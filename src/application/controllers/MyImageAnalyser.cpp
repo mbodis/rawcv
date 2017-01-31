@@ -16,8 +16,8 @@ using namespace std;
 
 
 void MyImageAnalyser::executeCustomLogic(Mat frame, int videoTime){
-	cout << "NEW LOGIC " << endl;
-	// TODO initial my logic class
-	imshow("aaa", frame);
+//	imshow("camera", frame);
+	inputFrame = frame.clone();
+	// TODO
 }
 

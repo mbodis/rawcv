@@ -31,7 +31,7 @@ public:
 	UsbCommunicator();
 	~UsbCommunicator();
 
-	void sendCommand(char*);
+	void sendCommand(char *);
 };
 
 

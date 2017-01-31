@@ -15,6 +15,7 @@ private:
     DebugFrames* mDebugFrames;
     
 public:
+    Mat inputFrame;
     ImageAnalyser(ConfigExample *config, int inputMode, int printMode);
 
     bool analyse(Mat, int videoTime);

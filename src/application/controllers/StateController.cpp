@@ -6,6 +6,8 @@
  */
 
 #include "../controllers/StateController.h"
+#include "../logic/robotic_arm/RoboticArm.h"
+
 
 thread t;
 bool isStateControllerAlive = false;
@@ -13,6 +15,8 @@ bool isStateControllerAlive = false;
 StateController::StateController(ConfigExample *mConfigExample, ImageAnalyser *mImageAnalyser){
 	this->mConfigExample = mConfigExample;
 	this->mImageAnalyser = mImageAnalyser;
+	this->arm = new RoboticArm();
+	this->mPickUpObject = new PickUpObject;
 }
 
 void StateController::start(){
@@ -28,6 +32,7 @@ void StateController::executeLogicLoop(){
 
 	while (isStateControllerAlive){
 		// TODO logic
+
 	}
 
 	cout << "-- -- -- STATE CONTROLLER ENDED -- -- --" << endl;

@@ -19,10 +19,11 @@ using namespace std;
 
 #include "application/config/ConfigExample.h"
 #include "system/logic/input/ProcessingFacade.h"
-#include "application/logic/robotic_arm/RoboticArmControlling.h"
+#include "application/controllers/RoboticArmController.h"
 #include "application/controllers/StateController.h"
 #include "application/controllers/MyImageAnalyser.h"
 #include "system/controllers/ImageAnalyser.h"
+#include "testing/RoboticArmControllingTest.h"
 
 /*
  * reload application constants
@@ -44,17 +45,17 @@ static int INPUT_MODE = INPUT_MODE_LOCAL_CAMERA;
 /*
  * NOTE: do not modify !
  */
-int main(int argc, char **argv) {
+int main2(int argc, char **argv) {
 
 	// init
 	ConfigExample mConfigExample(EXAMPLE_CONFIG, INPUT_MODE, PRINT_MODE);
 	MyImageAnalyser mImageAnalyser(&mConfigExample, INPUT_MODE, PRINT_MODE);
-	StateController mStateController(&mConfigExample, &mImageAnalyser);
-	mStateController.start();
+	StateController *mStateController = new StateController(&mConfigExample, &mImageAnalyser);
+	mStateController->start();
 
     // start arm communication
-    RoboticArmControlling *mRoboticArmControlling = new RoboticArmControlling;
-	mRoboticArmControlling->start();
+    RoboticArmController *mRoboticArmController = new RoboticArmController;
+    mRoboticArmController->start();
 
     // start video analyze
 	ProcessingFacade mProcessingFacade(&mConfigExample, &mImageAnalyser);
@@ -62,14 +63,23 @@ int main(int argc, char **argv) {
 
 	//---------------------------- until ESC pressed
 
-	mRoboticArmControlling->end();
-	mStateController.end();
+	mRoboticArmController->end();
+	mStateController->end();
 	cout << "-- -- -- EXIT -- -- --" << endl;
 
 	return 0;
 }
 
+/*
+ * TESTING
+ */
+int main(int argc, char **argv) {
 
+	RoboticArmControllingTest *mRoboticArmControllingTest = new RoboticArmControllingTest;
+	mRoboticArmControllingTest->runTest();
+
+	return 0;
+}
 
 
 

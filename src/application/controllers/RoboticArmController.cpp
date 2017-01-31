@@ -7,32 +7,32 @@
 
 
 
-#include "RoboticArmControlling.h";
+#include "RoboticArmController.h"
 
 static thread t;
-std::stack<char*> armCommandsStack;                    // empty stack
+std::stack<string> armCommandsStack;                    // empty stack
 bool readNewCommand = false;
 UsbCommunicator *mUsbCommunicator;
 
 
-void RoboticArmControlling::start(){
+void RoboticArmController::start(){
 	readNewCommand = true;
 	mUsbCommunicator = new UsbCommunicator();
 	t = thread(executeCommandsLoop);
 }
 
-void RoboticArmControlling::end(){
+void RoboticArmController::end(){
 	mUsbCommunicator->~UsbCommunicator();
 	readNewCommand = false;
 	cout << "-- -- -- ROBOTIC ARM CONTROLLING ENDING -- -- --" << endl;
 }
 
-void RoboticArmControlling::executeCommandsLoop(){
+void RoboticArmController::executeCommandsLoop(){
 	while (readNewCommand){
 		if (armCommandsStack.size() >0){
-			char* newCommand = armCommandsStack.top();
+			string newCommand = armCommandsStack.top();
 			cout << "executing command: " << newCommand << endl;
-			mUsbCommunicator->sendCommand(newCommand);
+			mUsbCommunicator->sendCommand((char*)newCommand.c_str());
 			armCommandsStack.pop();
 
 			sleep(TIME_DELAY_WAIT_AFTER_COMMAND);
@@ -46,11 +46,11 @@ void RoboticArmControlling::executeCommandsLoop(){
 }
 
 
-void RoboticArmControlling::addToStack(char* newCommand){
+void RoboticArmController::addToStack(string newCommand){
 	armCommandsStack.push(newCommand);
 }
 
-int RoboticArmControlling::getStackSize(){
+int RoboticArmController::getStackSize(){
 	return armCommandsStack.size();
 }
 

@@ -24,7 +24,7 @@ bool ImageAnalyser::analyse(Mat frame, int videoTime) {
     if (frame.dims == 0) return true;
 
     executeCustomLogic(frame, videoTime);
-    imshow("frame", frame);
+//    imshow("frame", frame);
 
     return keyaboardInput(&frame);
 }

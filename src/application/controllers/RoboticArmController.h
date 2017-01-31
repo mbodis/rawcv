@@ -5,19 +5,19 @@
  *      Author: mbodis
  */
 
-#ifndef SRC_APPLICATION_LOGIC_ROBOTIC_ARM_ROBOTICARMCONTROLLING_H_
-#define SRC_APPLICATION_LOGIC_ROBOTIC_ARM_ROBOTICARMCONTROLLING_H_
+#ifndef SRC_APPLICATION_LOGIC_ROBOTIC_ARM_ROBOTICARMCONTROLLER_H_
+#define SRC_APPLICATION_LOGIC_ROBOTIC_ARM_ROBOTICARMCONTROLLER_H_
 
 #include <stack>          // std::stack
 #include <thread>
-#include "../usb/UsbCommunicator.h"
+#include "../../libs/usb/UsbCommunicator.h"
 using namespace std;
 
 
 static double TIME_DELAY_WAIT_FOR_NEW_COMMAND = 0.5; // seconds
 static double TIME_DELAY_WAIT_AFTER_COMMAND = 2.0; // seconds
 
-class RoboticArmControlling {
+class RoboticArmController {
 private:
 
 
@@ -34,11 +34,11 @@ public:
 	void end();
 
 	static void executeCommandsLoop();
-	void addToStack(char*);
+	void addToStack(string);
 	int getStackSize();
 
 
 };
 
 
-#endif /* SRC_APPLICATION_LOGIC_ROBOTIC_ARM_ROBOTICARMCONTROLLING_H_ */
+#endif /* SRC_APPLICATION_LOGIC_ROBOTIC_ARM_ROBOTICARMCONTROLLER_H_ */

@@ -42,4 +42,12 @@ static Scalar colorOrange = Scalar(0, 140, 255);
 static char* OUTPUT_FOLDER = "output/";
 static char* OUTPUT_VIDEO_NAME = "out.avi";
 
+/* servo constants */
+const int DIRECTION_LEFT = 0;
+const int DIRECTION_RIGHT = 1;
+const int DIRECTION_FORWARD = 2;
+const int DIRECTION_BACKWARD = 3;
+const int DIRECTION_OPEN = 4;
+const int DIRECTION_CLOSE = 5;
+
 #endif /* SRC_CONFIG_CONSTANTS_H_ */

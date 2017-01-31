@@ -9,6 +9,11 @@
 #define SRC_TESTING_ROBOTICARMCONTROLLINGTEST_H_
 
 #include "abstract/TestIface.h"
+#include "../application/logic/servo/ServoIface.h"
+#include "../application/logic/servo/ServoRotationFB.h"
+#include "../application/logic/servo/ServoRotationLR.h"
+#include "../application/logic/servo/ServoRange.h"
+#include "../application/logic/robotic_arm/RoboticArm.h"
 
 #include <iostream>
 #include <stdio.h>
@@ -18,10 +23,24 @@ using namespace std;
 class RoboticArmControllingTest  : TestIface{
 private:
 	void dummyTestCommunicaion();
-	void testRealValues();
-	void resetToDefaultPosition();
+
+	void testRealValuesStepsMilis();
+	void resetToDefaultPositionStepsMilis();
+
+	void testRealValuesAllMilis();
+	void resetToDefaultPositionAllMilis();
+
+	void testRealValuesStepsAngle();
+	void resetToDefaultPositionStepsAngle();
+
+	void testRealValuesAllAngle();
+	void resetToDefaultPositionAllAngle();
+
+	RoboticArmController *mRoboticArmController;
+	RoboticArm *arm;
 
 public:
+	RoboticArmControllingTest();
 	void runTest();
 };
 
