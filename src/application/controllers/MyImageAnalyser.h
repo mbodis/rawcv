@@ -22,12 +22,17 @@ using namespace std;
 
 
 class MyImageAnalyser: public ImageAnalyser{
+private:
+	int i=0;
+
 public:
 	MyImageAnalyser(ConfigExample *config) : ImageAnalyser(config){
 		cout << "NEW INIT " << endl;
 		// TODO initial my logic class
 	}
 	void executeCustomLogic(Mat, int);
+
+	void saveImageForProcessing(Mat frame);
 };
 
 

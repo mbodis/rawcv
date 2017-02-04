@@ -15,10 +15,10 @@ class FileSystemHelper {
 private:
 
 public:
-	bool DirectoryExists(const char*);
-	int getNumberFilesInFolder(const char*);
-	string getFileInFolder(char*, int);
-	string getFileContent(char*);
+	static bool DirectoryExists(const char*);
+	static int getNumberFilesInFolder(const char*);
+	static string getFileInFolder(char*, int);
+	static string getFileContent(char*);
 
 };
 

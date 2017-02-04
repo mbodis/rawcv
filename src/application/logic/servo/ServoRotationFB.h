@@ -33,7 +33,7 @@ public:
 		}
 
 		cout << "getMaxForwardAngle: invalid direction servo idx:" << idx << endl;
-		throw "getMaxForwardAngle: invalid direction for ServoRotationFB";
+		throw std::logic_error("getMaxForwardAngle: invalid direction for ServoRotationFB");
 	}
 
 	int getMaxBackwardAngle(){
@@ -45,7 +45,7 @@ public:
 		}
 
 		cout << "getMaxBackwardAngle: invalid direction servo idx:" << idx << endl;
-		throw "getMaxBackwardAngle: invalid direction for ServoRotationFB";
+		throw std::logic_error("getMaxBackwardAngle: invalid direction for ServoRotationFB");
 	}
 
 	int convertAngleToMilisForward(int angle){

@@ -106,8 +106,8 @@ ConfigExample::ConfigExample(char* path, int inputMode, int printMode) {
 	} else {
 		root = value->AsObject();
 
-		VIDEO_NAME = string(ASSETS_FOLDER).append(getStrByKey(L"VIDEO_NAME", root));
-		FOLDER = string(ASSETS_FOLDER).append(getStrByKey(L"FOLDER", root));
+		VIDEO_NAME = string(FOLDER_ASSETS).append(getStrByKey(L"VIDEO_NAME", root));
+		FOLDER = string(FOLDER_ASSETS).append(getStrByKey(L"FOLDER", root));
         URL = string().append(getStrByKey(L"URL", root));
         CAMERA_IDX  = getNumberByKey(L"CAMERA_IDX", root);
 

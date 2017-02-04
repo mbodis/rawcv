@@ -38,7 +38,7 @@ public:
 		}
 
 		cout << "getMaxLeftAngle: invalid direction servo idx:" << idx << endl;
-		throw "getMaxLeftAngle: invalid direction for ServoRotationLR";
+		throw std::logic_error("getMaxLeftAngle: invalid direction for ServoRotationLR");
 	}
 
 	int getMaxRightAngle(){
@@ -50,7 +50,7 @@ public:
 		}
 
 		cout << "getMaxRightAngle: invalid direction servo idx:" << idx << endl;
-		throw "getMaxRightAngle: invalid direction for ServoRotationLR";
+		throw std::logic_error("getMaxRightAngle: invalid direction for ServoRotationLR");
 	}
 
 	int convertAngleToMilisLeft(int angle){

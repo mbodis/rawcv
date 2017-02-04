@@ -30,10 +30,10 @@ DebugFrames::DebugFrames(ConfigExample *mConfigExample, int mode, int typePrintI
     this->c = mConfigExample;
     this->INPUT_MODE = mode;
 	this->typePrintInfo = typePrintInfo;
-	if (!mFileSystemHelper.DirectoryExists(OUTPUT_FOLDER)) {
+	if (!mFileSystemHelper.DirectoryExists(FOLDER_OUTPUT)) {
 		cout
 				<< "missing output folder, please create empty folder in project directory: "
-				<< OUTPUT_FOLDER << endl;
+				<< FOLDER_OUTPUT << endl;
 	}
 }
 
@@ -62,7 +62,7 @@ void DebugFrames::saveFrameToFile(Mat *frame) {
 
 	imageSaveCounter++;
 	stringstream fileName;
-	fileName << OUTPUT_FOLDER;
+	fileName << FOLDER_OUTPUT;
 	fileName << "out_save_";
 	if (imageSaveCounter < 10) {
 		fileName << "0";

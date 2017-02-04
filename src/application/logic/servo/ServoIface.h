@@ -48,11 +48,11 @@ public:
 
 	}
 
-	virtual int convertAngleToMilisForward(int angle){ throw "undefined method ServoIface"; };
-	virtual int convertAngleToMilisBackward(int angle){ throw "undefined method ServoIface"; };
-	virtual int convertAngleToMilisLeft(int angle){ throw "undefined method ServoIface"; };
-	virtual int convertAngleToMilisRight(int angle){ throw "undefined method ServoIface"; };
-	virtual int convertMmToMilis(int mm){ throw "undefined method ServoIface"; };
+	virtual int convertAngleToMilisForward(int angle){ throw std::logic_error(" ServoIface convertAngleToMilisForward - method not implemented"); };
+	virtual int convertAngleToMilisBackward(int angle){ throw std::logic_error(" ServoIface convertAngleToMilisBackward - method not implemented"); };
+	virtual int convertAngleToMilisLeft(int angle){ throw std::logic_error(" ServoIface convertAngleToMilisLeft - method not implemented"); };
+	virtual int convertAngleToMilisRight(int angle){ throw std::logic_error(" ServoIface convertAngleToMilisRight - method not implemented"); };
+	virtual int convertMmToMilis(int mm){ throw std::logic_error(" ServoIface convertMmToMilis - method not implemented"); };
 
 	int convertAngleMmToMilis(int direction, int angle_mm){
 		switch(direction){

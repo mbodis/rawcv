@@ -13,7 +13,11 @@
 #include <opencv2/imgproc/imgproc.hpp>
 using namespace cv;
 
-static char* ASSETS_FOLDER = "../assets_opencv/";
+static char* FOLDER_ASSETS = "../assets_opencv/";
+static char* FOLDER_IMG_TO_PROCESS = "img_stack_to_process/";
+static char* FOLDER_OUTPUT = "output/";
+
+static char* OUTPUT_VIDEO_NAME = "out.avi";
 
 static int INPUT_MODE_IMG_FOLDER = 1;
 static int INPUT_MODE_VIDEO_RT = 2;
@@ -39,8 +43,6 @@ static Scalar colorYellow = Scalar(0, 255, 255);
 static Scalar colorMagenta = Scalar(255, 0, 255);
 static Scalar colorCyan = Scalar(255, 255, 0);
 static Scalar colorOrange = Scalar(0, 140, 255);
-static char* OUTPUT_FOLDER = "output/";
-static char* OUTPUT_VIDEO_NAME = "out.avi";
 
 /* servo constants */
 const int DIRECTION_LEFT = 0;

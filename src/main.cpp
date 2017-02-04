@@ -49,6 +49,8 @@ static int INPUT_MODE = INPUT_MODE_LOCAL_CAMERA;
  */
 int main(int argc, char **argv) {
 
+	cout << cv::getBuildInformation() << endl;
+
 	// init config
 	ConfigExample mConfigExample(EXAMPLE_CONFIG, INPUT_MODE, PRINT_MODE);
 
