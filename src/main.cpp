@@ -26,40 +26,20 @@ using namespace std;
 #include "testing/RoboticArmControllingTest.h"
 
 
-
-/*
- * reload application constants
- */
-static char* EXAMPLE_CONFIG = "src/application/config/json/example1.json";
-
-/*
- * setup output mode
- * [ PRINT_MODE_DEBUG, PRINT_MODE_PRESENTATION ]
- */
-static int PRINT_MODE = PRINT_MODE_DEBUG;
-
-/*
- * setup input mode
- * [INPUT_MODE_IMG_FOLDER, INPUT_MODE_VIDEO_RT, INPUT_MODE_VIDEO_FRAME, INPUT_MODE_URL, INPUT_MODE_LOCAL_CAMERA]
- */
-static int INPUT_MODE = INPUT_MODE_LOCAL_CAMERA;
-
 /*
  * NOTE: do not modify !
  */
 int main(int argc, char **argv) {
 
 	cout << cv::getBuildInformation() << endl;
+	ConfigExample::getInstance();
 
-	// init config
-	ConfigExample mConfigExample(EXAMPLE_CONFIG, INPUT_MODE, PRINT_MODE);
 
 	// main logic - in thread
 	StateController *mStateController = new StateController();
 
     // start video analyze
-	MyImageAnalyser mMyImageAnalyser(&mConfigExample);
-	(new ProcessingFacade(&mConfigExample, &mMyImageAnalyser))->runAnalyse();
+	(new ProcessingFacade(new MyImageAnalyser()))->runAnalyse();
 
 
 	//---------------------------- until ESC pressed

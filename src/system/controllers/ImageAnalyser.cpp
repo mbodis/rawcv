@@ -13,11 +13,15 @@ using namespace cv;
 using namespace std;
 
 
-ImageAnalyser::ImageAnalyser(ConfigExample *config){
+ImageAnalyser::ImageAnalyser(){
 
-    this->mDebugFrames = new DebugFrames(config, config->inputMode, config->printMode);
-    this->inputMode = config->inputMode;
-    this->printMode = config->printMode;
+    this->mDebugFrames = new DebugFrames();
+    this->inputMode = ConfigExample::getInstance().inputMode;
+    this->printMode = ConfigExample::getInstance().printMode;
+}
+
+ImageAnalyser::~ImageAnalyser(){
+
 }
 
 bool ImageAnalyser::analyse(Mat frame, int videoTime) {

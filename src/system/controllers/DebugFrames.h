@@ -45,7 +45,7 @@ private:
 public:
     ConfigExample *c;
 
-	DebugFrames(ConfigExample*, int, int);
+	DebugFrames();
 	~DebugFrames(void);
 	
 	void drawStatus(Mat*, int);

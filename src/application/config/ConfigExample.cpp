@@ -13,6 +13,39 @@ using namespace std;
 #include "iostream"
 #include "../../libs/json/JSON.h"
 
+#include <stddef.h>  // defines NULL
+
+
+// Global static pointer used to ensure a single instance of the class.
+ConfigExample* ConfigExample::m_pInstance = NULL;
+
+/** This function is called to create an instance of the class.
+    Calling the constructor publicly is not allowed. The constructor
+    is private and is only called by this Instance function.
+*/
+
+ConfigExample* ConfigExample::Instance()
+{
+   if (!m_pInstance)   // Only allow one instance of class to be generated.
+      m_pInstance = new ConfigExample;
+
+   return m_pInstance;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
  * parse string value by key from JSON structure
@@ -88,12 +121,12 @@ Point getPointByKey(wstring wkey, JSONObject root){
 /*
  * parsing constant form JSON file
  */
-ConfigExample::ConfigExample(char* path, int inputMode, int printMode) {
+ConfigExample::ConfigExample(){
 
-	this->inputMode = inputMode;
-	this->printMode = printMode;
+	this->inputMode = INPUT_MODE;
+	this->printMode = PRINT_MODE;
 	FileSystemHelper mFileSystemHelper;
-	string s = mFileSystemHelper.getFileContent(path);
+	string s = mFileSystemHelper.getFileContent(EXAMPLE_CONFIG);
     cout << s << endl;
 
 	char *json_string = (char*) s.c_str();
@@ -113,7 +146,7 @@ ConfigExample::ConfigExample(char* path, int inputMode, int printMode) {
 
         // TODO add your constants here
 
-        setFontSize(-1, -1);		
+        setFontSize(-1, -1);
 		debugPrintOut();
 	}
 }

@@ -20,7 +20,8 @@ private:
     
 public:
     Mat inputFrame;
-    ImageAnalyser(ConfigExample *config);
+    ImageAnalyser();
+    ~ImageAnalyser();
 
     bool analyse(Mat, int videoTime);
     bool keyaboardInput(Mat*);

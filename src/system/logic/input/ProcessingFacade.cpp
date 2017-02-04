@@ -17,8 +17,8 @@
 #include "path/UrlPath.h"
 #include "path/CameraPath.h"
 
-ProcessingFacade::ProcessingFacade(ConfigExample *mConfigExample, ImageAnalyser *mImageAnalyser) {
-    this->mConfigExample = mConfigExample;
+ProcessingFacade::ProcessingFacade(ImageAnalyser *mImageAnalyser) {
+    this->mConfigExample = &ConfigExample::getInstance();
     this->mImageAnalyser = mImageAnalyser;
 }
 

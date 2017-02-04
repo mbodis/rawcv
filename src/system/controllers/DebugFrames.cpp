@@ -25,11 +25,11 @@ using namespace cv;
  * mode [MODE_VIDEO, MODE_IMG_FOLDER, MODE_IMG]
  * typePrintInfo [PRINT_MODE_DEBUG, PRINT_MODE_PRESENTATION]
  */
-DebugFrames::DebugFrames(ConfigExample *mConfigExample, int mode, int typePrintInfo) {
+DebugFrames::DebugFrames() {
 	cout << "Object DebugFrames is being created" << endl;
-    this->c = mConfigExample;
-    this->INPUT_MODE = mode;
-	this->typePrintInfo = typePrintInfo;
+    this->c = &ConfigExample::getInstance();
+    this->INPUT_MODE = ConfigExample::getInstance().inputMode;
+	this->typePrintInfo = ConfigExample::getInstance().printMode;
 	if (!mFileSystemHelper.DirectoryExists(FOLDER_OUTPUT)) {
 		cout
 				<< "missing output folder, please create empty folder in project directory: "

@@ -26,10 +26,12 @@ private:
 	int i=0;
 
 public:
-	MyImageAnalyser(ConfigExample *config) : ImageAnalyser(config){
+	MyImageAnalyser() : ImageAnalyser(){
 		cout << "NEW INIT " << endl;
 		// TODO initial my logic class
 	}
+
+	~MyImageAnalyser();
 	void executeCustomLogic(Mat, int);
 
 	void saveImageForProcessing(Mat frame);

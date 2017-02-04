@@ -33,7 +33,7 @@ private:
 public:
 	ConfigExample *mConfigExample;
 	ImageAnalyser *mImageAnalyser;
-	ProcessingFacade(ConfigExample*, ImageAnalyser*);
+	ProcessingFacade(ImageAnalyser*);
 	~ProcessingFacade();
     
     void runAnalyse();
