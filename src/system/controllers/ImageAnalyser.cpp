@@ -13,18 +13,18 @@ using namespace cv;
 using namespace std;
 
 
-ImageAnalyser::ImageAnalyser(ConfigExample *config, int inputMode, int printMode){
+ImageAnalyser::ImageAnalyser(ConfigExample *config){
 
-    this->mDebugFrames = new DebugFrames(config, inputMode, printMode);
-    this->inputMode = inputMode;
-    this->printMode = printMode;
+    this->mDebugFrames = new DebugFrames(config, config->inputMode, config->printMode);
+    this->inputMode = config->inputMode;
+    this->printMode = config->printMode;
 }
 
 bool ImageAnalyser::analyse(Mat frame, int videoTime) {
     if (frame.dims == 0) return true;
 
     executeCustomLogic(frame, videoTime);
-//    imshow("frame", frame);
+    //imshow("frame", frame);
 
     return keyaboardInput(&frame);
 }

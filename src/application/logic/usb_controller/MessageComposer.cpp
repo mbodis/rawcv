@@ -95,11 +95,11 @@ string MessageComposer::composeControllerFullMessage(
 		){
 
 	int servo1Milis = servo1->convertAngleMmToMilis(direction1, angle1);
-	int servo2Milis = servo2->convertAngleMmToMilis(direction2, angle1);
-	int servo3Milis = servo3->convertAngleMmToMilis(direction3, angle1);
-	int servo4Milis = servo4->convertAngleMmToMilis(direction4, angle1);
-	int servo5Milis = servo5->convertAngleMmToMilis(direction5, angle1);
-	int servo6Milis = servo6->convertAngleMmToMilis(direction6, angle1);
+	int servo2Milis = servo2->convertAngleMmToMilis(direction2, angle2);
+	int servo3Milis = servo3->convertAngleMmToMilis(direction3, angle3);
+	int servo4Milis = servo4->convertAngleMmToMilis(direction4, angle4);
+	int servo5Milis = servo5->convertAngleMmToMilis(direction5, angle5);
+	int servo6Milis = servo6->convertAngleMmToMilis(direction6, angle6);
 
 	return composeControllerFullMessage(servo1Milis, servo2Milis,
 			servo3Milis, servo4Milis, servo5Milis, servo6Milis, SERVO_SPEED_NORMAL);

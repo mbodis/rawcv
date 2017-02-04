@@ -36,6 +36,8 @@ private:
 	void testRealValuesAllAngle();
 	void resetToDefaultPositionAllAngle();
 
+	void stupido();
+
 	RoboticArmController *mRoboticArmController;
 	RoboticArm *arm;
 

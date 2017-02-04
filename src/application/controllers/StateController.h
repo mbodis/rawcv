@@ -14,22 +14,16 @@
 #include "../logic/robotic_arm/RoboticArm.h"
 #include "../config/ConfigExample.h"
 #include "../modules/PickUpObject.h"
+#include "RoboticArmController.h"
+#include "MainLogic.h"
 
 
 class StateController{
 private:
-	ConfigExample *mConfigExample;
-	ImageAnalyser *mImageAnalyser;
-	RoboticArm *arm;
 	static void executeLogicLoop();
 public:
-
-	StateController(ConfigExample *mConfigExample, ImageAnalyser *mImageAnalyser);
-	void start();
-	void end();
-
-	// MODULES
-	PickUpObject *mPickUpObject;
+	StateController();
+	~StateController();
 };
 
 

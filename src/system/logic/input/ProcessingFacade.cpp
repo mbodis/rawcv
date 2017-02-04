@@ -22,6 +22,10 @@ ProcessingFacade::ProcessingFacade(ConfigExample *mConfigExample, ImageAnalyser 
     this->mImageAnalyser = mImageAnalyser;
 }
 
+ProcessingFacade::~ProcessingFacade(){
+	delete this->mImageAnalyser;
+}
+
 /*
  * run analyze by selected mode
  */
@@ -84,8 +88,6 @@ void ProcessingFacade::runURLVideoFrameProcessing() {
  * video input from local camera/usb camera
  */
 void ProcessingFacade::runLocalCameraFrameProcessing() {
-	(new VideoFrameProcessingLocalCamera(new CameraPath(mConfigExample->CAMERA_IDX), mConfigExample, mImageAnalyser))
-			->start();
-//	(new VideoFrameProcessingLocalCamera(new CameraPath(mConfigExample->CAMERA_IDX), mConfigExample, mImageAnalyser))
-//			->startEveryFrame();
+	VideoFrameProcessingLocalCamera *mVideoFrameProcessingLocalCamera = new VideoFrameProcessingLocalCamera(new CameraPath(mConfigExample->CAMERA_IDX), mConfigExample, mImageAnalyser);
+	mVideoFrameProcessingLocalCamera->start();
 }

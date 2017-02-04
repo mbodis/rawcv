@@ -11,6 +11,11 @@
 #include "../../../application/config/ConfigExample.h"
 #include "../../controllers/ImageAnalyser.h"
 
+#include "processing/DirImageFrameProcessing.h"
+#include "processing/VideoFrameProcessing.h"
+#include "processing/VideoFrameProcessingRunEveryFrame.h"
+#include "processing/VideoFrameProcessingLocalCamera.h"
+
 using namespace std;
 
 class ProcessingFacade{    
@@ -23,11 +28,13 @@ private:
 	void runURLVideoFrameProcessing();    
 	void runLocalCameraFrameProcessing();
 	void runImageAnalyse();
+
     
 public:
 	ConfigExample *mConfigExample;
 	ImageAnalyser *mImageAnalyser;
 	ProcessingFacade(ConfigExample*, ImageAnalyser*);
+	~ProcessingFacade();
     
     void runAnalyse();
 };

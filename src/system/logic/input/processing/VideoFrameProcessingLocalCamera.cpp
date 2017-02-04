@@ -18,6 +18,11 @@
 using namespace std;
 using namespace cv;
 
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+
 #include <thread>
 #include "../path/SourcePath.h"
 #include "../../../config/Constants.h"
@@ -26,12 +31,13 @@ using namespace cv;
 bool isInputFinished2 = false;
 Mat frameShared2, processingFrame2;
 int videoTimeShared2 = 0;
-bool lockClone2 = false;
+thread videoThread;
 /*
  * sourcePath   ==> path to .avi or url
  * isRT         ==> (RT like Real Time) if is urlPath then have true value
  * */
 void VideoFrameProcessingLocalCamera::runRTV(SourcePath *sourcePath) {
+
 	VideoCapture stream1(sourcePath->cameraIdx);
 
 	if (!stream1.isOpened()) {
@@ -41,7 +47,7 @@ void VideoFrameProcessingLocalCamera::runRTV(SourcePath *sourcePath) {
 
 	while (!isInputFinished2) {
         videoTimeShared2 = stream1.get(CV_CAP_PROP_POS_MSEC);
-        if (lockClone2) continue;
+
 		if (!stream1.read(frameShared2)) {
 			stream1.release();
 			isInputFinished2 = true;
@@ -50,15 +56,13 @@ void VideoFrameProcessingLocalCamera::runRTV(SourcePath *sourcePath) {
 }
 
 void VideoFrameProcessingLocalCamera::start() {
-	thread t(runRTV, sourcePath);
-//	mImageAnalyser->setInputFacade(new InputFacade(new Move()));
-
+	videoThread = thread(runRTV, sourcePath);
     bool isRunningLocal = true;
 	while (!isInputFinished2) {
         if (frameShared2.dims > 0){
-            lockClone2 = true;
+
             processingFrame2 = frameShared2.clone();
-            lockClone2 = false;
+
             isRunningLocal = mImageAnalyser->analyse(processingFrame2, videoTimeShared2);
         }
 
@@ -68,8 +72,9 @@ void VideoFrameProcessingLocalCamera::start() {
         }
     }
 
-	t.join();
+	videoThread.join();
 }
+
 
 void VideoFrameProcessingLocalCamera::startEveryFrame() {
 

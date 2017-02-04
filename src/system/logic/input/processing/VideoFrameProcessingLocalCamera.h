@@ -14,8 +14,6 @@
 
 class VideoFrameProcessingLocalCamera : public FrameProcessing{
 private:
-    static void runRTV(SourcePath* path);
-    ImageAnalyser* mImageAnalyser;
 
 public:
 	VideoFrameProcessingLocalCamera(SourcePath* sourcePath, ConfigExample* mConfigExample, ImageAnalyser* mImageAnalyser):
@@ -25,6 +23,8 @@ public:
 
 	void start();
 	void startEveryFrame();
+    static void runRTV(SourcePath *sourcePath);
+    ImageAnalyser* mImageAnalyser;
 };
 
 

@@ -23,7 +23,7 @@ using namespace std;
 
 class MyImageAnalyser: public ImageAnalyser{
 public:
-	MyImageAnalyser(ConfigExample *config, int inputMode, int printMode) : ImageAnalyser(config, inputMode, printMode){
+	MyImageAnalyser(ConfigExample *config) : ImageAnalyser(config){
 		cout << "NEW INIT " << endl;
 		// TODO initial my logic class
 	}

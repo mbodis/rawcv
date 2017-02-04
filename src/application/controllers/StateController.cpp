@@ -8,33 +8,35 @@
 #include "../controllers/StateController.h"
 #include "../logic/robotic_arm/RoboticArm.h"
 
+#include <unistd.h>
 
 thread t;
 bool isStateControllerAlive = false;
 
-StateController::StateController(ConfigExample *mConfigExample, ImageAnalyser *mImageAnalyser){
-	this->mConfigExample = mConfigExample;
-	this->mImageAnalyser = mImageAnalyser;
-	this->arm = new RoboticArm();
-	this->mPickUpObject = new PickUpObject;
-}
+StateController::StateController(){
 
-void StateController::start(){
+
 	isStateControllerAlive = true;
 	t = thread(executeLogicLoop);
 }
 
-void StateController::end(){
+StateController::~StateController(){
+	cout << "-- -- -- DESTRUCTOR: StateController -- -- --" << endl;
 	isStateControllerAlive = false;
 }
 
 void StateController::executeLogicLoop(){
 
-	while (isStateControllerAlive){
-		// TODO logic
+	MainLogic *mMainLogic = new MainLogic();
 
+	while (isStateControllerAlive){
+		mMainLogic->process();
+		usleep(500);
 	}
+
+	delete mMainLogic;
 
 	cout << "-- -- -- STATE CONTROLLER ENDED -- -- --" << endl;
 	t.join();
 }
+

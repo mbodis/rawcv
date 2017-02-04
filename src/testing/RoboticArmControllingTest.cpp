@@ -66,15 +66,21 @@ void RoboticArmControllingTest::resetToDefaultPositionAllMilis(){
 }
 
 void RoboticArmControllingTest::testRealValuesStepsAngle(){
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_BASE), DIRECTION_LEFT, 10));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_BASE), DIRECTION_LEFT, 30));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_FORWARD, 10));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_BASE), DIRECTION_RIGHT, 30));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 10));
+
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_FORWARD, 30));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 10));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_BACKWARD, 30));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_LEFT, 10));
+
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 30));
+	sleep(2);
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 30));
+	sleep(2);
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_LEFT, 30));
 	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_CLAWS), DIRECTION_OPEN, 300));
 	sleep(2);
@@ -96,15 +102,17 @@ void RoboticArmControllingTest::resetToDefaultPositionStepsAngle(){
 }
 
 void RoboticArmControllingTest::testRealValuesAllAngle(){
+
 	mRoboticArmController->addToStack(MessageComposer::composeControllerFullMessage(
-		arm->getServo(SERVO_BASE), DIRECTION_LEFT, 60,
-		arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_FORWARD, 10,
-		arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 10,
-		arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 10,
-		arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_LEFT, 10,
-		arm->getServo(SERVO_CLAWS), DIRECTION_OPEN, 300
+		arm->getServo(SERVO_BASE), DIRECTION_RIGHT, 0,
+		arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_FORWARD, 30,
+		arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 60,
+		arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 70,
+		arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_LEFT, 0,
+		arm->getServo(SERVO_CLAWS), DIRECTION_OPEN, 420
 		));
 	sleep(2);
+
 }
 
 void RoboticArmControllingTest::resetToDefaultPositionAllAngle(){
@@ -119,7 +127,87 @@ void RoboticArmControllingTest::resetToDefaultPositionAllAngle(){
 	sleep(2);
 }
 
+void RoboticArmControllingTest::stupido(){
+	int claw = 30;
+//	mRoboticArmController->addToStack(MessageComposer::composeControllerFullMessage(
+//	arm->getServo(SERVO_BASE), DIRECTION_RIGHT, 0,
+//	arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_FORWARD, 0,
+//	arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 0,
+//	arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 0,
+//	arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_LEFT, 0,
+//	arm->getServo(SERVO_CLAWS), DIRECTION_OPEN, 420
+//	));
+//	sleep(2);
+//
+//	mRoboticArmController->addToStack(MessageComposer::composeControllerFullMessage(
+//		arm->getServo(SERVO_BASE), DIRECTION_RIGHT, 0,
+//		arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_FORWARD, 0,
+//		arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 0,
+//		arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 0,
+//		arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_LEFT, 0,
+//		arm->getServo(SERVO_CLAWS), DIRECTION_OPEN, claw
+//		));
+//		sleep(2);
 
+	mRoboticArmController->addToStack(MessageComposer::composeControllerFullMessage(
+	arm->getServo(SERVO_BASE), DIRECTION_RIGHT, 0,
+	arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
+	arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 60,
+	arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 60,
+	arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_LEFT, 0,
+	arm->getServo(SERVO_CLAWS), DIRECTION_OPEN, claw
+	));
+	sleep(2);
+
+	for(int i=0; i< 2;i++){
+
+		//left
+		mRoboticArmController->addToStack(MessageComposer::composeControllerFullMessage(
+		arm->getServo(SERVO_BASE), DIRECTION_LEFT, 20,
+		arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
+		arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 60,
+		arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 60,
+		arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_RIGHT, 0,
+		arm->getServo(SERVO_CLAWS), DIRECTION_OPEN, claw
+		));
+		sleep(4);
+
+		//top
+		mRoboticArmController->addToStack(MessageComposer::composeControllerFullMessage(
+		arm->getServo(SERVO_BASE), DIRECTION_LEFT, 0,
+		arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
+		arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 55,
+		arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 60,
+		arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_RIGHT, 0,
+		arm->getServo(SERVO_CLAWS), DIRECTION_OPEN, claw
+		));
+		sleep(4);
+
+		//right
+		mRoboticArmController->addToStack(MessageComposer::composeControllerFullMessage(
+		arm->getServo(SERVO_BASE), DIRECTION_RIGHT, 20,
+		arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
+		arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 60,
+		arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 60,
+		arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_LEFT, 0,
+		arm->getServo(SERVO_CLAWS), DIRECTION_OPEN, claw
+		));
+		sleep(4);
+
+		//down
+		mRoboticArmController->addToStack(MessageComposer::composeControllerFullMessage(
+		arm->getServo(SERVO_BASE), DIRECTION_LEFT, 0,
+		arm->getServo(SERVO_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
+		arm->getServo(SERVO_MIDDLE_JOINT), DIRECTION_FORWARD, 65,
+		arm->getServo(SERVO_UPPER_JOINT), DIRECTION_FORWARD, 65,
+		arm->getServo(SERVO_CLAW_ROTATE), DIRECTION_RIGHT, 0,
+		arm->getServo(SERVO_CLAWS), DIRECTION_OPEN, claw
+		));
+		sleep(4);
+	}
+
+	resetToDefaultPositionAllAngle();
+}
 
 void RoboticArmControllingTest::runTest(){
 	mRoboticArmController->start();
@@ -135,6 +223,9 @@ void RoboticArmControllingTest::runTest(){
 
 //	testRealValuesAllAngle();
 //	resetToDefaultPositionAllAngle();
+
+//	stupido();
+	resetToDefaultPositionAllAngle();
 
 	mRoboticArmController->end();
 

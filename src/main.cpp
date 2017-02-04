@@ -25,6 +25,8 @@ using namespace std;
 #include "system/controllers/ImageAnalyser.h"
 #include "testing/RoboticArmControllingTest.h"
 
+
+
 /*
  * reload application constants
  */
@@ -45,42 +47,36 @@ static int INPUT_MODE = INPUT_MODE_LOCAL_CAMERA;
 /*
  * NOTE: do not modify !
  */
-int main2(int argc, char **argv) {
+int main(int argc, char **argv) {
 
-	// init
+	// init config
 	ConfigExample mConfigExample(EXAMPLE_CONFIG, INPUT_MODE, PRINT_MODE);
-	MyImageAnalyser mImageAnalyser(&mConfigExample, INPUT_MODE, PRINT_MODE);
-	StateController *mStateController = new StateController(&mConfigExample, &mImageAnalyser);
-	mStateController->start();
 
-    // start arm communication
-    RoboticArmController *mRoboticArmController = new RoboticArmController;
-    mRoboticArmController->start();
+	// main logic - in thread
+	StateController *mStateController = new StateController();
 
     // start video analyze
-	ProcessingFacade mProcessingFacade(&mConfigExample, &mImageAnalyser);
-	mProcessingFacade.runAnalyse();
+	MyImageAnalyser mMyImageAnalyser(&mConfigExample);
+	(new ProcessingFacade(&mConfigExample, &mMyImageAnalyser))->runAnalyse();
+
 
 	//---------------------------- until ESC pressed
-
-	mRoboticArmController->end();
-	mStateController->end();
+	delete mStateController;
 	cout << "-- -- -- EXIT -- -- --" << endl;
 
 	return 0;
 }
 
 /*
- * TESTING
+ * TESTING CONTROLING ROBOTIC ARM
  */
-int main(int argc, char **argv) {
+int main2(int argc, char **argv) {
 
 	RoboticArmControllingTest *mRoboticArmControllingTest = new RoboticArmControllingTest;
 	mRoboticArmControllingTest->runTest();
 
 	return 0;
 }
-
 
 
 
