@@ -35,14 +35,12 @@ int main(int argc, char **argv) {
 	ConfigExample::getInstance();
 
 
-	// main logic - in thread
+	// main logic
 	StateController *mStateController = new StateController();
 
-    // start video analyze
+    // start video analyze on main thread - until ESC pressed
 	(new ProcessingFacade(new MyImageAnalyser()))->runAnalyse();
 
-
-	//---------------------------- until ESC pressed
 	delete mStateController;
 	cout << "-- -- -- EXIT -- -- --" << endl;
 

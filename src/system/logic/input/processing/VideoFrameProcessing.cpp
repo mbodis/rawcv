@@ -30,8 +30,9 @@ void VideoFrameProcessing::runRTV(SourcePath *sourcePath) {
 
 	capture.set(CV_CAP_PROP_BUFFERSIZE, 1);    
     cout<<"sourcePath->path.c_str(): " << sourcePath->path.c_str() << endl;
-	if (!capture.open(sourcePath->path.c_str()))
-		throw "Error opening video stream or file";
+	if (!capture.open(sourcePath->path.c_str())){
+		throw std::logic_error("VideoFrameProcessing::runRTV Error opening video stream or file");
+	}
 
 	while (!isInputFinished) {
         videoTimeShared = capture.get(CV_CAP_PROP_POS_MSEC);  
@@ -44,7 +45,7 @@ void VideoFrameProcessing::runRTV(SourcePath *sourcePath) {
 				//wait for continue
 				cv::waitKey();
 			} else {
-				throw "unexpected situation";
+				throw std::logic_error("VideoFrameProcessing::runRTV unexpected situation");
 			}                    
 		}
 	}

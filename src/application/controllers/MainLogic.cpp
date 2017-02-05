@@ -42,10 +42,12 @@ void MainLogic::process(){
 		if (DEBUG_LOCAL) cout << "MainLogic::process new IMG: " << newFramePath << endl;
 
 		Mat activeFrame = imread(newFramePath, 1);
-//		imshow("TEST-A", activeFrame);
-//		cv::waitKey(10000);
-
-		// TODO delete old files ?
+		if (DEBUG_LOCAL) cout << "process img : " << activeFrame.cols << " " << activeFrame.rows << endl;
+		if( remove(newFramePath.c_str() ) != 0 ){
+		   cout << "Error deleting file: " << newFramePath << endl;
+		}else{
+		   cout << "file deleted: " << newFramePath << endl;
+		}
 
 		if (isAnyModulActive()){
 			continueInActiveModule(&activeFrame);
@@ -66,6 +68,7 @@ string MainLogic::getNextFile(){
 			string newFramePath = FileSystemHelper::getFileInFolder(FOLDER_IMG_TO_PROCESS, 0);
 			if (this->lastFramePath.compare(newFramePath) != 0){
 				this->lastFramePath = newFramePath;
+				usleep(1000000); // wait for frontend save full image
 				return newFramePath;
 			}
 		}

@@ -20,8 +20,9 @@ void VideoFrameProcessingRunEveryFrame::start() {
 	VideoCapture capture;
 
 	capture.set(CV_CAP_PROP_BUFFERSIZE, 1);
-	if (!capture.open(c->VIDEO_NAME))
-		throw "Error opening video stream or file";
+	if (!capture.open(c->VIDEO_NAME)){
+		throw std::logic_error("VideoFrameProcessingRunEveryFrame::start Error opening video stream or file");
+	}
 
 	int v_ts;
 	Mat mat;

@@ -21,7 +21,7 @@
 
 using namespace std;
 
-static char* USB_PORT = "/dev/ttyACM0";
+static char* USB_PORT = "/dev/ttyACM0"; // TODO constant ?? // ttyAMA0
 
 class UsbCommunicator {
 private:

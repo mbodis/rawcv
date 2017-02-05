@@ -42,7 +42,7 @@ void VideoFrameProcessingLocalCamera::runRTV(SourcePath *sourcePath) {
 
 	if (!stream1.isOpened()) {
 		cout << "camera index " << sourcePath->cameraIdx << " is not working please try different idx" << endl;
-		throw "Error opening camera stream ";
+		throw std::logic_error(" VideoFrameProcessingLocalCamera Error opening camera stream");
 	}
 
 	while (!isInputFinished2) {

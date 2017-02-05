@@ -19,8 +19,8 @@ protected:
 
 public:
 
-	virtual void start() { throw "Use subclass"; };
-	virtual ~FrameProcessing(){ throw "Use subclass"; };
+	virtual void start() { throw std::logic_error("FrameProcessing start Use subclass"); };
+	virtual ~FrameProcessing(){ throw std::logic_error("FrameProcessing ~FrameProcessing Use subclass"); };
 
 	FrameProcessing(SourcePath* sourcePathInput, ConfigExample* mConfigExample){
         this->sourcePath = sourcePathInput;
