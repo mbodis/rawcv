@@ -24,24 +24,27 @@ public:
 		this->numberStates = 3;
 	}
 
-	bool initialObjectDetection(Mat *newFrame){
+	bool initialObjectDetection(Mat *newFrame, RoboticArmMove *mRoboticArmMove){
 		cout << "initialObjectDetection" << endl;
-		return true; // TODO
+
+		// TODO update mRoboticArmMove
+
+		return true;
 	}
 
-	void processNextState(Mat *newFrame){
+	void processNextState(Mat *newFrame, RoboticArmMove *mRoboticArmMove){
 		switch(this->currentState){
 
 		case MODULE_STATE_NONE:
 			break;
 		case MODULE_STATE_START:
 			cout << "start picking object" << endl;
-			// TODO start picking the object
+			// TODO start picking the object - update
 			break;
 		case MODULE_STATE_PICKUP_OBJECT_CONFIRM_OBJECT_IS_MISSING:
-			// TODO yes / no
+			// TODO yes / no update mRoboticArmMove
 		case MODULE_STATE_PICKUP_OBJECT_PICKED_UP:
-			// TODO wait - finished
+			// TODO wait - finished mRoboticArmMove
 			break;
 		}
 

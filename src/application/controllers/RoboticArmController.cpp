@@ -10,7 +10,7 @@
 #include "RoboticArmController.h"
 
 static thread t;
-std::stack<string> armCommandsStack;                    // empty stack
+std::queue<string> armCommandsStack;                    // empty stack
 bool readNewCommand = false;
 UsbCommunicator *mUsbCommunicator;
 
@@ -30,7 +30,7 @@ void RoboticArmController::end(){
 void RoboticArmController::executeCommandsLoop(){
 	while (readNewCommand){
 		if (armCommandsStack.size() >0){
-			string newCommand = armCommandsStack.top();
+			string newCommand = armCommandsStack.front();
 			cout << "executing command: " << newCommand << endl;
 			mUsbCommunicator->sendCommand((char*)newCommand.c_str());
 			armCommandsStack.pop();

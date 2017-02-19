@@ -19,7 +19,11 @@ MainLogic::MainLogic(){
 	this->arm = new RoboticArm();
 
 	// modules
-	this->modules[0] = new PickUpObject("PickUpObject");
+	this->modules.push_back(new PickUpObject("PickUpObject"));
+
+	// img storage
+	this->mImageStorage = &ImageStorage::getInstance();
+
 }
 
 
@@ -36,47 +40,30 @@ MainLogic::~MainLogic(){
  * - show arm position
  */
 void MainLogic::process(){
-	string newFramePath = getNextFile();
 
-	if (newFramePath.size() > 1){
-		if (DEBUG_LOCAL) cout << "MainLogic::process new IMG: " << newFramePath << endl;
+	this->arm->resetNextMove();
 
-		Mat activeFrame = imread(newFramePath, 1);
+	if (mImageStorage->getProcessingQueueSize() > 0){
+		if (DEBUG_LOCAL) cout << "MainLogic::process new IMG " << endl;
+
+		Mat activeFrame = (mImageStorage->getImgFromProcessingQueue()).mMat;
 		if (DEBUG_LOCAL) cout << "process img : " << activeFrame.cols << " " << activeFrame.rows << endl;
-		if( remove(newFramePath.c_str() ) != 0 ){
-		   cout << "Error deleting file: " << newFramePath << endl;
-		}else{
-		   cout << "file deleted: " << newFramePath << endl;
-		}
 
 		if (isAnyModulActive()){
-			continueInActiveModule(&activeFrame);
+			continueInActiveModule(&activeFrame, this->arm->getNextMove());
 
 		}else{
-			detectModuleToStartWith(&activeFrame);
+			detectModuleToStartWith(&activeFrame, this->arm->getNextMove());
 		}
 	}
 
-	showArmPosition();
-}
+	if (this->arm->getNextMove()->hasChanged()){
+		// move arm
+		this->mRoboticArmController->addToStack(this->arm->composeNextMove());
 
-
-string MainLogic::getNextFile(){
-
-	if (FileSystemHelper::DirectoryExists(FOLDER_IMG_TO_PROCESS)){
-		if (FileSystemHelper::getNumberFilesInFolder(FOLDER_IMG_TO_PROCESS) > 0){
-			string newFramePath = FileSystemHelper::getFileInFolder(FOLDER_IMG_TO_PROCESS, 0);
-			if (this->lastFramePath.compare(newFramePath) != 0){
-				this->lastFramePath = newFramePath;
-				usleep(1000000); // wait for frontend save full image
-				return newFramePath;
-			}
-		}
-	}else{
-		cout << "output processing foleder does not exists: " << FOLDER_IMG_TO_PROCESS << endl;
+		// show arm
+		showArmPosition(this->arm->getNextMove());
 	}
-
-	return "";
 }
 
 bool MainLogic::isAnyModulActive(){
@@ -89,28 +76,70 @@ bool MainLogic::isAnyModulActive(){
 	return false;
 }
 
-void MainLogic::continueInActiveModule(Mat *frame){
+void MainLogic::continueInActiveModule(Mat *frame, RoboticArmMove *mRoboticArmMove){
 	if (DEBUG_LOCAL) cout << "MainLogic::continueInActiveModule" << endl;
 	for (int i=0; i<1;i++){
 		if (this->modules[i]->isModulActive()){
-			this->modules[i]->processNextState(frame);
+			this->modules[i]->processNextState(frame, mRoboticArmMove);
 		}
 	}
 }
 
-void MainLogic::detectModuleToStartWith(Mat *frame){
+void MainLogic::detectModuleToStartWith(Mat *frame, RoboticArmMove *mRoboticArmMove){
 	if (DEBUG_LOCAL) cout << "MainLogic::detectModuleToStartWith" << endl;
 	for (int i=0; i<1;i++){
-	if (DEBUG_LOCAL) cout << "i="<<i << endl;
-		if (this->modules[i]->initialObjectDetection(frame)){
+		if (DEBUG_LOCAL) cout << "i="<<i << endl;
+		if (this->modules[i]->initialObjectDetection(frame, mRoboticArmMove)){
 			this->modules[i]->setModulState(MODULE_STATE_START);
 		}
 	}
 }
 
-void MainLogic::showArmPosition(){
-	//TODO
 
-//	imshow();
-//	imshow();
+/*
+ *
+ */
+void MainLogic::showArmPosition(RoboticArmMove *mRoboticArmMove){
+	if (DEBUG_LOCAL) cout << "MainLogic::showArmPosition" << endl;
+
+	Mat viewTopMat = Mat::zeros(Size(640, 480), 16);
+	Mat viewSideMat = Mat::zeros(Size(640, 480), 16);;
+
+	// TODO draw table, arm
+	// TODO inverses kinematics - logic
+
+
+	// TODO remove this sleep
+	usleep(2000000);
+	xx += 20;
+	line(viewTopMat, Point(10,0), Point(10, xx), Scalar(255,255,255), 2);
+
+	// image is show in main thread
+	mImageStorage->addToDisplayQueue("viewTopMat", viewTopMat);
+	mImageStorage->addToDisplayQueue("viewSideMat", viewSideMat);
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

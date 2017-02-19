@@ -45,6 +45,9 @@ void VideoFrameProcessingLocalCamera::runRTV(SourcePath *sourcePath) {
 		throw std::logic_error(" VideoFrameProcessingLocalCamera Error opening camera stream");
 	}
 
+	stream1.set(CV_CAP_PROP_FRAME_WIDTH,1920);
+	stream1.set(CV_CAP_PROP_FRAME_HEIGHT,1080);
+
 	while (!isInputFinished2) {
         videoTimeShared2 = stream1.get(CV_CAP_PROP_POS_MSEC);
 

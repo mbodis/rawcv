@@ -16,9 +16,9 @@
 class ImageAnalyser {
 private:
     int inputMode, printMode;
-    DebugFrames* mDebugFrames;
     
 public:
+    DebugFrames* mDebugFrames;
     Mat inputFrame;
     ImageAnalyser();
     ~ImageAnalyser();

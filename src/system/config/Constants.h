@@ -15,7 +15,7 @@ using namespace cv;
 
 static char* FOLDER_ASSETS = "../assets_opencv/";
 static char* FOLDER_IMG_TO_PROCESS = "img_stack_to_process/";
-static char* FOLDER_OUTPUT = "output/";
+static char* FOLDER_OUTPUT = "img_output/";
 
 static char* OUTPUT_VIDEO_NAME = "out.avi";
 
@@ -45,11 +45,12 @@ static Scalar colorCyan = Scalar(255, 255, 0);
 static Scalar colorOrange = Scalar(0, 140, 255);
 
 /* servo constants */
-const int DIRECTION_LEFT = 0;
-const int DIRECTION_RIGHT = 1;
-const int DIRECTION_FORWARD = 2;
-const int DIRECTION_BACKWARD = 3;
-const int DIRECTION_OPEN = 4;
-const int DIRECTION_CLOSE = 5;
+const int DIRECTION_UNDEFINED = 0;
+const int DIRECTION_LEFT = 1;
+const int DIRECTION_RIGHT = 2;
+const int DIRECTION_FORWARD = 3;
+const int DIRECTION_BACKWARD = 4;
+const int DIRECTION_OPEN = 5;
+const int DIRECTION_CLOSE = 6;
 
 #endif /* SRC_CONFIG_CONSTANTS_H_ */

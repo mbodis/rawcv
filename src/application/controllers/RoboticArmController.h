@@ -8,7 +8,7 @@
 #ifndef SRC_APPLICATION_LOGIC_ROBOTIC_ARM_ROBOTICARMCONTROLLER_H_
 #define SRC_APPLICATION_LOGIC_ROBOTIC_ARM_ROBOTICARMCONTROLLER_H_
 
-#include <stack>          // std::stack
+#include <queue>
 #include <thread>
 #include "../../libs/usb/UsbCommunicator.h"
 using namespace std;

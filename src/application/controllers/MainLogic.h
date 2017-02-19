@@ -15,6 +15,9 @@
 #include "../modules/PickUpObject.h"
 #include "RoboticArmController.h"
 #include "../../system/helper/FileSystemHelper.h"
+#include "../logic/image/ImageStorage.h"
+#include "../logic/image/ImageStoreItem.h"
+#include "../logic/robotic_arm/RoboticArmMove.h"
 
 class MainLogic{
 private:
@@ -31,22 +34,29 @@ private:
 	 * stack with separate thread to send messages via USB
 	 */
 	RoboticArmController *mRoboticArmController;
-public:
 
+	/*
+	 * queue for images process/display
+	 */
+	ImageStorage *mImageStorage;
+
+public:
 	MainLogic();
 	~MainLogic();
 
 	void process();
-	string getNextFile();
 
 	bool isAnyModulActive();
-	void continueInActiveModule(Mat *frame);
-	void detectModuleToStartWith(Mat *frame);
+	void continueInActiveModule(Mat *frame, RoboticArmMove *mRoboticArmMove);
+	void detectModuleToStartWith(Mat *frame, RoboticArmMove *mRoboticArmMove);
 
-	void showArmPosition();
+	void showArmPosition(RoboticArmMove *mRoboticArmMove);
 
 	// MODULES
-	CVModule *modules[1];
+	vector<CVModule*> modules;
+
+	// TODO testing remove later
+	int xx = 0;
 };
 
 

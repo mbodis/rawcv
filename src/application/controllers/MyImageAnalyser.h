@@ -16,6 +16,7 @@
 
 #include "../../system/controllers/ImageAnalyser.h"
 #include "../config/ConfigExample.h"
+#include "../logic/image/ImageStorage.h"
 
 using namespace cv;
 using namespace std;
@@ -23,18 +24,53 @@ using namespace std;
 
 class MyImageAnalyser: public ImageAnalyser{
 private:
-	int i=0;
+	int video_time = 0;
+	int last_move_time = 0;
+	bool resiseInput = true;
 
+	double resizeRatio = 2;
+	int resizedWidth = -1;
+	int resizedHeight = -1;
+
+	// BGR original frame
+	Mat originalColorFrame;
+	// gray scale frame
+	Mat grayFrame;
+	// previous gray scale frame
+	Mat lastGrayFrame;
+
+	Mat outputColorFrame;
+
+	// logic
+	bool isFrameMoving = true;
+
+	// state when changing between
+	bool interestingFrame = false;
+
+	// result of pre-processing - object was
+	bool isObjectDetected = false;
+
+
+	ImageStorage *mImageStorage;
 public:
 	MyImageAnalyser() : ImageAnalyser(){
-		cout << "NEW INIT " << endl;
-		// TODO initial my logic class
+		this->mImageStorage = &ImageStorage::getInstance();
 	}
+	~MyImageAnalyser(){ }
 
-	~MyImageAnalyser();
+	void setFrameIsMoving(bool);
+
 	void executeCustomLogic(Mat, int);
+	void saveImageForProcessing();
 
-	void saveImageForProcessing(Mat frame);
+	void saveInputFrame(Mat, int);
+	void resetStates();
+
+	void detectMovement(Mat*, Mat*);
+
+	void showImg(Mat, String);
+	void showOutput();
+	void showImageFromBackground();
 };
 
 

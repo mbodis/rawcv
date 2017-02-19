@@ -36,12 +36,12 @@ public:
 
 	}
 
-	virtual bool initialObjectDetection(Mat *newFrame){
+	virtual bool initialObjectDetection(Mat *newFrame, RoboticArmMove *mRoboticArmMove){
 		cout << "CVmodule initialObjectDetection" << endl;
 		throw std::logic_error(" CVmodule initialObjectDeection - method not implemented");
 	}
 
-	virtual void processNextState(Mat *newFrame){
+	virtual void processNextState(Mat *newFrame, RoboticArmMove *mRoboticArmMove){
 		throw std::logic_error(" CVmodule processNextState - method not implemented ");
 	}
 
