@@ -17,60 +17,107 @@
 #include "../../system/controllers/ImageAnalyser.h"
 #include "../config/ConfigExample.h"
 #include "../logic/image/ImageStorage.h"
+#include "../../system/helper/RotateBBHelper.h"
 
 using namespace cv;
 using namespace std;
 
+static double THRESHOLD_MOVE_PERCENTAGE = 0.02;
+static int THRESHOLD_MOVE_MILIS = 200;
+
 
 class MyImageAnalyser: public ImageAnalyser{
 private:
-	int video_time = 0;
+
+	bool DEBUG_LOCAL = false;
+
+	ImageStorage *mImageStorage;
+
+	// video time
+	long video_time = 0;
 	int last_move_time = 0;
 	bool resiseInput = true;
 
+	// resize
 	double resizeRatio = 2;
 	int resizedWidth = -1;
 	int resizedHeight = -1;
 
-	// BGR original frame
+
+	// input
 	Mat originalColorFrame;
-	// gray scale frame
-	Mat grayFrame;
-	// previous gray scale frame
-	Mat lastGrayFrame;
-
-	Mat outputColorFrame;
-
-	// logic
-	bool isFrameMoving = true;
-
-	// state when changing between
-	bool interestingFrame = false;
-
-	// result of pre-processing - object was
-	bool isObjectDetected = false;
-
-
-	ImageStorage *mImageStorage;
-public:
-	MyImageAnalyser() : ImageAnalyser(){
-		this->mImageStorage = &ImageStorage::getInstance();
-	}
-	~MyImageAnalyser(){ }
-
-	void setFrameIsMoving(bool);
-
-	void executeCustomLogic(Mat, int);
-	void saveImageForProcessing();
-
+	Mat outputColorFrame, outputColorStretchFrame;
 	void saveInputFrame(Mat, int);
-	void resetStates();
 
-	void detectMovement(Mat*, Mat*);
-
+	//output
 	void showImg(Mat, String);
 	void showOutput();
 	void showImageFromBackground();
+
+	// logic detect movement
+	int THRESHOLD_MOVEMENT_VALUE = 120;
+	bool isFrameMoving = true;
+	double whitePercentage = 0.0;
+	Mat detectMovementGrayFrame; // gray scale frame
+	Mat detectMovementLastGrayFrame; // previous gray scale frame
+	bool interestingFrame = false; // state between moving and not moving
+	void detectMovement();
+	void detectMovementResetStates();
+	void setFrameIsMoving(bool);
+
+	// logic - crop and stretch table
+	void cropAndStretchTableBg();
+	bool tableDetected = false;
+	Rect tableBb;
+	Mat binaryTableCrop;
+	Point2f lt, lb, rt, rb;
+
+	// logic - recalculate px -> mm
+	bool mmToPxCalculated = false;
+	int TABLE_WIDTH_MM = 655;
+	int TABLE_HEIGHT_MM = 955;
+	double oneMmInPx = 0;
+	int oneMmInPxframeWidth = 0;
+	int oneMmInPxframeHeight = 0;
+	void recalculatePxToMm(Point, Point, int, int);
+
+	// logic - detect arm
+	void detectArm();
+	bool armDetected = false;
+	Point armCenter = Point(0,0);
+	Rect armBb;
+
+	// logic - is there an object
+	int processImgCount = 0;
+	bool isObjectDetected = false;
+	void detectObject();
+	vector<RotatedRect> detectedObjects;
+	Mat binaryWithoutArm;
+
+	// logic - if there is something interesting
+	void saveImageForProcessing();
+
+	//output
+	void drawOutputInfo(Mat);
+
+	// GUI trackball slider
+	const int slider_max = 255;
+	int sliderThresholdBg = 46;
+	void initTrackball();
+	static void on_trackbar( int val, void* ){
+		// this is not necessary
+		//cout<< "v: "<< val << endl;
+	}
+
+public:
+	MyImageAnalyser() : ImageAnalyser(){
+		this->mImageStorage = &ImageStorage::getInstance();
+		initTrackball();
+	}
+	~MyImageAnalyser(){ }
+
+	void executeCustomLogic(Mat, int);
+
 };
 
 

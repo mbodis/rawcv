@@ -11,7 +11,7 @@
 class TestIface{
 
 public:
-	virtual void runTest(){ throw "Use subclass"; };
+	virtual void runTest(){ throw std::logic_error(" TestIface runTest - method not implemented"); };
 };
 
 

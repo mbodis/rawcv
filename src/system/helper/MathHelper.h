@@ -17,8 +17,8 @@ class MathHelper{
 private:
 
 public:
-	double calcMHWScore(vector<int> );
-	vector<Point2f> sortPointsByYAxe(vector<Point2f>);
+	static double calcMHWScore(vector<int> );
+	static vector<Point2f> sortPointsByYAxe(vector<Point2f>);
 
 };
 

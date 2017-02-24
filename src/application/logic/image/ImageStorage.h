@@ -12,7 +12,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include "ImageStoreItem.h"
+
+#include "ImageDisplayItem.h"
+#include "ImagePreprocessItem.h"
 using namespace cv;
 
 #include "../../../system/config/Constants.h"
@@ -38,7 +40,7 @@ private:
 	static ImageStorage* m_pInstance;
 
 	std::queue<ImageStoreItem> displayImgQueue;
-	std::queue<ImageStoreItem> processingImgImgQueue;
+	std::queue<ImagePreprocessItem> processingImgImgQueue;
 
 public:
 
@@ -58,8 +60,8 @@ public:
 	/*
 	 * processing queue
 	 */
-	void addToProcessingQueue(String fileName, Mat mMat);
-	ImageStoreItem getImgFromProcessingQueue();
+	void addToProcessingQueue(Mat rawFrame, Mat preprocessFrame, Point armCenter, vector<RotatedRect> detectedObjects);
+	ImagePreprocessItem getImgFromProcessingQueue();
 	int getProcessingQueueSize();
 
 };

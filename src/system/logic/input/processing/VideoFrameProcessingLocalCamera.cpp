@@ -30,7 +30,7 @@ using namespace cv;
 /* SHARED PROCESSING LABEL*/
 bool isInputFinished2 = false;
 Mat frameShared2, processingFrame2;
-int videoTimeShared2 = 0;
+long videoTimeShared2 = 0;
 thread videoThread;
 /*
  * sourcePath   ==> path to .avi or url
@@ -49,7 +49,13 @@ void VideoFrameProcessingLocalCamera::runRTV(SourcePath *sourcePath) {
 	stream1.set(CV_CAP_PROP_FRAME_HEIGHT,1080);
 
 	while (!isInputFinished2) {
-        videoTimeShared2 = stream1.get(CV_CAP_PROP_POS_MSEC);
+
+		// use cuurent time - time form camera is 0
+        // videoTimeShared2 = stream1.get(CV_CAP_PROP_POS_MSEC);
+        struct timeval tp;
+		gettimeofday(&tp, NULL);
+		long int ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+		videoTimeShared2 = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
 		if (!stream1.read(frameShared2)) {
 			stream1.release();

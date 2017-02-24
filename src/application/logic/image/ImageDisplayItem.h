@@ -5,8 +5,8 @@
  *      Author: mbodis
  */
 
-#ifndef SRC_APPLICATION_LOGIC_IMAGE_IMAGESTOREITEM_H_
-#define SRC_APPLICATION_LOGIC_IMAGE_IMAGESTOREITEM_H_
+#ifndef SRC_APPLICATION_LOGIC_IMAGE_IMAGEDISPLAYITEM_H_
+#define SRC_APPLICATION_LOGIC_IMAGE_IMAGEDISPLAYITEM_H_
 
 
 #include <opencv2/highgui/highgui.hpp>
@@ -20,14 +20,18 @@ using namespace cv;
 
 class ImageStoreItem{
 public:
+
 	ImageStoreItem(String name, Mat mMat){
 		this->name = name;
 		this->mMat = mMat;
 	}
+
+	// frame name
 	String name;
+	// frame
 	Mat mMat;
 };
 
 
 
-#endif /* SRC_APPLICATION_LOGIC_IMAGE_IMAGESTOREITEM_H_ */
+#endif /* SRC_APPLICATION_LOGIC_IMAGE_IMAGEDISPLAYITEM_H_ */

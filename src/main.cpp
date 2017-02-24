@@ -32,8 +32,8 @@ using namespace std;
 int main(int argc, char **argv) {
 
 	cout << cv::getBuildInformation() << endl;
-	ConfigExample::getInstance();
-
+	ConfigExample &mConfigExample = ConfigExample::getInstance();
+	mConfigExample.CAMERA_IDX = 2; // TODO changing param !!
 
 	// main logic
 	StateController *mStateController = new StateController();

@@ -26,7 +26,7 @@ private:
 
 public:
 	RoboticArmMove(){
-		// cusom setup
+		// custom setup
 		this->servoMoveSetup.push_back(new ServoMove(DIRECTION_UNDEFINED, 0, SERVO_IDX_BASE));
 		this->servoMoveSetup.push_back(new ServoMove(DIRECTION_UNDEFINED, 0, SERVO_IDX_BOTTOM_JOINT));
 		this->servoMoveSetup.push_back(new ServoMove(DIRECTION_UNDEFINED, 0, SERVO_IDX_MIDDLE_JOINT));

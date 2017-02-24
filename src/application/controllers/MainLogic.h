@@ -16,14 +16,13 @@
 #include "RoboticArmController.h"
 #include "../../system/helper/FileSystemHelper.h"
 #include "../logic/image/ImageStorage.h"
-#include "../logic/image/ImageStoreItem.h"
+#include "../logic/image/ImageDisplayItem.h"
+#include "../logic/image/ImagePreprocessItem.h"
 #include "../logic/robotic_arm/RoboticArmMove.h"
 
 class MainLogic{
 private:
 	bool DEBUG_LOCAL = true;
-	Mat activeFrame;
-	string lastFramePath = "";
 
 	/*
 	 * servo setup for robotic arm
@@ -47,16 +46,14 @@ public:
 	void process();
 
 	bool isAnyModulActive();
-	void continueInActiveModule(Mat *frame, RoboticArmMove *mRoboticArmMove);
-	void detectModuleToStartWith(Mat *frame, RoboticArmMove *mRoboticArmMove);
+	void continueInActiveModule(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
+	void detectModuleToStartWith(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
 
 	void showArmPosition(RoboticArmMove *mRoboticArmMove);
 
 	// MODULES
 	vector<CVModule*> modules;
 
-	// TODO testing remove later
-	int xx = 0;
 };
 
 

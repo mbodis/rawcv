@@ -15,6 +15,8 @@ const int MODULE_STATE_START = 1;
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
+#include "../../logic/image/ImagePreprocessItem.h"
+
 using namespace std;
 using namespace cv;
 
@@ -36,12 +38,12 @@ public:
 
 	}
 
-	virtual bool initialObjectDetection(Mat *newFrame, RoboticArmMove *mRoboticArmMove){
+	virtual bool initialObjectDetection(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 		cout << "CVmodule initialObjectDetection" << endl;
 		throw std::logic_error(" CVmodule initialObjectDeection - method not implemented");
 	}
 
-	virtual void processNextState(Mat *newFrame, RoboticArmMove *mRoboticArmMove){
+	virtual void processNextState(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 		throw std::logic_error(" CVmodule processNextState - method not implemented ");
 	}
 

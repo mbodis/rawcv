@@ -15,12 +15,15 @@ using namespace cv;
 using namespace std;
 
 /*
+ * Main logic - repeating loop with new input from camera
+ *
  * 0) save input frame
  * 1) has something move for 1 sec
  * 2) crop table
- * 3) remove arm from image
- * 4) is there object ?
- * 5) save image for main logic processing
+ * 3) recalculate px -> mm
+ * 4) detect arm
+ * 5) is there object ?
+ * 6) save image for main logic processing
  *
  *
  */
@@ -29,47 +32,68 @@ void MyImageAnalyser::executeCustomLogic(Mat frame, int videoTime){
 	// 0) save input frame
 	saveInputFrame(frame, videoTime);
 
-	// 1) has something move for 1 sec
-	if (mDebugFrames->c->inputMode == INPUT_MODE_IMG_FOLDER){
-		setFrameIsMoving(false);
-	}else{
-		detectMovement(&grayFrame, &lastGrayFrame);
-	}
+	// 1) has something move
+	detectMovement();
 
-	// 2) TODO crop table
-	// 3) TODO remove arm from image
-	// 4) TODO is there object ?
+	// 2) crop / stretch table
+	cropAndStretchTableBg();
 
-	// 5) save image for main logic processing
+	// 3) recalculate px -> mm (inside point 2)
+
+	// 4) detect arm center
+	detectArm();
+
+	// 5) find object on the table
+	detectObject();
+
+	// 6) save image for main logic processing
 	saveImageForProcessing();
+
+	drawOutputInfo(outputColorStretchFrame);
 
 	// show output
 	showOutput();
 	showImageFromBackground();
 
-	resetStates();
+	// 1) has something move - reset
+	detectMovementResetStates();
 }
 
-void MyImageAnalyser::detectMovement(Mat *grayFrame1, Mat *grayFrame2){
+/**
+ * detect if image has moved
+ * - comparing last two images
+ * - CONSTANT threshold for movement in percentage
+ * - time to leave this state CONSTANT in milis
+ * return set local variable true/false [isFrameMoving]
+ */
+void MyImageAnalyser::detectMovement(){
 
+	if (mDebugFrames->c->inputMode == INPUT_MODE_IMG_FOLDER){
+		setFrameIsMoving(false);
+		return;
+	}
+
+	cvtColor(outputColorFrame, detectMovementGrayFrame, CV_BGR2GRAY);
+	equalizeHist(detectMovementGrayFrame, detectMovementGrayFrame);
 	Mat diffGray, actualDiffBw;
 
-	if (grayFrame1->dims != 0 && grayFrame2->dims != 0) {
+	if (detectMovementGrayFrame.dims != 0 && detectMovementLastGrayFrame.dims != 0) {
 
-		absdiff(*grayFrame2, *grayFrame1, diffGray);
-		actualDiffBw = diffGray > 120; // TODO constant
+		absdiff(detectMovementLastGrayFrame, detectMovementGrayFrame, diffGray);
+		actualDiffBw = diffGray > THRESHOLD_MOVEMENT_VALUE;
 
-		double whitePercentage = (double)countNonZero(actualDiffBw) * 100
-				/ (grayFrame1->cols * grayFrame1->rows);
-		// cout << "display moves percentage: " << whitePercentage << endl;
-		// cout << "video_time: " << video_time << endl;
-		// cout << "last_move_tim: " << last_move_time << endl;
-		// cout << "----------------------" << endl;
-		if (whitePercentage > 0.02) {
+		whitePercentage = (double)countNonZero(actualDiffBw) * 100
+				/ (detectMovementGrayFrame.cols * detectMovementGrayFrame.rows);
+		if (DEBUG_LOCAL) cout << "display moves percentage: " << whitePercentage << endl;
+		if (DEBUG_LOCAL) cout << "video_time: " << video_time << " " << (video_time - last_move_time) << endl;
+		if (DEBUG_LOCAL) cout << "last_move_tim: " << last_move_time << endl;
+		if (DEBUG_LOCAL) cout << "----------------------" << endl;
+
+		if (whitePercentage > THRESHOLD_MOVE_PERCENTAGE) {
 			setFrameIsMoving(true);
 			last_move_time = video_time;
 		}else{
-			if (video_time - last_move_time < 200){
+			if (video_time - last_move_time < THRESHOLD_MOVE_MILIS){
 				setFrameIsMoving(true);
 			}else{
 				setFrameIsMoving(false);
@@ -79,11 +103,36 @@ void MyImageAnalyser::detectMovement(Mat *grayFrame1, Mat *grayFrame2){
 		setFrameIsMoving(true);
 	}
 
-	string movingTxt = isFrameMoving?"moving":"not moving";
-	Scalar color = isFrameMoving?Scalar(0,0,255):Scalar(0,255,0);
+}
 
-	cv::putText(outputColorFrame, movingTxt, cvPoint(5, 55),
+void MyImageAnalyser::drawOutputInfo(Mat frame){
+
+	// draw moving info
+	string movingTxt = isFrameMoving ? "moving" : "not moving";
+	Scalar color = isFrameMoving ? Scalar(0,0,255) : Scalar(0,255,0);
+
+	cv::putText(frame, movingTxt, cvPoint(15, 55),
 					FONT_HERSHEY_COMPLEX_SMALL, 0.8, color, 1, CV_AA);
+
+	stringstream moveStr;
+		moveStr << whitePercentage << " %";
+	cv::putText(frame, moveStr.str(), cvPoint(15, 75),
+						FONT_HERSHEY_COMPLEX_SMALL, 0.8, colorWhite, 1, CV_AA);
+
+	// draw arm  + center
+	if (armDetected){
+		circle(frame, armCenter, 4, colorRed, -1, 8, 0 );
+		rectangle(frame, armBb, colorRed, 2);
+	}
+
+	//draw objects
+	for (int i = 0; i < detectedObjects.size(); i++) {
+		line(frame, RotateBBHelper::getLtRotatedRect(detectedObjects[i]), RotateBBHelper::getRtRotatedRect(detectedObjects[i]), colorGreen, 3, 8);
+		line(frame, RotateBBHelper::getLtRotatedRect(detectedObjects[i]), RotateBBHelper::getLbRotatedRect(detectedObjects[i]), colorGreen, 3, 8);
+		line(frame, RotateBBHelper::getLbRotatedRect(detectedObjects[i]), RotateBBHelper::getRbRotatedRect(detectedObjects[i]), colorGreen, 3, 8);
+		line(frame, RotateBBHelper::getRtRotatedRect(detectedObjects[i]), RotateBBHelper::getRbRotatedRect(detectedObjects[i]), colorGreen, 3, 8);
+	}
+
 }
 
 void MyImageAnalyser::setFrameIsMoving(bool newValue){
@@ -94,11 +143,290 @@ void MyImageAnalyser::setFrameIsMoving(bool newValue){
 	this->isFrameMoving = newValue;
 }
 
-void MyImageAnalyser::saveImageForProcessing(){
-	if (this->interestingFrame && this-> isObjectDetected){
+/*
+ * input: color image
+ *  - find table
+ *  - crop / stretch table
+ *
+ * output: binary image of table [binaryTableCrop]
+ *
+ */
+void MyImageAnalyser::cropAndStretchTableBg(){
 
-		mImageStorage->addToProcessingQueue("newProcssImg", this->originalColorFrame);
-		imshow("new image to process", this->originalColorFrame);
+	Mat resizedFrame, grayFrame, diffGray, actualDiffBw, thBinaryFrame,
+		morphBinaryFrame, stretchTable;
+
+	resize(originalColorFrame, resizedFrame, Size(originalColorFrame.cols/2, originalColorFrame.rows/2));
+
+	// gray
+	cvtColor(resizedFrame, grayFrame, CV_BGR2GRAY);
+	equalizeHist(grayFrame, grayFrame);
+
+	// blur
+	blur(grayFrame, thBinaryFrame, Size( 3, 3 ) );
+	thBinaryFrame = thBinaryFrame > sliderThresholdBg;
+
+	// draw 1 px on borders
+	line(thBinaryFrame, Point(0,0), Point(thBinaryFrame.cols, 0), colorBlack, 1);
+	line(thBinaryFrame, Point(0,0), Point(0, thBinaryFrame.rows), colorBlack, 1);
+	line(thBinaryFrame, Point(thBinaryFrame.cols-1, 0), Point(thBinaryFrame.cols-1, thBinaryFrame.rows-1), colorBlack, 1);
+	line(thBinaryFrame, Point(0, thBinaryFrame.rows-1), Point(thBinaryFrame.cols-1, thBinaryFrame.rows-1), colorBlack, 1);
+
+	//morph
+	Mat element = getStructuringElement(MORPH_ELLIPSE, Size(3, 3), Point(1, 1));
+	morphologyEx(thBinaryFrame, morphBinaryFrame, MORPH_OPEN, element);
+
+	if (!tableDetected){
+
+		// find countours
+		vector<vector<Point> > contours;
+		vector<Vec4i> hierarchy;
+		cv::findContours(morphBinaryFrame.clone(), contours, hierarchy, CV_RETR_EXTERNAL,
+				CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+
+		// find table
+		bool findTable = false;
+		for (int i = 0; i < contours.size(); i++) {
+			Rect bbox = boundingRect(contours[i]);
+			int bbSize = bbox.height * bbox.width;
+			int frameSize = morphBinaryFrame.cols * morphBinaryFrame.rows;
+			double perc = bbSize * 100 / frameSize;
+			if (DEBUG_LOCAL) cout << "contour[" << i << "] =  " << perc <<endl;
+			if (perc > 60 ){
+				tableBb = bbox;
+				findTable = true;
+			}else{
+				 rectangle(morphBinaryFrame, Point(bbox.x, bbox.y), Point(bbox.x+bbox.width, bbox.y+bbox.height), colorBlack, CV_FILLED);
+			}
+		}
+		if (DEBUG_LOCAL) showImg(morphBinaryFrame, "morphBinaryFrame");
+
+		if (!findTable) return;
+
+		// corner detect // Parameters for Shi-Tomasi algorithm
+		vector<Point2f> corners;
+		double qualityLevel = 0.21;
+		double minDistance = 50;
+		int blockSize = 5;//3;
+		int maxCorners = 15;//4;
+		// Apply corner detection
+		goodFeaturesToTrack( morphBinaryFrame, corners,
+						   maxCorners, qualityLevel,
+						   minDistance, Mat(),
+						   blockSize);
+		// Draw corners detected
+		lt = Point(999, 999); lb = Point(999, -1); rt = Point(-1, 999); rb = Point(-1, -1);
+
+		// TODO do some  validation -> points should be in 10% position in frame corners
+
+		for( int i = 0; i < corners.size(); i++ ){
+			if (lt.x >= corners[i].x && lt.y >= corners[i].y) {
+				lt = corners[i];
+			}
+			if (lb.x >= corners[i].x && lb.y <= corners[i].y) {
+				lb = corners[i];
+			}
+			if (rt.x <= corners[i].x && rt.y >= corners[i].y) {
+				rt = corners[i];
+			}
+			if (rb.x <= corners[i].x && rb.y <= corners[i].y) {
+				rb = corners[i];
+			}
+		}
+
+		if (DEBUG_LOCAL) cout << "lt.x= " << lt.x << " lt.y= " << lt.y << endl;
+		if (DEBUG_LOCAL) cout << "lb.x= " << lb.x << " lb.y= " << lb.y << endl;
+		if (DEBUG_LOCAL) cout << "rt.x= " << rt.x << " rt.y= " << rt.y << endl;
+		if (DEBUG_LOCAL) cout << "rb.x= " << rb.x << " rb.y= " << rb.y << endl;
+		if (DEBUG_LOCAL) cout << "-----------------------------------" << endl;
+
+		// skip if corners where detected wrong
+		if (abs(lt.x - lb.x) > 30 || abs (lt.y - rt.y) > 30
+				|| abs(rt.x - rb.x) > 30 || abs (lb.y - rb.y) > 30){
+			return;
+		}
+
+		// debug - draw corners
+		if (DEBUG_LOCAL){
+			Mat cornerFrame = resizedFrame.clone();
+			for( int i = 0; i < corners.size(); i++ ){
+				circle( cornerFrame, corners[i], 4, Scalar(255,0,0), -1, 8, 0 );
+			}
+			showImg(cornerFrame, "cornerFrame");
+		}
+
+		recalculatePxToMm(lt, rt, resizedFrame.cols, resizedFrame.rows);
+
+		tableDetected = true;
+	}
+
+	// if table was found
+	if (tableDetected){
+
+		Point2f ptsTableCorners[4];
+		ptsTableCorners[0] = lt;
+		ptsTableCorners[1] = rt;
+		ptsTableCorners[2] = lb;
+		ptsTableCorners[3] = rb;
+
+		Point2f ptsCroppedTable[4];
+		ptsCroppedTable[0] = Point2f(0,0);
+		ptsCroppedTable[1] = Point2f(tableBb.width,0);
+		ptsCroppedTable[2] = Point2f(0,tableBb.height);
+		ptsCroppedTable[3] = Point2f(tableBb.width,tableBb.height);
+
+		Mat perspectiveMat = getPerspectiveTransform(ptsTableCorners, ptsCroppedTable);
+		warpPerspective(morphBinaryFrame, stretchTable, perspectiveMat, Size(tableBb.width, tableBb.height));
+		warpPerspective(outputColorFrame, outputColorStretchFrame, perspectiveMat, Size(tableBb.width, tableBb.height));
+		if (DEBUG_LOCAL) showImg(stretchTable, "stretchTable");
+
+		binaryTableCrop = stretchTable;
+	}
+}
+
+/*
+ * input - binary img with table
+ * output: set local variable - px for one mm
+ */
+void MyImageAnalyser::recalculatePxToMm(Point p1, Point p2, int frameW, int frameH){
+
+	if (!mmToPxCalculated){
+		Point difference = p1-p2;
+		double distance = sqrt( difference.ddot(difference));
+		oneMmInPx = (double)TABLE_WIDTH_MM / distance;
+		oneMmInPxframeWidth = frameW;
+		oneMmInPxframeHeight = frameH;
+		mmToPxCalculated = true;
+		if (DEBUG_LOCAL) cout << "one MM to PX = " << TABLE_WIDTH_MM << "/" << distance << " = " <<  oneMmInPx << endl;
+	}
+}
+
+/*
+ * input: binary image of table
+ * output: center point(x, y) of robotic arm
+ */
+void MyImageAnalyser::detectArm(){
+
+	if (tableDetected){
+
+		bitwise_not(binaryTableCrop, binaryWithoutArm);
+
+		if (armDetected){
+			// remove arm from image
+			rectangle(binaryWithoutArm, Point(armBb.x, armBb.y), Point(armBb.x+armBb.width, armBb.y+armBb.height), colorBlack, CV_FILLED);
+
+		}else{
+			// find countours
+			vector<vector<Point> > contours;
+			vector<Vec4i> hierarchy;
+			cv::findContours(binaryWithoutArm.clone(), contours, hierarchy, CV_RETR_EXTERNAL,
+					CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+
+			// find arm
+			for (int i = 0; i < contours.size(); i++) {
+				Rect bbox = boundingRect(contours[i]);
+				int bbSize = bbox.height * bbox.width;
+				int frameSize = binaryWithoutArm.cols * binaryWithoutArm.rows;
+				double perc = bbSize * 100 / frameSize;
+				if (DEBUG_LOCAL) cout << "contour[" << i << "] =  " << perc << endl;
+
+				double verticalPos = (double) (bbox.y + bbox.height) / binaryWithoutArm.rows * 100;
+				double horizontalPos = (double) (bbox.x + bbox.width/2) / binaryWithoutArm.cols * 100;
+				if (DEBUG_LOCAL) cout << "pos: " << horizontalPos << " ver: " << verticalPos << endl;
+
+				// arm founded
+				if (horizontalPos > 48 && horizontalPos < 52 && verticalPos > 98){
+					armBb = bbox;
+
+					// TODO find center - continue here
+					Mat myArm = binaryWithoutArm(bbox);
+//					int* rowCount = new int[myArm.rows];
+					int selectedRow = 0, selectedColumn = 0, rowCount = 0;
+					for (int row = 0; row < myArm.rows; row++) {
+
+						rowCount = countNonZero(myArm.row(i));
+						if (selectedRow <= rowCount){
+							selectedRow = countNonZero(myArm.row(i));
+						}else{
+							int firstIdx = 0, lastIdx = 0;
+							for (int col = 0; col < myArm.cols; col++) {
+								//TODO
+								if (firstIdx == 0 && myArm.at<bool>(row, col) == 1){
+									firstIdx = col;
+								}
+								if (myArm.at<bool>(row, col) == 1){
+									lastIdx = col;
+								}
+							}
+							selectedColumn = (firstIdx + lastIdx) /2;
+							break;
+						}
+					}
+					showImg(myArm, "aarm");
+cout << "selectedColumn: " << selectedColumn << " selectedRow: " << selectedRow << endl;
+					armCenter = Point (bbox.x + selectedColumn, bbox.y + selectedRow);
+
+					rectangle(binaryWithoutArm, Point(armBb.x, armBb.y), Point(armBb.x+armBb.width, armBb.y+armBb.height), colorBlack, CV_FILLED);
+
+					if (DEBUG_LOCAL) cout << "arm detected" << endl;
+					armDetected = true;
+				}
+			}
+			if (DEBUG_LOCAL) cout << "-----------------------" << endl;
+		}
+	}
+}
+
+/*
+ * input: binary image of table
+ * output: true/false if there is any other object expect arm on table
+ */
+void MyImageAnalyser::detectObject(){
+	detectedObjects.clear();
+
+	vector<vector<Point> > contours;
+	vector<Vec4i> hierarchy;
+
+	cv::findContours(binaryWithoutArm.clone(), contours, hierarchy, CV_RETR_EXTERNAL,
+			CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	vector<RotatedRect> minRect( contours.size() );
+
+	// loop through founded contours
+	for (int i = 0; i < contours.size(); i++) {
+		// test draw contours
+		//drawContours(outputColorStretchFrame, contours, i, colorGreen, 3, 8, hierarchy, 0, Point());
+
+
+		// filter small thrash
+		Rect bbox = boundingRect(contours[i]);
+		if (bbox.width < 5 || bbox.height < 5){
+			if (DEBUG_LOCAL) cout << "skipping rect TOO SMALL " << endl;
+			continue;
+		}
+
+		// create rotate rect
+		minRect[i] = minAreaRect( Mat(contours[i]) );
+
+		// add rotate rect to found objects
+		detectedObjects.push_back(minRect[i]);
+	}
+
+	isObjectDetected = (detectedObjects.size() > 0);
+
+}
+
+void MyImageAnalyser::saveImageForProcessing(){
+	if (interestingFrame && isObjectDetected){
+		mImageStorage->addToProcessingQueue(originalColorFrame, binaryWithoutArm, armCenter, detectedObjects);
+
+
+		// show next processing frame
+		processImgCount++;
+		Mat nextFrameToPrcess = outputColorStretchFrame.clone();
+		stringstream str;
+		str << "process img: " <<  processImgCount;
+		cv::putText(nextFrameToPrcess, str.str(), cvPoint(15, 75), FONT_HERSHEY_COMPLEX_SMALL, 0.8, colorRed, 1, CV_AA);
+		imshow("new image to process", nextFrameToPrcess);
 	}
 }
 
@@ -107,30 +435,30 @@ void MyImageAnalyser::saveInputFrame(Mat frame, int videoTime){
         resizedWidth = frame.cols/resizeRatio;
         resizedHeight = frame.rows/resizeRatio;
     }
-    this->originalColorFrame = frame.clone();
+
+    originalColorFrame = frame.clone();
 
     if (resiseInput){
-        resize(frame, frame, Size(resizedWidth, resizedHeight));
+        resize(frame, outputColorFrame, Size(resizedWidth, resizedHeight));
     }
-    this->outputColorFrame = frame;
 
-    this->video_time = videoTime;
-    cvtColor(outputColorFrame, grayFrame, CV_BGR2GRAY);
-    equalizeHist(grayFrame, grayFrame);
+    video_time = videoTime;
 
     // save img size and setup font size
     mDebugFrames->c->initFontSize(&frame);
 }
 
-void MyImageAnalyser::resetStates(){
-	this->interestingFrame = false;
-    lastGrayFrame = grayFrame.clone();
+void MyImageAnalyser::detectMovementResetStates(){
+	interestingFrame = false;
+	detectMovementLastGrayFrame = detectMovementGrayFrame.clone();
 }
 
 void MyImageAnalyser::showOutput(){
-    this->showImg(outputColorFrame, "outpuColorFrame");
 //    this->showImg(originalColorFrame, "originalColorFrame");
-    // cout<< originalColorFrame.cols << " " << originalColorFrame.rows << endl;
+//    this->showImg(outputColorFrame, "outpuColorFrame");
+    this->showImg(outputColorStretchFrame, "outputColorStretchFrame");
+//    this->showImg(binaryTableCrop, "binaryTableCrop");
+    this->showImg(binaryWithoutArm, "binaryWithoutArm");
 }
 
 /*
@@ -144,10 +472,18 @@ void MyImageAnalyser::showImageFromBackground(){
 	}
 }
 
+/*
+ * show image with fallback for possible empty image
+ */
 void MyImageAnalyser::showImg(Mat frame, String frameName){
 	if (frame.dims != 0) {
 		imshow(frameName, frame);
 	} else {
 		cout << frameName << " is EMPTY !" << endl;
 	}
+}
+
+void MyImageAnalyser::initTrackball(){
+    namedWindow("tools", 1);
+    createTrackbar( "th background", "tools", &sliderThresholdBg, slider_max, on_trackbar);
 }

@@ -41,78 +41,79 @@ MainLogic::~MainLogic(){
  */
 void MainLogic::process(){
 
-	this->arm->resetNextMove();
+	arm->resetNextMove();
 
 	if (mImageStorage->getProcessingQueueSize() > 0){
 		if (DEBUG_LOCAL) cout << "MainLogic::process new IMG " << endl;
 
-		Mat activeFrame = (mImageStorage->getImgFromProcessingQueue()).mMat;
-		if (DEBUG_LOCAL) cout << "process img : " << activeFrame.cols << " " << activeFrame.rows << endl;
+		ImagePreprocessItem mImagePreprocessItem = (mImageStorage->getImgFromProcessingQueue());
 
 		if (isAnyModulActive()){
-			continueInActiveModule(&activeFrame, this->arm->getNextMove());
+			continueInActiveModule(&mImagePreprocessItem, arm->getNextMove());
 
 		}else{
-			detectModuleToStartWith(&activeFrame, this->arm->getNextMove());
+			detectModuleToStartWith(&mImagePreprocessItem, arm->getNextMove());
 		}
 	}
 
-	if (this->arm->getNextMove()->hasChanged()){
+	if (arm->getNextMove()->hasChanged()){
 		// move arm
-		this->mRoboticArmController->addToStack(this->arm->composeNextMove());
+		mRoboticArmController->addToStack(arm->composeNextMove());
 
 		// show arm
 		showArmPosition(this->arm->getNextMove());
 	}
 }
 
+/*
+ * TODO desc
+ */
 bool MainLogic::isAnyModulActive(){
 	if (DEBUG_LOCAL) cout << "MainLogic::isAnyModulActive" << endl;
 	for (int i=0; i<1;i++){
-		if (this->modules[i]->isModulActive()){
+		if (modules[i]->isModulActive()){
 			return true;
 		}
 	}
 	return false;
 }
 
-void MainLogic::continueInActiveModule(Mat *frame, RoboticArmMove *mRoboticArmMove){
+/*
+ * TODO desc
+ */
+void MainLogic::continueInActiveModule(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 	if (DEBUG_LOCAL) cout << "MainLogic::continueInActiveModule" << endl;
 	for (int i=0; i<1;i++){
-		if (this->modules[i]->isModulActive()){
-			this->modules[i]->processNextState(frame, mRoboticArmMove);
+		if (modules[i]->isModulActive()){
+			modules[i]->processNextState(mImagePreprocessItem, mRoboticArmMove);
 		}
 	}
 }
 
-void MainLogic::detectModuleToStartWith(Mat *frame, RoboticArmMove *mRoboticArmMove){
+/*
+ * TODO desc
+ */
+void MainLogic::detectModuleToStartWith(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 	if (DEBUG_LOCAL) cout << "MainLogic::detectModuleToStartWith" << endl;
 	for (int i=0; i<1;i++){
 		if (DEBUG_LOCAL) cout << "i="<<i << endl;
-		if (this->modules[i]->initialObjectDetection(frame, mRoboticArmMove)){
-			this->modules[i]->setModulState(MODULE_STATE_START);
+		if (modules[i]->initialObjectDetection(mImagePreprocessItem, mRoboticArmMove)){
+			modules[i]->setModulState(MODULE_STATE_START);
 		}
 	}
 }
 
-
 /*
- *
+ * TODO desc
  */
 void MainLogic::showArmPosition(RoboticArmMove *mRoboticArmMove){
 	if (DEBUG_LOCAL) cout << "MainLogic::showArmPosition" << endl;
 
 	Mat viewTopMat = Mat::zeros(Size(640, 480), 16);
+	// TODO draw table, top view
+
 	Mat viewSideMat = Mat::zeros(Size(640, 480), 16);;
-
-	// TODO draw table, arm
-	// TODO inverses kinematics - logic
-
-
-	// TODO remove this sleep
-	usleep(2000000);
-	xx += 20;
-	line(viewTopMat, Point(10,0), Point(10, xx), Scalar(255,255,255), 2);
+	// TODO draw table, side view
 
 	// image is show in main thread
 	mImageStorage->addToDisplayQueue("viewTopMat", viewTopMat);
