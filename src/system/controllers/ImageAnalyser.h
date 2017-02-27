@@ -23,10 +23,10 @@ public:
     ImageAnalyser();
     ~ImageAnalyser();
 
-    bool analyse(Mat, int videoTime);
+    bool analyse(Mat, long videoTime);
     bool keyaboardInput(Mat*);
     void initCustom();
-    virtual void executeCustomLogic(Mat, int);
+    virtual void executeCustomLogic(Mat, long);
 
 };
 

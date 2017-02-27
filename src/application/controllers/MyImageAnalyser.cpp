@@ -27,7 +27,7 @@ using namespace std;
  *
  *
  */
-void MyImageAnalyser::executeCustomLogic(Mat frame, int videoTime){
+void MyImageAnalyser::executeCustomLogic(Mat frame, long videoTime){
 
 	// 0) save input frame
 	saveInputFrame(frame, videoTime);
@@ -44,7 +44,7 @@ void MyImageAnalyser::executeCustomLogic(Mat frame, int videoTime){
 	detectArm();
 
 	// 5) find object on the table
-	detectObject();
+	detectObjects();
 
 	// 6) save image for main logic processing
 	saveImageForProcessing();
@@ -67,6 +67,9 @@ void MyImageAnalyser::executeCustomLogic(Mat frame, int videoTime){
  * return set local variable true/false [isFrameMoving]
  */
 void MyImageAnalyser::detectMovement(){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::detectMovement" << endl;
+
+	if (outputColorFrame.data == 0) return;
 
 	if (mDebugFrames->c->inputMode == INPUT_MODE_IMG_FOLDER){
 		setFrameIsMoving(false);
@@ -106,6 +109,7 @@ void MyImageAnalyser::detectMovement(){
 }
 
 void MyImageAnalyser::drawOutputInfo(Mat frame){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::drawOutputInfo" << endl;
 
 	// draw moving info
 	string movingTxt = isFrameMoving ? "moving" : "not moving";
@@ -136,6 +140,8 @@ void MyImageAnalyser::drawOutputInfo(Mat frame){
 }
 
 void MyImageAnalyser::setFrameIsMoving(bool newValue){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::setFrameIsMoving" << endl;
+
 	if (this->isFrameMoving && newValue == false){
 		this->interestingFrame = true;
 	}
@@ -152,6 +158,10 @@ void MyImageAnalyser::setFrameIsMoving(bool newValue){
  *
  */
 void MyImageAnalyser::cropAndStretchTableBg(){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::cropAndStretchTableBg" << endl;
+
+	if (originalColorFrame.data == 0) return;
+
 
 	Mat resizedFrame, grayFrame, diffGray, actualDiffBw, thBinaryFrame,
 		morphBinaryFrame, stretchTable;
@@ -217,7 +227,6 @@ void MyImageAnalyser::cropAndStretchTableBg(){
 		// Draw corners detected
 		lt = Point(999, 999); lb = Point(999, -1); rt = Point(-1, 999); rb = Point(-1, -1);
 
-		// TODO do some  validation -> points should be in 10% position in frame corners
 
 		for( int i = 0; i < corners.size(); i++ ){
 			if (lt.x >= corners[i].x && lt.y >= corners[i].y) {
@@ -238,6 +247,29 @@ void MyImageAnalyser::cropAndStretchTableBg(){
 		if (DEBUG_LOCAL) cout << "lb.x= " << lb.x << " lb.y= " << lb.y << endl;
 		if (DEBUG_LOCAL) cout << "rt.x= " << rt.x << " rt.y= " << rt.y << endl;
 		if (DEBUG_LOCAL) cout << "rb.x= " << rb.x << " rb.y= " << rb.y << endl;
+		if (DEBUG_LOCAL) cout << "-----------------------------------" << endl;
+
+		// corner validation -> points should be in 10% position in frame corners
+		double d_ltx = lt.x / morphBinaryFrame.cols * 100;
+		double d_lty = lt.y / morphBinaryFrame.rows * 100;
+		double d_lbx = lb.x / morphBinaryFrame.cols * 100;
+		double d_lby = 100 - lb.y / morphBinaryFrame.rows * 100;
+		double d_rtx = 100 - rt.x / morphBinaryFrame.cols * 100;
+		double d_rty = rt.y / morphBinaryFrame.rows * 100;
+		double d_rbx = 100 - rb.x / morphBinaryFrame.cols * 100;
+		double d_rby = 100 - rb.y / morphBinaryFrame.rows * 100;
+
+		if (d_ltx > TABLE_CORNER_OFFSER_PERCENTAGE || d_lty > TABLE_CORNER_OFFSER_PERCENTAGE
+				|| d_lbx > TABLE_CORNER_OFFSER_PERCENTAGE || d_lby > TABLE_CORNER_OFFSER_PERCENTAGE
+				|| d_rtx > TABLE_CORNER_OFFSER_PERCENTAGE || d_rty > TABLE_CORNER_OFFSER_PERCENTAGE
+				|| d_rbx > TABLE_CORNER_OFFSER_PERCENTAGE || d_rby > TABLE_CORNER_OFFSER_PERCENTAGE	){
+			return;
+		}
+
+		if (DEBUG_LOCAL) cout << "d_ltx= " << d_ltx << " d_lty= " << d_lty << endl;
+		if (DEBUG_LOCAL) cout << "d_lbx= " << d_lbx << " d_lby= " << d_lby << endl;
+		if (DEBUG_LOCAL) cout << "d_rtx= " << d_rtx << " d_rty= " << d_rty << endl;
+		if (DEBUG_LOCAL) cout << "d_rbx= " << d_rbx << " d_rby= " << d_rby << endl;
 		if (DEBUG_LOCAL) cout << "-----------------------------------" << endl;
 
 		// skip if corners where detected wrong
@@ -289,15 +321,18 @@ void MyImageAnalyser::cropAndStretchTableBg(){
  * output: set local variable - px for one mm
  */
 void MyImageAnalyser::recalculatePxToMm(Point p1, Point p2, int frameW, int frameH){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::recalculatePxToMm" << endl;
 
-	if (!mmToPxCalculated){
-		Point difference = p1-p2;
-		double distance = sqrt( difference.ddot(difference));
-		oneMmInPx = (double)TABLE_WIDTH_MM / distance;
-		oneMmInPxframeWidth = frameW;
-		oneMmInPxframeHeight = frameH;
-		mmToPxCalculated = true;
-		if (DEBUG_LOCAL) cout << "one MM to PX = " << TABLE_WIDTH_MM << "/" << distance << " = " <<  oneMmInPx << endl;
+	if (tableDetected){
+		if (!mmToPxCalculated){
+			Point difference = p1-p2;
+			double distance = sqrt( difference.ddot(difference));
+			oneMmInPx = (double)TABLE_WIDTH_MM / distance;
+			oneMmInPxframeWidth = frameW;
+			oneMmInPxframeHeight = frameH;
+			mmToPxCalculated = true;
+			if (DEBUG_LOCAL) cout << "one MM to PX = " << TABLE_WIDTH_MM << "/" << distance << " = " <<  oneMmInPx << endl;
+		}
 	}
 }
 
@@ -306,6 +341,7 @@ void MyImageAnalyser::recalculatePxToMm(Point p1, Point p2, int frameW, int fram
  * output: center point(x, y) of robotic arm
  */
 void MyImageAnalyser::detectArm(){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::detectArm" << endl;
 
 	if (tableDetected){
 
@@ -340,36 +376,39 @@ void MyImageAnalyser::detectArm(){
 
 					// TODO find center - continue here
 					Mat myArm = binaryWithoutArm(bbox);
-//					int* rowCount = new int[myArm.rows];
-					int selectedRow = 0, selectedColumn = 0, rowCount = 0;
-					for (int row = 0; row < myArm.rows; row++) {
 
-						rowCount = countNonZero(myArm.row(i));
-						if (selectedRow <= rowCount){
-							selectedRow = countNonZero(myArm.row(i));
-						}else{
-							int firstIdx = 0, lastIdx = 0;
-							for (int col = 0; col < myArm.cols; col++) {
-								//TODO
-								if (firstIdx == 0 && myArm.at<bool>(row, col) == 1){
-									firstIdx = col;
-								}
-								if (myArm.at<bool>(row, col) == 1){
-									lastIdx = col;
-								}
-							}
-							selectedColumn = (firstIdx + lastIdx) /2;
-							break;
+					int selectedRow = 84, selectedColumn = 0, rowCount = 0, lastRowCount = 0;
+//					for (int row = 0; row < myArm.rows; row++) {
+//
+//						cout << "row: " << row << " rowCount: " << countNonZero(myArm.row(row)) << endl;
+//						rowCount = countNonZero(myArm.row(row));
+//						if (lastRowCount <= rowCount){
+//							lastRowCount = rowCount;
+//							selectedRow = row;
+//						}else{
+//							break;
+//						}
+//					}
+//					cout << "selectedRow: " << selectedRow << endl;
+
+					// find middle point in binary lines - horizontal
+					int firstIdx = 0, lastIdx = 0;
+					for (int col = 0; col < myArm.cols; col++) {
+						if (firstIdx == 0 && myArm.at<bool>(col, selectedRow) == 1){
+							firstIdx = col;
+						}
+						if (myArm.at<bool>(col, selectedRow) == 1){
+							lastIdx = col;
 						}
 					}
-					showImg(myArm, "aarm");
-cout << "selectedColumn: " << selectedColumn << " selectedRow: " << selectedRow << endl;
+
+					selectedColumn = (firstIdx + lastIdx) /2;
 					armCenter = Point (bbox.x + selectedColumn, bbox.y + selectedRow);
-
 					rectangle(binaryWithoutArm, Point(armBb.x, armBb.y), Point(armBb.x+armBb.width, armBb.y+armBb.height), colorBlack, CV_FILLED);
-
-					if (DEBUG_LOCAL) cout << "arm detected" << endl;
 					armDetected = true;
+
+					if (DEBUG_LOCAL) showImg(myArm, "aarm");
+					if (DEBUG_LOCAL) cout << "arm detected" << endl;
 				}
 			}
 			if (DEBUG_LOCAL) cout << "-----------------------" << endl;
@@ -381,34 +420,39 @@ cout << "selectedColumn: " << selectedColumn << " selectedRow: " << selectedRow 
  * input: binary image of table
  * output: true/false if there is any other object expect arm on table
  */
-void MyImageAnalyser::detectObject(){
+void MyImageAnalyser::detectObjects(){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::detectObjects" << endl;
+
 	detectedObjects.clear();
 
-	vector<vector<Point> > contours;
-	vector<Vec4i> hierarchy;
+	if (armDetected){
 
-	cv::findContours(binaryWithoutArm.clone(), contours, hierarchy, CV_RETR_EXTERNAL,
-			CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-	vector<RotatedRect> minRect( contours.size() );
+		vector<vector<Point> > contours;
+		vector<Vec4i> hierarchy;
 
-	// loop through founded contours
-	for (int i = 0; i < contours.size(); i++) {
-		// test draw contours
-		//drawContours(outputColorStretchFrame, contours, i, colorGreen, 3, 8, hierarchy, 0, Point());
+		cv::findContours(binaryWithoutArm.clone(), contours, hierarchy, CV_RETR_EXTERNAL,
+				CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+		vector<RotatedRect> minRect( contours.size() );
+
+		// loop through founded contours
+		for (int i = 0; i < contours.size(); i++) {
+			// test draw contours
+			//drawContours(outputColorStretchFrame, contours, i, colorGreen, 3, 8, hierarchy, 0, Point());
 
 
-		// filter small thrash
-		Rect bbox = boundingRect(contours[i]);
-		if (bbox.width < 5 || bbox.height < 5){
-			if (DEBUG_LOCAL) cout << "skipping rect TOO SMALL " << endl;
-			continue;
+			// filter small thrash
+			Rect bbox = boundingRect(contours[i]);
+			if (bbox.width < 5 || bbox.height < 5){
+				if (DEBUG_LOCAL) cout << "skipping rect TOO SMALL " << endl;
+				continue;
+			}
+
+			// create rotate rect
+			minRect[i] = minAreaRect( Mat(contours[i]) );
+
+			// add rotate rect to found objects
+			detectedObjects.push_back(minRect[i]);
 		}
-
-		// create rotate rect
-		minRect[i] = minAreaRect( Mat(contours[i]) );
-
-		// add rotate rect to found objects
-		detectedObjects.push_back(minRect[i]);
 	}
 
 	isObjectDetected = (detectedObjects.size() > 0);
@@ -416,6 +460,8 @@ void MyImageAnalyser::detectObject(){
 }
 
 void MyImageAnalyser::saveImageForProcessing(){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::saveImageForProcessing" << endl;
+
 	if (interestingFrame && isObjectDetected){
 		mImageStorage->addToProcessingQueue(originalColorFrame, binaryWithoutArm, armCenter, detectedObjects);
 
@@ -430,7 +476,18 @@ void MyImageAnalyser::saveImageForProcessing(){
 	}
 }
 
-void MyImageAnalyser::saveInputFrame(Mat frame, int videoTime){
+void MyImageAnalyser::saveInputFrame(Mat frame, long videoTime){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::saveInputFrame" << endl;
+
+	if (startTime == 0){
+		startTime = videoTime;
+	}
+
+	// camera is starting wait some time
+	if (videoTime - startTime < 2000){
+		return;
+	}
+
     if (resizedWidth == -1 || resizedHeight == -1){
         resizedWidth = frame.cols/resizeRatio;
         resizedHeight = frame.rows/resizeRatio;
@@ -449,11 +506,15 @@ void MyImageAnalyser::saveInputFrame(Mat frame, int videoTime){
 }
 
 void MyImageAnalyser::detectMovementResetStates(){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::detectMovementResetStates" << endl;
+
 	interestingFrame = false;
 	detectMovementLastGrayFrame = detectMovementGrayFrame.clone();
 }
 
 void MyImageAnalyser::showOutput(){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::showOutput" << endl;
+
 //    this->showImg(originalColorFrame, "originalColorFrame");
 //    this->showImg(outputColorFrame, "outpuColorFrame");
     this->showImg(outputColorStretchFrame, "outputColorStretchFrame");
@@ -465,6 +526,7 @@ void MyImageAnalyser::showOutput(){
  * show images saved through application and show them on main thread - GUI
  */
 void MyImageAnalyser::showImageFromBackground(){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::showOutput" << endl;
 
 	while (mImageStorage->getDisplayQueueSize() >0){
 		ImageStoreItem mImageStoreItem = mImageStorage->getImgFromDiplayQueue();
@@ -476,6 +538,8 @@ void MyImageAnalyser::showImageFromBackground(){
  * show image with fallback for possible empty image
  */
 void MyImageAnalyser::showImg(Mat frame, String frameName){
+	if (DEBUG_LOCAL) cout << "MyImageAnalyser::showOutput" << endl;
+
 	if (frame.dims != 0) {
 		imshow(frameName, frame);
 	} else {

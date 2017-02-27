@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
 
 	cout << cv::getBuildInformation() << endl;
 	ConfigExample &mConfigExample = ConfigExample::getInstance();
-	mConfigExample.CAMERA_IDX = 2; // TODO changing param !!
+	mConfigExample.CAMERA_IDX = 1; // TODO changing param !!
 
 	// main logic
 	StateController *mStateController = new StateController();

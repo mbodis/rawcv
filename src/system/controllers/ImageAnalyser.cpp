@@ -24,7 +24,7 @@ ImageAnalyser::~ImageAnalyser(){
 
 }
 
-bool ImageAnalyser::analyse(Mat frame, int videoTime) {
+bool ImageAnalyser::analyse(Mat frame, long videoTime) {
     if (frame.dims == 0) return true;
 
     executeCustomLogic(frame, videoTime);
@@ -42,6 +42,6 @@ bool ImageAnalyser::keyaboardInput(Mat *frame){
     return true;
 }
 
-void ImageAnalyser::executeCustomLogic(Mat frame, int videoTime){
+void ImageAnalyser::executeCustomLogic(Mat frame, long videoTime){
 	// TODO initial my logic class
 }

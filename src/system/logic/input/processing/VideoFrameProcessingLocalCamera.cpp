@@ -47,14 +47,13 @@ void VideoFrameProcessingLocalCamera::runRTV(SourcePath *sourcePath) {
 
 	stream1.set(CV_CAP_PROP_FRAME_WIDTH,1920);
 	stream1.set(CV_CAP_PROP_FRAME_HEIGHT,1080);
+    struct timeval tp;
 
 	while (!isInputFinished2) {
 
-		// use cuurent time - time form camera is 0
+		// use current time - time form camera is 0
         // videoTimeShared2 = stream1.get(CV_CAP_PROP_POS_MSEC);
-        struct timeval tp;
 		gettimeofday(&tp, NULL);
-		long int ms = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 		videoTimeShared2 = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
 		if (!stream1.read(frameShared2)) {

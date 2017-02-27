@@ -47,7 +47,8 @@ private:
 	// input
 	Mat originalColorFrame;
 	Mat outputColorFrame, outputColorStretchFrame;
-	void saveInputFrame(Mat, int);
+	void saveInputFrame(Mat, long);
+	long startTime = 0;
 
 	//output
 	void showImg(Mat, String);
@@ -66,6 +67,7 @@ private:
 	void setFrameIsMoving(bool);
 
 	// logic - crop and stretch table
+	int TABLE_CORNER_OFFSER_PERCENTAGE = 7;
 	void cropAndStretchTableBg();
 	bool tableDetected = false;
 	Rect tableBb;
@@ -90,7 +92,7 @@ private:
 	// logic - is there an object
 	int processImgCount = 0;
 	bool isObjectDetected = false;
-	void detectObject();
+	void detectObjects();
 	vector<RotatedRect> detectedObjects;
 	Mat binaryWithoutArm;
 
@@ -116,7 +118,7 @@ public:
 	}
 	~MyImageAnalyser(){ }
 
-	void executeCustomLogic(Mat, int);
+	void executeCustomLogic(Mat, long);
 
 };
 
