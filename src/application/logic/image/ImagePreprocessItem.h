@@ -13,11 +13,12 @@
 class ImagePreprocessItem{
 public:
 
-	ImagePreprocessItem(Mat fullInputFrame, Mat preprocessFrame, Point armCenter, vector<RotatedRect> detectedObjects ){
+	ImagePreprocessItem(Mat fullInputFrame, Mat preprocessFrame, Point armCenter, vector<RotatedRect> detectedObjects, double oneMmInPx ){
 		this->fullInputFrame = fullInputFrame;
 		this->preprocessFrame = preprocessFrame;
 		this->armCenter = armCenter;
 		this->detectedObjects = detectedObjects;
+		this->oneMmInPx = oneMmInPx;
 	}
 
 	// raw input
@@ -27,6 +28,7 @@ public:
 	Mat preprocessFrame;
 	Point armCenter;
 	vector<RotatedRect> detectedObjects;
+	double oneMmInPx;
 };
 
 

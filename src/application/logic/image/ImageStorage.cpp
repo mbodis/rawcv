@@ -53,8 +53,8 @@ int ImageStorage::getDisplayQueueSize(){
  * add image to processing queue
  * save image from preprocessing thread into queue -> main logic will continue with this image
  */
-void ImageStorage::addToProcessingQueue(Mat rawFrame, Mat preprocessFrame, Point armCenter, vector<RotatedRect> detectedObjects){
-	processingImgImgQueue.push(ImagePreprocessItem(rawFrame, preprocessFrame, armCenter, detectedObjects));
+void ImageStorage::addToProcessingQueue(Mat rawFrame, Mat preprocessFrame, Point armCenter, vector<RotatedRect> detectedObjects, double oneMmInPx){
+	processingImgImgQueue.push(ImagePreprocessItem(rawFrame, preprocessFrame, armCenter, detectedObjects, oneMmInPx));
 }
 
 /*

@@ -16,6 +16,7 @@ using namespace std;
 
 /*
  * #1P1500T3000\r\n
+ * #servo-indexPtime-in-milis-as-rotationTtime-for-execution\r\n
  */
 string MessageComposer::composeControllerMessage(int servoIdx, int servoMilis, int timeMilis){
 
@@ -32,6 +33,7 @@ string MessageComposer::composeControllerMessage(int servoIdx, int servoMilis, i
 
 /*
  * #1P1500T3000\r\n
+ * #servo-indexPtime-in-milis-as-rotationTtime-for-execution\r\n
  */
 string MessageComposer::composeControllerMessage(ServoIface *servo, int direction, int angle_mm){
 	return composeControllerMessage(servo->getIdx(), servo->convertAngleMmToMilis(direction, angle_mm), SERVO_SPEED_NORMAL);
@@ -39,6 +41,7 @@ string MessageComposer::composeControllerMessage(ServoIface *servo, int directio
 
 /*
  * #1P1500#2P2300#3P2300#4P2300#5P2300#6P2300T100\r\n
+ * #servo-indexPtime-in-milis-as-rotation#servo-indexPtime-in-milis-as-rotation...Ttime-for-execution\r\n
  */
 string MessageComposer::composeControllerFullMessage(int servo1Milis, int servo2Milis,
 			int servo3Milis, int servo4Milis, int servo5Milis, int servo6Milis, int timeMilis){
@@ -84,6 +87,7 @@ string MessageComposer::composeControllerFullMessage(int servo1Milis, int servo2
 
 /*
  * #1P1500#2P2300#3P2300#4P2300#5P2300#6P2300T100\r\n
+ * #servo-indexPtime-in-milis-as-rotation#servo-indexPtime-in-milis-as-rotation...Ttime-for-execution\r\n
  */
 string MessageComposer::composeControllerFullMessage(
 		ServoIface *servo1, int direction1, int angle1,

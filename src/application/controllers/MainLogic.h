@@ -19,10 +19,11 @@
 #include "../logic/image/ImageDisplayItem.h"
 #include "../logic/image/ImagePreprocessItem.h"
 #include "../logic/robotic_arm/RoboticArmMove.h"
+#include "../../system/helper/RotateBBHelper.h"
 
 class MainLogic{
 private:
-	bool DEBUG_LOCAL = true;
+	bool DEBUG_LOCAL = false;
 
 	/*
 	 * servo setup for robotic arm
@@ -49,7 +50,8 @@ public:
 	void continueInActiveModule(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
 	void detectModuleToStartWith(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
 
-	void showArmPosition(RoboticArmMove *mRoboticArmMove);
+	void showArmPositionTopView(ImagePreprocessItem *ImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
+	void showArmPositionSideView(ImagePreprocessItem *ImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
 
 	// MODULES
 	vector<CVModule*> modules;

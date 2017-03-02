@@ -60,7 +60,7 @@ public:
 	/*
 	 * processing queue
 	 */
-	void addToProcessingQueue(Mat rawFrame, Mat preprocessFrame, Point armCenter, vector<RotatedRect> detectedObjects);
+	void addToProcessingQueue(Mat rawFrame, Mat preprocessFrame, Point armCenter, vector<RotatedRect> detectedObjects, double oneMmInPx);
 	ImagePreprocessItem getImgFromProcessingQueue();
 	int getProcessingQueueSize();
 

@@ -23,7 +23,7 @@ using namespace cv;
 using namespace std;
 
 static double THRESHOLD_MOVE_PERCENTAGE = 0.02;
-static int THRESHOLD_MOVE_MILIS = 200;
+
 
 
 class MyImageAnalyser: public ImageAnalyser{
@@ -35,14 +35,13 @@ private:
 
 	// video time
 	long video_time = 0;
-	int last_move_time = 0;
+	long last_move_time = 0;
 	bool resiseInput = true;
 
 	// resize
 	double resizeRatio = 2;
 	int resizedWidth = -1;
 	int resizedHeight = -1;
-
 
 	// input
 	Mat originalColorFrame;
@@ -56,7 +55,9 @@ private:
 	void showImageFromBackground();
 
 	// logic detect movement
-	int THRESHOLD_MOVEMENT_VALUE = 120;
+	int THRESHOLD_MOVE_MILIS = 800;
+	double THRESHOLD_MOVE_PERCENTAGE = 0.03;
+	int THRESHOLD_MOVEMENT_BW_VALUE = 120;
 	bool isFrameMoving = true;
 	double whitePercentage = 0.0;
 	Mat detectMovementGrayFrame; // gray scale frame
@@ -104,7 +105,7 @@ private:
 
 	// GUI trackball slider
 	const int slider_max = 255;
-	int sliderThresholdBg = 46;
+	int sliderThresholdBg = 43;
 	void initTrackball();
 	static void on_trackbar( int val, void* ){
 		// this is not necessary

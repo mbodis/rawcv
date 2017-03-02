@@ -9,10 +9,9 @@
 #define SRC_APPLICATION_MODULES_PICKUPOBJECT_H_
 
 const int MODULE_STATE_PICKUP_OBJECT_NONE = 0;
-const int MODULE_STATE_PICKUP_OBJECT_START = 1;
-const int MODULE_STATE_PICKUP_OBJECT_CONFIRM_OBJECT_IS_MISSING = 2;
-const int MODULE_STATE_PICKUP_OBJECT_PICKED_UP = 3;
-const int MODULE_STATE_PICKUP_OBJECT_FINISHED = 4;
+const int MODULE_STATE_PICKUP_OBJECT_ARM_PICKING_OBJECT = 1;
+const int MODULE_STATE_PICKUP_OBJECT_FINISHED_SUCCESS = 2;
+const int MODULE_STATE_PICKUP_OBJECT_FINISHED_FAILED = 3;
 
 #include "iface/CVModule.h"
 #include <iostream>
@@ -21,51 +20,132 @@ using namespace std;
 
 class PickUpObject : public CVModule{
 private:
+	int triesObjectPickup = 0;
+	int MAX_TRIES = 3;
 
-public:
-	PickUpObject(string moduleName):CVModule(moduleName){
-		cout << "-- -- -- CONSTRUCTOR: PickUpObject -- -- --" << endl;
-		this->numberStates = 5;
+	void increasePickupCounter(){
+		triesObjectPickup++;
 	}
 
-	bool initialObjectDetection(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
-		cout << "PickUpObject :: initialObjectDetection" << endl;
+	bool validateInpuDetectedObject(ImagePreprocessItem *mImagePreprocessItem){
 
-		// TODO update mRoboticArmMove
+		// is there one object ?
+		if (mImagePreprocessItem->detectedObjects.size() != 1){
+			if (DEBUG_LOCAL) cout << "PickUpObject :: initialObjectDetection invalid number of objects" << mImagePreprocessItem->detectedObjects.size() << endl;
+			return false;
+		}
+
+		// TODO check size of object
 
 		return true;
 	}
 
-	void processNextState(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
-		cout << "PickUpObject :: processNextState" << endl;
+public:
+	PickUpObject(string moduleName):CVModule(moduleName){
+		if (DEBUG_LOCAL) cout << "-- -- -- CONSTRUCTOR: PickUpObject -- -- --" << endl;
+	}
 
+	/*
+	 * initialization
+	 *
+	 * validate input (one object, size fits)
+	 * pick up object
+	 * update pickup tries counter
+	 * update state
+	 */
+	bool initialObjectDetection(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+		if (DEBUG_LOCAL) cout << "PickUpObject :: initialObjectDetection" << endl;
+
+		if (!validateInpuDetectedObject(mImagePreprocessItem)){
+			return false;
+		}
+
+		pickupObject(mImagePreprocessItem, mRoboticArmMove);
+		mRoboticArmMove->setObjectIndex(0);
+		increasePickupCounter();
+		setModulState(MODULE_STATE_PICKUP_OBJECT_ARM_PICKING_OBJECT);
+
+		return true;
+	}
+
+	/*
+	 * TODO continue
+	 */
+	void processNextState(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+		if (DEBUG_LOCAL) cout << "PickUpObject :: processNextState" << endl;
+
+		testing(mImagePreprocessItem, mRoboticArmMove);
+
+		/*
 		switch(this->currentState){
 
 		case MODULE_STATE_NONE:
+			if (DEBUG_LOCAL) cout << "PickUpObject :: processNextState - invalid move MODULE_STATE_NONE" << endl;
 			break;
-		case MODULE_STATE_START:
-			cout << "start picking object" << endl;
-			// TODO start picking the object - update
+
+		case MODULE_STATE_PICKUP_OBJECT_ARM_PICKING_OBJECT:
+			// move arm to default position
+			mRoboticArmMove->setDefaultPosition();
+
+			// update state
+			setModulState(MODULE_STATE_PICKUP_OBJECT_CONFIRM_OBJECT_IS_MISSING);
 			break;
+
 		case MODULE_STATE_PICKUP_OBJECT_CONFIRM_OBJECT_IS_MISSING:
-			// TODO yes / no update mRoboticArmMove
-		case MODULE_STATE_PICKUP_OBJECT_PICKED_UP:
-			// TODO wait - finished mRoboticArmMove
+			cout << "start picking object" << endl;
+			if (triesObjectPickup > MAX_TRIES){
+				setModulState(MODULE_STATE_PICKUP_OBJECT_FINISHED_FAILED);
+				setFinished(true);
+				if (DEBUG_LOCAL) cout << "picking object FAILED -- END" << endl;
+			}
+
+			// object has been picked up
+			if (mImagePreprocessItem->detectedObjects.size() == 0){
+				setModulState(MODULE_STATE_PICKUP_OBJECT_FINISHED_SUCCESS);
+				setFinished(true);
+				pullDownObject(mRoboticArmMove);
+
+			// object still there
+			}else{
+				pickupObject(mImagePreprocessItem, mRoboticArmMove);
+				setModulState(MODULE_STATE_PICKUP_OBJECT_ARM_PICKING_OBJECT);
+				increasePickupCounter();
+			}
 			break;
-		case MODULE_STATE_PICKUP_OBJECT_FINISHED:
-			// TODO
+
+		case MODULE_STATE_PICKUP_OBJECT_FINISHED_FAILED:
+			if (DEBUG_LOCAL) cout << "PickUpObject :: processNextState - invalid move MODULE_STATE_PICKUP_OBJECT_FINISHED_FAILED" << endl;
+			break;
+
+		case MODULE_STATE_PICKUP_OBJECT_FINISHED_SUCCESS:
+			if (DEBUG_LOCAL) cout << "picking object SUCCESS -- END" << endl;
 			break;
 		}
+		*/
+	}
 
-		checkIfModuleHasEnded();
+	/*
+	 * TODO testing
+	 */
+	void testing(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+
+		if (currentState == MODULE_STATE_PICKUP_OBJECT_ARM_PICKING_OBJECT){
+			mRoboticArmMove->setDefaultPosition();
+			setModulState(MODULE_STATE_PICKUP_OBJECT_FINISHED_SUCCESS);
+		}
+
+	}
+
+	void pullDownObject(RoboticArmMove *mRoboticArmMove){
+		//TODO continue
 	}
 
 	void resetContent(){
-		// TODO add some more logic
+		triesObjectPickup = 0;
 	}
 
 	~PickUpObject(){
-		cout << "-- -- -- DESTRUCTOR: PickUpObject -- -- --" << endl;
+		if (DEBUG_LOCAL) cout << "-- -- -- DESTRUCTOR: PickUpObject -- -- --" << endl;
 
 	}
 };

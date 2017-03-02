@@ -225,7 +225,7 @@ void RoboticArmControllingTest::runTest(){
 //	resetToDefaultPositionAllAngle();
 
 //	stupido();
-	resetToDefaultPositionAllAngle();
+//	resetToDefaultPositionAllAngle();
 
 	mRoboticArmController->end();
 

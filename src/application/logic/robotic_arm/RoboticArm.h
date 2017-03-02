@@ -65,12 +65,12 @@ public:
 
 	string composeNextMove(){
 		return MessageComposer::composeControllerFullMessage(
-				this->servo[0], this->nextMove->getAngleForServo(SERVO_IDX_BASE), this->nextMove->getDirectionForServo(SERVO_IDX_BASE),
-				this->servo[1], this->nextMove->getAngleForServo(SERVO_IDX_BOTTOM_JOINT), this->nextMove->getDirectionForServo(SERVO_IDX_BOTTOM_JOINT),
-				this->servo[2], this->nextMove->getAngleForServo(SERVO_IDX_MIDDLE_JOINT), this->nextMove->getDirectionForServo(SERVO_IDX_MIDDLE_JOINT),
-				this->servo[3], this->nextMove->getAngleForServo(SERVO_IDX_UPPER_JOINT), this->nextMove->getDirectionForServo(SERVO_IDX_UPPER_JOINT),
-				this->servo[4], this->nextMove->getAngleForServo(SERVO_IDX_CLAW_ROTATE), this->nextMove->getDirectionForServo(SERVO_IDX_CLAW_ROTATE),
-				this->servo[5], this->nextMove->getAngleForServo(SERVO_IDX_CLAWS), this->nextMove->getDirectionForServo(SERVO_IDX_CLAWS)
+				this->servo[0], this->nextMove->getDirectionForServo(SERVO_IDX_BASE), this->nextMove->getAngleForServo(SERVO_IDX_BASE),
+				this->servo[1], this->nextMove->getDirectionForServo(SERVO_IDX_BOTTOM_JOINT), this->nextMove->getAngleForServo(SERVO_IDX_BOTTOM_JOINT),
+				this->servo[2], this->nextMove->getDirectionForServo(SERVO_IDX_MIDDLE_JOINT), this->nextMove->getAngleForServo(SERVO_IDX_MIDDLE_JOINT),
+				this->servo[3], this->nextMove->getDirectionForServo(SERVO_IDX_UPPER_JOINT), this->nextMove->getAngleForServo(SERVO_IDX_UPPER_JOINT),
+				this->servo[4], this->nextMove->getDirectionForServo(SERVO_IDX_CLAW_ROTATE), this->nextMove->getAngleForServo(SERVO_IDX_CLAW_ROTATE),
+				this->servo[5], this->nextMove->getDirectionForServo(SERVO_IDX_CLAWS), this->nextMove->getAngleForServo(SERVO_IDX_CLAWS)
 				);
 
 	}

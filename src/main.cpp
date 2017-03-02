@@ -25,6 +25,9 @@ using namespace std;
 #include "system/controllers/ImageAnalyser.h"
 #include "testing/RoboticArmControllingTest.h"
 
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
 
 /*
  * NOTE: do not modify !

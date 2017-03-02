@@ -83,7 +83,7 @@ void MyImageAnalyser::detectMovement(){
 	if (detectMovementGrayFrame.dims != 0 && detectMovementLastGrayFrame.dims != 0) {
 
 		absdiff(detectMovementLastGrayFrame, detectMovementGrayFrame, diffGray);
-		actualDiffBw = diffGray > THRESHOLD_MOVEMENT_VALUE;
+		actualDiffBw = diffGray > THRESHOLD_MOVEMENT_BW_VALUE;
 
 		whitePercentage = (double)countNonZero(actualDiffBw) * 100
 				/ (detectMovementGrayFrame.cols * detectMovementGrayFrame.rows);
@@ -287,9 +287,9 @@ void MyImageAnalyser::cropAndStretchTableBg(){
 			showImg(cornerFrame, "cornerFrame");
 		}
 
-		recalculatePxToMm(lt, rt, resizedFrame.cols, resizedFrame.rows);
-
 		tableDetected = true;
+
+		recalculatePxToMm(lt, rt, resizedFrame.cols, resizedFrame.rows);
 	}
 
 	// if table was found
@@ -463,7 +463,7 @@ void MyImageAnalyser::saveImageForProcessing(){
 	if (DEBUG_LOCAL) cout << "MyImageAnalyser::saveImageForProcessing" << endl;
 
 	if (interestingFrame && isObjectDetected){
-		mImageStorage->addToProcessingQueue(originalColorFrame, binaryWithoutArm, armCenter, detectedObjects);
+		mImageStorage->addToProcessingQueue(originalColorFrame, binaryWithoutArm, armCenter, detectedObjects, oneMmInPx);
 
 
 		// show next processing frame
@@ -543,7 +543,7 @@ void MyImageAnalyser::showImg(Mat frame, String frameName){
 	if (frame.dims != 0) {
 		imshow(frameName, frame);
 	} else {
-		cout << frameName << " is EMPTY !" << endl;
+		if (DEBUG_LOCAL) cout << frameName << " is EMPTY !" << endl;
 	}
 }
 
