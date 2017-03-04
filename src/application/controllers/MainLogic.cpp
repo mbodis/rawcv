@@ -170,8 +170,12 @@ void MainLogic::showArmPositionTopView(ImagePreprocessItem *mImagePreprocessItem
 void MainLogic::showArmPositionSideView(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 	if (!arm->getNextMove()->isMoveDefault()){
 
+		int ARM_PART_1_PX = ARM_PART_1_MM * mImagePreprocessItem->oneMmInPx;
+		int ARM_PART_2_PX = ARM_PART_2_MM * mImagePreprocessItem->oneMmInPx;
+		int ARM_PART_3_PX = ARM_PART_3_MM * mImagePreprocessItem->oneMmInPx;
+
 		// constants for drawing
-		int baseWidthMm = 100;
+		int baseWidthPx = 100;
 		int marginTopPx = 30;
 		int marginBottomPx = 30;
 		int marginLeftPx = 300;
@@ -200,10 +204,10 @@ void MainLogic::showArmPositionSideView(ImagePreprocessItem *mImagePreprocessIte
 
 		// frame size (side margins, arm height, distance from object)
 		Mat viewSideMat = Mat::zeros(Size(
-						marginLeftPx + marginRightPx + baseWidthMm/2 + objectDistanceFromArmMm + objectWidthMm/2,
-						marginTopPx + marginBottomPx + ARM_PART_1_MM + ARM_PART_2_MM + ARM_PART_3_MM + BASE_HEIGHT_MM),
+						marginLeftPx + marginRightPx + baseWidthPx/2 + objectDistanceFromArmPx + objectWidthPx/2,
+						marginTopPx + marginBottomPx + ARM_PART_1_PX + ARM_PART_2_PX + ARM_PART_3_PX + BASE_HEIGHT_MM),
 						16);
-		int baseJointX = marginLeftPx + baseWidthMm/2;
+		int baseJointX = marginLeftPx + baseWidthPx/2;
 		int baseJointY = viewSideMat.rows - marginBottomPx - BASE_HEIGHT_MM;
 		Point baseCenter = Point(baseJointX, baseJointY);
 
@@ -218,41 +222,66 @@ void MainLogic::showArmPositionSideView(ImagePreprocessItem *mImagePreprocessIte
 		// draw base
 		rectangle(viewSideMat,
 				Point(marginLeftPx, viewSideMat.rows - marginBottomPx - BASE_HEIGHT_MM),
-				Point(marginLeftPx + baseWidthMm, viewSideMat.rows - marginBottomPx), colorWhite, 2);
+				Point(marginLeftPx + baseWidthPx, viewSideMat.rows - marginBottomPx), colorWhite, 2);
 
 		//arm part 1
-		int joint1X = MathHelper::sinDeg(180+armAngle1) * ARM_PART_1_MM;
-		int joint1Y = MathHelper::sinDeg(90+armAngle1) * ARM_PART_1_MM;
+		int joint1X = MathHelper::sinDeg(180+armAngle1) * ARM_PART_1_PX; // -1 because of visualization
+		int joint1Y = MathHelper::sinDeg(90+armAngle1) * ARM_PART_1_PX;
 		Point joint1Center = Point(baseJointX - joint1X, baseJointY - joint1Y);
+		if (DEBUG_LOCAL) cout << "joint1X: " << joint1X << " joint1Y: " << joint1Y << endl;
+		if (DEBUG_LOCAL) cout << "joint1CenterX: " << joint1Center.x << " joint1CenterY: " << joint1Center.y << endl;
 		line(viewSideMat, baseCenter, joint1Center, colorWhite, 4, 8);
 
 		//arm part 2
-		int joint2X = MathHelper::sinDeg(180+armAngle2) * ARM_PART_2_MM;
-		int joint2Y = MathHelper::sinDeg(90+armAngle2) * ARM_PART_2_MM;
+		int joint2X = MathHelper::sinDeg(180+armAngle2) * ARM_PART_2_PX; // -1 because of visualization
+		int joint2Y = MathHelper::sinDeg(90+armAngle2) * ARM_PART_2_PX;
 		Point joint2Center = Point(joint1Center.x - joint2X, joint1Center.y - joint2Y);
+		if (DEBUG_LOCAL) cout << "joint2X: " << joint2X << " joint2Y: " << joint2Y << endl;
+		if (DEBUG_LOCAL) cout << "joint2CenterX: " << joint2Center.x << " joint2CenterY: " << joint2Center.y << endl;
 		line(viewSideMat, joint1Center, joint2Center, colorWhite, 4, 8);
 
 		//arm part 3
-		int joint3X = MathHelper::sinDeg(180+armAngle3) * ARM_PART_3_MM;
-		int joint3Y = MathHelper::sinDeg(90+armAngle3) * ARM_PART_3_MM;
+		int joint3X = MathHelper::sinDeg(180+armAngle3) * ARM_PART_3_PX; // -1 because of visualization
+		int joint3Y = MathHelper::sinDeg(90+armAngle3) * ARM_PART_3_PX;
 		Point joint3Center = Point(joint2Center.x - joint3X, joint2Center.y - joint3Y);
+		if (DEBUG_LOCAL) cout << "joint3X: " << joint3X << " joint3Y: " << joint3Y << endl;
+		if (DEBUG_LOCAL) cout << "joint3CenterX: " << joint3Center.x << " joint3CenterY: " << joint3Center.y << endl;
 		line(viewSideMat, joint2Center, joint3Center, colorWhite, 4, 8);
+
+		double armObjectDistanceFromArmPx = cv::norm((Point)joint3Center - Point(marginLeftPx + baseWidthPx/2 + objectDistanceFromArmPx, viewSideMat.rows - marginBottomPx - OBJECT_DEPTH_MM) );
+		double armObjectDistanceFromArmMm = armObjectDistanceFromArmPx * mImagePreprocessItem->oneMmInPx;
+		if (DEBUG_LOCAL) cout << "armObjectDistanceFromArmPx: " << armObjectDistanceFromArmPx << endl;
+		if (DEBUG_LOCAL) cout << "armObjectDistanceFromArmMm: " << armObjectDistanceFromArmMm << endl;
 
 		// draw base rotate center
 		circle(viewSideMat, baseCenter, 7, colorRed, 2);
 
 		// draw 3 joints - geometry needed
 		circle(viewSideMat, joint1Center, 7, colorRed, 2);
+		stringstream angleTxt1;
+		angleTxt1 << arm->getNextMove()->getAngleForServo(SERVO_IDX_BOTTOM_JOINT);
+		angleTxt1 << "'";
+		cv::putText(viewSideMat, angleTxt1.str(), Point(baseCenter.x - 5, baseCenter.y - 20), FONT_HERSHEY_COMPLEX_SMALL, 0.7, colorRed, 1, CV_AA);
+
 		circle(viewSideMat, joint2Center, 7, colorRed, 2);
+		stringstream angleTxt2;
+		angleTxt2 << arm->getNextMove()->getAngleForServo(SERVO_IDX_MIDDLE_JOINT);
+		angleTxt2 << "'";
+		cv::putText(viewSideMat, angleTxt2.str(), Point(joint1Center.x - 5, joint1Center.y - 20), FONT_HERSHEY_COMPLEX_SMALL, 0.7, colorRed, 1, CV_AA);
+
 		circle(viewSideMat, joint3Center, 7, colorRed, 2);
+		stringstream angleTxt3;
+		angleTxt3 << arm->getNextMove()->getAngleForServo(SERVO_IDX_UPPER_JOINT);
+		angleTxt3 << "'";
+		cv::putText(viewSideMat, angleTxt3.str(), Point(joint2Center.x - 5, joint2Center.y - 20), FONT_HERSHEY_COMPLEX_SMALL, 0.7, colorRed, 1, CV_AA);
 
 		// draw object
 		rectangle(viewSideMat,
-				Point(marginLeftPx + baseWidthMm/2 + objectDistanceFromArmMm - objectWidthMm/2, viewSideMat.rows - marginBottomPx - OBJECT_DEPTH_MM),
-				Point(marginLeftPx + baseWidthMm/2 + objectDistanceFromArmMm + objectWidthMm/2, viewSideMat.rows - marginBottomPx),
+				Point(marginLeftPx + baseWidthPx/2 + objectDistanceFromArmPx - objectWidthPx/2, viewSideMat.rows - marginBottomPx - OBJECT_DEPTH_MM),
+				Point(marginLeftPx + baseWidthPx/2 + objectDistanceFromArmPx + objectWidthPx/2, viewSideMat.rows - marginBottomPx),
 				colorGreen, 2);
 		circle(viewSideMat,
-				Point(marginLeftPx + baseWidthMm/2 + objectDistanceFromArmMm, viewSideMat.rows - marginBottomPx - OBJECT_DEPTH_MM),
+				Point(marginLeftPx + baseWidthPx/2 + objectDistanceFromArmPx, viewSideMat.rows - marginBottomPx - OBJECT_DEPTH_MM),
 				2, colorGreen, 2);
 
 

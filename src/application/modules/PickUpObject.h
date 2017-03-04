@@ -60,8 +60,8 @@ public:
 			return false;
 		}
 
-		pickupObject(mImagePreprocessItem, mRoboticArmMove);
 		mRoboticArmMove->setObjectIndex(0);
+		pickupObject(mImagePreprocessItem, mRoboticArmMove);
 		increasePickupCounter();
 		setModulState(MODULE_STATE_PICKUP_OBJECT_ARM_PICKING_OBJECT);
 

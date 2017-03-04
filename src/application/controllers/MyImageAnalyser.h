@@ -77,8 +77,8 @@ private:
 
 	// logic - recalculate px -> mm
 	bool mmToPxCalculated = false;
-	int TABLE_WIDTH_MM = 655;
-	int TABLE_HEIGHT_MM = 955;
+	int TABLE_WIDTH_MM = 955;
+	int TABLE_HEIGHT_MM = 655;
 	double oneMmInPx = 0;
 	int oneMmInPxframeWidth = 0;
 	int oneMmInPxframeHeight = 0;
@@ -105,7 +105,7 @@ private:
 
 	// GUI trackball slider
 	const int slider_max = 255;
-	int sliderThresholdBg = 43;
+	int sliderThresholdBg = 45;//43;
 	void initTrackball();
 	static void on_trackbar( int val, void* ){
 		// this is not necessary
