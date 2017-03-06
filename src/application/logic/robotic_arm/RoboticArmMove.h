@@ -10,15 +10,9 @@
 
 #include "../servo/ServoMove.h"
 #include "../../../system/config/Constants.h"
+#include "../../config/AppConfig.h"
 
 using namespace std;
-
-const int SERVO_IDX_BASE = 0;
-const int SERVO_IDX_BOTTOM_JOINT = 1;
-const int SERVO_IDX_MIDDLE_JOINT = 2;
-const int SERVO_IDX_UPPER_JOINT = 3;
-const int SERVO_IDX_CLAW_ROTATE = 4;
-const int SERVO_IDX_CLAWS = 5;
 
 class RoboticArmMove{
 private:
@@ -26,6 +20,10 @@ private:
 	vector<ServoMove*> servoMoveSetup;
 
 public:
+
+	/*
+	 * make do more generic ?
+	 */
 	RoboticArmMove(){
 		// custom setup
 		this->servoMoveSetup.push_back(new ServoMove(DIRECTION_UNDEFINED, 0, SERVO_IDX_BASE));
@@ -93,6 +91,9 @@ public:
 		return true;
 	}
 
+	/*
+	 * make do more generic ?
+	 */
 	void setDefaultPosition(){
 		this->servoMoveSetup[SERVO_IDX_BASE]->direction = DIRECTION_LEFT;
 		this->servoMoveSetup[SERVO_IDX_BASE]->angle = 0;

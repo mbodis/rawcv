@@ -27,9 +27,9 @@ using namespace cv;
  */
 DebugFrames::DebugFrames() {
 	cout << "Object DebugFrames is being created" << endl;
-    this->c = &ConfigExample::getInstance();
-    this->INPUT_MODE = ConfigExample::getInstance().inputMode;
-	this->typePrintInfo = ConfigExample::getInstance().printMode;
+    this->c = &AppConfig::getInstance();
+    this->INPUT_MODE = AppConfig::getInstance().inputMode;
+	this->typePrintInfo = AppConfig::getInstance().printMode;
 	if (!mFileSystemHelper.DirectoryExists(FOLDER_OUTPUT)) {
 		cout
 				<< "missing output folder, please create empty folder in project directory: "

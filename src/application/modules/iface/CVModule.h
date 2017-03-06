@@ -17,23 +17,11 @@ const int MODULE_STATE_START = 1;
 #include <iostream>
 #include "../../logic/image/ImagePreprocessItem.h"
 #include "../../../system/helper/MathHelper.h"
+#include "../../config/AppConfig.h"
 
 using namespace std;
 using namespace cv;
 
-static int BASE_HEIGHT_MM = 88;
-
-static int ARM_PART_1_MM = 105;
-static int ARM_PART_2_MM = 60;
-static int ARM_PART_3_MM = 135;
-
-static int OBJECT_DEPTH_MM = 88;
-
-static int ARM_ANGLE_1_DEFAULT = 90;
-static int ARM_ANGLE_2_DEFAULT = 180;
-static int ARM_ANGLE_3_DEFAULT = 180;
-
-static int ARM_MAX_DISTANCE_PICKUP_MM = 25;
 
 class CVModule{
 
@@ -49,7 +37,7 @@ protected:
 	/*
 	 * arm rotation
 	 */
-	void calculateArmRotation(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+	void pickupObjectCalculateArmRotation(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 		if (DEBUG_LOCAL) cout << "train rotation" << endl;
 		if (DEBUG_LOCAL) cout << "plane: " << mImagePreprocessItem->preprocessFrame.cols << " x " << mImagePreprocessItem->preprocessFrame.rows << endl;
 		if (DEBUG_LOCAL) cout << "arm: [" << mImagePreprocessItem->armCenter.x << "," << mImagePreprocessItem->armCenter.y << "]" << endl;
@@ -81,7 +69,7 @@ protected:
 	/*
 	 * arm lean
 	 */
-	void calculateArmLean(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+	void pickupObjectCalculateArmLean(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 		if (DEBUG_LOCAL) cout << "calculateArmLean--------------------------" << endl;
 
 		int ARM_PART_1_PX = ARM_PART_1_MM * mImagePreprocessItem->oneMmInPx;
@@ -166,6 +154,11 @@ protected:
 		mRoboticArmMove->setServo(SERVO_IDX_UPPER_JOINT, DIRECTION_FORWARD, minAngle3);
 	}
 
+
+	void calculateClaws(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+		mRoboticArmMove->setServo(SERVO_IDX_CLAWS, DIRECTION_FORWARD, 1800);
+	}
+
 public:
 
 	CVModule(string moduleName){
@@ -225,8 +218,8 @@ public:
 	 * 2) calculate 3 joints - for object pickup
 	 */
 	void pickupObject(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
-		calculateArmRotation(mImagePreprocessItem, mRoboticArmMove);
-		calculateArmLean(mImagePreprocessItem, mRoboticArmMove);
+		pickupObjectCalculateArmRotation(mImagePreprocessItem, mRoboticArmMove);
+		pickupObjectCalculateArmLean(mImagePreprocessItem, mRoboticArmMove);
 	}
 
 };

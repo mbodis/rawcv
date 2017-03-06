@@ -10,7 +10,8 @@
 
 #include <opencv2/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include "../../application/config/ConfigExample.h"
+
+#include "../../application/config/AppConfig.h"
 
 using namespace cv;
 
@@ -22,7 +23,7 @@ private:
 
 public:
 	Scalar getSemaphoreBorderColorByValue(int, double);
-	void drawSquareWithPxMMVals(ConfigExample*, Mat*, Point, int, double, double);
+	void drawSquareWithPxMMVals(AppConfig*, Mat*, Point, int, double, double);
 
 };
 

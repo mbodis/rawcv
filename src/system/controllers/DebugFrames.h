@@ -10,9 +10,9 @@
 
 #include <opencv2/highgui/highgui.hpp>
 
+#include "../../application/config/AppConfig.h"
 #include "../../system/config/Constants.h"
 #include "../../system/helper/FileSystemHelper.h"
-#include "../../application/config/ConfigExample.h"
 
 using namespace std;
 using namespace cv;
@@ -43,7 +43,7 @@ private:
 	void printPresentationInfo(Mat*);
     
 public:
-    ConfigExample *c;
+	AppConfig *c;
 
 	DebugFrames();
 	~DebugFrames(void);

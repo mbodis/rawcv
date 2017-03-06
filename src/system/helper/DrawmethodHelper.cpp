@@ -16,7 +16,7 @@ using namespace cv;
 #include "DrawMethodHelper.h"
 
 #include "../config/Constants.h"
-#include "../../application/config/ConfigExample.h"
+#include "../../application/config/AppConfig.h"
 
 /*
  * draw rectangle with color borders

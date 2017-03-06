@@ -17,7 +17,7 @@
 
 using namespace std;
 
-#include "application/config/ConfigExample.h"
+#include "application/config/AppConfig.h"
 #include "system/logic/input/ProcessingFacade.h"
 #include "application/controllers/RoboticArmController.h"
 #include "application/controllers/StateController.h"
@@ -35,8 +35,8 @@ using namespace std;
 int main(int argc, char **argv) {
 
 	cout << cv::getBuildInformation() << endl;
-	ConfigExample &mConfigExample = ConfigExample::getInstance();
-	mConfigExample.CAMERA_IDX = 1; // TODO changing param !!
+	AppConfig &mAppConfig = AppConfig::getInstance();
+	mAppConfig.CAMERA_IDX = 1; // TODO changing param !!
 
 	// main logic
 	StateController *mStateController = new StateController();

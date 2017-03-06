@@ -11,8 +11,8 @@
 
 using namespace cv;
 
-DirImageFrameProcessing::DirImageFrameProcessing(ConfigExample *mConfigExample, ImageAnalyser *mImageAnalyser, SourcePath *sourcePath):
-    FrameProcessing(sourcePath, mConfigExample){
+DirImageFrameProcessing::DirImageFrameProcessing(AppConfig *mAppConfig, ImageAnalyser *mImageAnalyser, SourcePath *sourcePath):
+    FrameProcessing(sourcePath, mAppConfig){
     selectedImage = 0;
     mFileSystemHelper = new FileSystemHelper();
     folderSize = mFileSystemHelper->getNumberFilesInFolder(sourcePath->path.c_str());

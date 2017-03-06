@@ -16,8 +16,8 @@ using namespace std;
 ImageAnalyser::ImageAnalyser(){
 
     this->mDebugFrames = new DebugFrames();
-    this->inputMode = ConfigExample::getInstance().inputMode;
-    this->printMode = ConfigExample::getInstance().printMode;
+    this->inputMode = AppConfig::getInstance().inputMode;
+    this->printMode = AppConfig::getInstance().printMode;
 }
 
 ImageAnalyser::~ImageAnalyser(){

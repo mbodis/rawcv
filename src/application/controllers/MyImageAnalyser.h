@@ -15,7 +15,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include "../../system/controllers/ImageAnalyser.h"
-#include "../config/ConfigExample.h"
+#include "../config/AppConfig.h"
 #include "../logic/image/ImageStorage.h"
 #include "../../system/helper/RotateBBHelper.h"
 

@@ -9,8 +9,8 @@
 #define SRC_HELPER_BBHELPER_H_
 
 #include <opencv2/core.hpp>
-#include "../../application/config/ConfigExample.h"
 #include <opencv2/highgui/highgui.hpp>
+#include "../../application/config/AppConfig.h"
 
 using namespace cv;
 
@@ -22,7 +22,7 @@ private:
 
 public:
 	bool isBBFillingAllHeight(Mat*, Rect);
-	bool isBBAboveBB(ConfigExample*, Mat*, Rect, Rect);
+	bool isBBAboveBB(AppConfig*, Mat*, Rect, Rect);
 };
 
 

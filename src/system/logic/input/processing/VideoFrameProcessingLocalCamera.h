@@ -16,8 +16,8 @@ class VideoFrameProcessingLocalCamera : public FrameProcessing{
 private:
 
 public:
-	VideoFrameProcessingLocalCamera(SourcePath* sourcePath, ConfigExample* mConfigExample, ImageAnalyser* mImageAnalyser):
-        FrameProcessing(sourcePath, mConfigExample){
+	VideoFrameProcessingLocalCamera(SourcePath* sourcePath, AppConfig* mAppConfig, ImageAnalyser* mImageAnalyser):
+        FrameProcessing(sourcePath, mAppConfig){
 		this->mImageAnalyser = mImageAnalyser;
 	}
 

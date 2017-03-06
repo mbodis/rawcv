@@ -44,7 +44,7 @@ static Scalar colorMagenta = Scalar(255, 0, 255);
 static Scalar colorCyan = Scalar(255, 255, 0);
 static Scalar colorOrange = Scalar(0, 140, 255);
 
-/* servo constants */
+// servo direction constants
 const int DIRECTION_UNDEFINED = 0;
 const int DIRECTION_LEFT = 1;
 const int DIRECTION_RIGHT = 2;

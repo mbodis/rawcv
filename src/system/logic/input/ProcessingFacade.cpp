@@ -7,7 +7,7 @@
 
 #include "ProcessingFacade.h"
 #include "../../config/Constants.h"
-#include "../../../application/config/ConfigExample.h"
+#include "../../../application/config/AppConfig.h"
 #include "processing/DirImageFrameProcessing.h"
 #include "processing/VideoFrameProcessing.h"
 #include "processing/VideoFrameProcessingRunEveryFrame.h"
@@ -18,7 +18,7 @@
 #include "path/CameraPath.h"
 
 ProcessingFacade::ProcessingFacade(ImageAnalyser *mImageAnalyser) {
-    this->mConfigExample = &ConfigExample::getInstance();
+    this->mAppConfig = &AppConfig::getInstance();
     this->mImageAnalyser = mImageAnalyser;
 }
 
@@ -31,19 +31,19 @@ ProcessingFacade::~ProcessingFacade(){
  */
 void ProcessingFacade::runAnalyse() {
 
-    if (this->mConfigExample->inputMode == INPUT_MODE_IMG_FOLDER){
+    if (this->mAppConfig->inputMode == INPUT_MODE_IMG_FOLDER){
         runDirImageFrameProcessing();
         
-    }else if (this->mConfigExample->inputMode == INPUT_MODE_VIDEO_RT){
+    }else if (this->mAppConfig->inputMode == INPUT_MODE_VIDEO_RT){
         runVideoFrameProcessing();
         
-    }else if (this->mConfigExample->inputMode == INPUT_MODE_VIDEO_FRAME){
+    }else if (this->mAppConfig->inputMode == INPUT_MODE_VIDEO_FRAME){
         runVideoFrameProcessingRunEveryFrame();        
         
-    }else if (this->mConfigExample->inputMode == INPUT_MODE_URL){
+    }else if (this->mAppConfig->inputMode == INPUT_MODE_URL){
         runURLVideoFrameProcessing();
         
-    }else if (this->mConfigExample->inputMode == INPUT_MODE_LOCAL_CAMERA){
+    }else if (this->mAppConfig->inputMode == INPUT_MODE_LOCAL_CAMERA){
     	runLocalCameraFrameProcessing();
 
     }else{
@@ -56,7 +56,7 @@ void ProcessingFacade::runAnalyse() {
  * input from folder with multiple images
  */
 void ProcessingFacade::runDirImageFrameProcessing() {
-    (new DirImageFrameProcessing(mConfigExample, mImageAnalyser, new DirPath(mConfigExample->FOLDER)))
+    (new DirImageFrameProcessing(mAppConfig, mImageAnalyser, new DirPath(mAppConfig->FOLDER)))
     		->start();
 }
 
@@ -64,7 +64,7 @@ void ProcessingFacade::runDirImageFrameProcessing() {
  * video input from file - real time
  */
 void ProcessingFacade::runVideoFrameProcessing() {
-	(new VideoFrameProcessing(new VideoPath(mConfigExample->VIDEO_NAME), mConfigExample, mImageAnalyser))
+	(new VideoFrameProcessing(new VideoPath(mAppConfig->VIDEO_NAME), mAppConfig, mImageAnalyser))
 			->start();
 }
 
@@ -72,7 +72,7 @@ void ProcessingFacade::runVideoFrameProcessing() {
  * video input from file - analyze on every frame
  */
 void ProcessingFacade::runVideoFrameProcessingRunEveryFrame() {
-	(new VideoFrameProcessingRunEveryFrame(new VideoPath(mConfigExample->VIDEO_NAME), mConfigExample, mImageAnalyser))
+	(new VideoFrameProcessingRunEveryFrame(new VideoPath(mAppConfig->VIDEO_NAME), mAppConfig, mImageAnalyser))
 			->start();
 }
 
@@ -80,7 +80,7 @@ void ProcessingFacade::runVideoFrameProcessingRunEveryFrame() {
  * video input from url
  */
 void ProcessingFacade::runURLVideoFrameProcessing() {
-	(new VideoFrameProcessing(new UrlPath(mConfigExample->URL), mConfigExample, mImageAnalyser))
+	(new VideoFrameProcessing(new UrlPath(mAppConfig->URL), mAppConfig, mImageAnalyser))
 			->start();
 }
 
@@ -88,6 +88,6 @@ void ProcessingFacade::runURLVideoFrameProcessing() {
  * video input from local camera/usb camera
  */
 void ProcessingFacade::runLocalCameraFrameProcessing() {
-	VideoFrameProcessingLocalCamera *mVideoFrameProcessingLocalCamera = new VideoFrameProcessingLocalCamera(new CameraPath(mConfigExample->CAMERA_IDX), mConfigExample, mImageAnalyser);
+	VideoFrameProcessingLocalCamera *mVideoFrameProcessingLocalCamera = new VideoFrameProcessingLocalCamera(new CameraPath(mAppConfig->CAMERA_IDX), mAppConfig, mImageAnalyser);
 	mVideoFrameProcessingLocalCamera->start();
 }

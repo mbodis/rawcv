@@ -9,8 +9,9 @@
 #define SRC_SYSTEM_HELPER_ROTATEBBHELPER_H_
 
 #include <opencv2/core.hpp>
-#include "../../application/config/ConfigExample.h"
 #include <opencv2/highgui/highgui.hpp>
+
+#include "../../application/config/AppConfig.h"
 #include "MathHelper.h"
 
 using namespace cv;

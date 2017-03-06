@@ -11,7 +11,7 @@
 #include "FrameProcessing.h"
 #include "../keyboard/abstract/Move.h"
 #include "../../../helper/FileSystemHelper.h"
-#include "../../../../application/config/ConfigExample.h"
+#include "../../../../application/config/AppConfig.h"
 #include "../../../controllers/ImageAnalyser.h"
 
 using namespace std;
@@ -23,8 +23,8 @@ class VideoFrameProcessingRunEveryFrame : public FrameProcessing{
 
 	public:
 
-		VideoFrameProcessingRunEveryFrame(SourcePath* sourcePath, ConfigExample* mConfigExample, ImageAnalyser* mImageAnalyser):
-	        FrameProcessing(sourcePath, mConfigExample){
+		VideoFrameProcessingRunEveryFrame(SourcePath* sourcePath, AppConfig* mAppConfig, ImageAnalyser* mImageAnalyser):
+	        FrameProcessing(sourcePath, mAppConfig){
 			this->mImageAnalyser = mImageAnalyser;
 		}
 		void start();

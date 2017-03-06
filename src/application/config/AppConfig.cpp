@@ -5,7 +5,8 @@
  *      Author: mbodis
  */
 
-#include "ConfigExample.h"
+#include "AppConfig.h"
+
 #include "../../system/helper/FileSystemHelper.h"
 
 using namespace std;
@@ -17,35 +18,20 @@ using namespace std;
 
 
 // Global static pointer used to ensure a single instance of the class.
-ConfigExample* ConfigExample::m_pInstance = NULL;
+AppConfig* AppConfig::m_pInstance = NULL;
 
 /** This function is called to create an instance of the class.
     Calling the constructor publicly is not allowed. The constructor
     is private and is only called by this Instance function.
 */
 
-ConfigExample* ConfigExample::Instance()
+AppConfig* AppConfig::Instance()
 {
    if (!m_pInstance)   // Only allow one instance of class to be generated.
-      m_pInstance = new ConfigExample;
+      m_pInstance = new AppConfig;
 
    return m_pInstance;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*
  * parse string value by key from JSON structure
@@ -121,7 +107,7 @@ Point getPointByKey(wstring wkey, JSONObject root){
 /*
  * parsing constant form JSON file
  */
-ConfigExample::ConfigExample(){
+AppConfig::AppConfig(){
 
 	this->inputMode = INPUT_MODE;
 	this->printMode = PRINT_MODE;
@@ -151,7 +137,7 @@ ConfigExample::ConfigExample(){
 	}
 }
 
-void ConfigExample::initFontSize(Mat *frame){
+void AppConfig::initFontSize(Mat *frame){
     if (isFontSizeSet) 
         return;
     
@@ -162,7 +148,7 @@ void ConfigExample::initFontSize(Mat *frame){
     isFontSizeSet = true;
 }
 
-void ConfigExample::setFontSize(int width, int height){
+void AppConfig::setFontSize(int width, int height){
     if ( (width == -1 && height == -1) 
         || (width == 1280 && height == 720) ){
         // fonts and line height - 1280:720
@@ -178,7 +164,7 @@ void ConfigExample::setFontSize(int width, int height){
     }
 }
 
-void ConfigExample::debugPrintOut(){
+void AppConfig::debugPrintOut(){
 
 	cout << "VIDEO_NAME:" << VIDEO_NAME << endl;
 	cout << "FOLDER:" << FOLDER << endl;

@@ -6,7 +6,7 @@
  */
 
 #include "BBHelper.h"
-#include "../../application/config/ConfigExample.h"
+#include "../../application/config/AppConfig.h"
 
 #include <iostream>
 #include <stdio.h>
@@ -30,7 +30,7 @@ bool BBHelper::isBBFillingAllHeight(Mat *bwMat, Rect bb){
  * bb1 - bounding box selecting one part of line
  * bb2 - bounding box selecting second part of line
  */
-bool BBHelper::isBBAboveBB(ConfigExample *c, Mat *bwMat, Rect bb1, Rect bb2){
+bool BBHelper::isBBAboveBB(AppConfig *c, Mat *bwMat, Rect bb1, Rect bb2){
 
 	// bb1 starts upper than bb2
 	if (bb1.y < bb2.y){

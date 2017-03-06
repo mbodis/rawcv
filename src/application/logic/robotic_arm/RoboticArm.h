@@ -14,6 +14,7 @@
 #include "../servo/ServoRotationLR.h"
 #include "RoboticArmMove.h"
 #include "../usb_controller/MessageComposer.h"
+#include "../../config/AppConfig.h"
 
 const int SERVO_COUNT = 6;
 
@@ -32,12 +33,9 @@ private:
 
 public:
 	RoboticArm(){
-		this->servo[0] = new ServoRotationLR(SERVO_IDX_BASE, "base", 430, 2520, 1, -1, 10.55);
-		this->servo[1] = new ServoRotationFB(SERVO_IDX_BOTTOM_JOINT, "bottom joint", 430, 2520, -1, 1, 10.55);
-		this->servo[2] = new ServoRotationFB(SERVO_IDX_MIDDLE_JOINT, "middle joint", 430, 2520, 1, -1, 10.55);
-		this->servo[3] = new ServoRotationFB(SERVO_IDX_UPPER_JOINT, "upper joint", 430, 2520, -1, 1, 10.55);
-		this->servo[4] = new ServoRotationLR(SERVO_IDX_CLAW_ROTATE, "claw rotation", 430, 2520, 1, -1, 10.55);
-		this->servo[5] = new ServoRange(SERVO_IDX_CLAWS, "claws", 1500, 2520, 1, -1, 2.04, 500);
+		for (int i = 0; i< SERVO_COUNT; i++){
+			this->servo[i] = AppConfig::getServoConfiguration(i);
+		}
 
 		// empty move
 		this->nextMove = new RoboticArmMove();
@@ -63,6 +61,9 @@ public:
 		return this->nextMove;
 	}
 
+	/*
+	 * make do more generic ?
+	 */
 	string composeNextMove(){
 		return MessageComposer::composeControllerFullMessage(
 				this->servo[0], this->nextMove->getDirectionForServo(SERVO_IDX_BASE), this->nextMove->getAngleForServo(SERVO_IDX_BASE),

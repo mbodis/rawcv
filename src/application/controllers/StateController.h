@@ -12,7 +12,7 @@
 
 #include "../../system/controllers/ImageAnalyser.h"
 #include "../logic/robotic_arm/RoboticArm.h"
-#include "../config/ConfigExample.h"
+#include "../config/AppConfig.h"
 #include "../modules/PickUpObject.h"
 #include "RoboticArmController.h"
 #include "MainLogic.h"

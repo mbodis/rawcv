@@ -10,7 +10,7 @@
 
 #include "../../system/controllers/ImageAnalyser.h"
 #include "../logic/robotic_arm/RoboticArm.h"
-#include "../config/ConfigExample.h"
+#include "../config/AppConfig.h"
 #include "../modules/iface/CVModule.h"
 #include "../modules/PickUpObject.h"
 #include "RoboticArmController.h"
@@ -20,6 +20,7 @@
 #include "../logic/image/ImagePreprocessItem.h"
 #include "../logic/robotic_arm/RoboticArmMove.h"
 #include "../../system/helper/RotateBBHelper.h"
+#include "../logic/robotic_arm/MoveVisualization.h"
 
 class MainLogic{
 private:

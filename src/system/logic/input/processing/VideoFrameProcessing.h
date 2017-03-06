@@ -19,8 +19,8 @@ private:
     
 public:
 
-	VideoFrameProcessing(SourcePath* sourcePath, ConfigExample* mConfigExample, ImageAnalyser* mImageAnalyser):
-        FrameProcessing(sourcePath, mConfigExample){
+	VideoFrameProcessing(SourcePath* sourcePath, AppConfig* mAppConfig, ImageAnalyser* mImageAnalyser):
+        FrameProcessing(sourcePath, mAppConfig){
 		this->mImageAnalyser = mImageAnalyser;
 	}
 

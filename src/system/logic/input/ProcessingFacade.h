@@ -8,7 +8,7 @@
 #ifndef SRC_LOGIC_PROCESSINGFACADE_H_
 #define SRC_LOGIC_PROCESSINGFACADE_H_
 
-#include "../../../application/config/ConfigExample.h"
+#include "../../../application/config/AppConfig.h"
 #include "../../controllers/ImageAnalyser.h"
 
 #include "processing/DirImageFrameProcessing.h"
@@ -31,7 +31,7 @@ private:
 
     
 public:
-	ConfigExample *mConfigExample;
+	AppConfig *mAppConfig;
 	ImageAnalyser *mImageAnalyser;
 	ProcessingFacade(ImageAnalyser*);
 	~ProcessingFacade();

@@ -11,7 +11,7 @@
 #include "FrameProcessing.h"
 #include "../keyboard/abstract/Move.h"
 #include "../../../helper/FileSystemHelper.h"
-#include "../../../../application/config/ConfigExample.h"
+#include "../../../../application/config/AppConfig.h"
 #include "../../../controllers/ImageAnalyser.h"
 
 using namespace std;
@@ -31,7 +31,7 @@ private:
     ImageAnalyser* mImageAnalyser;
 public:
 
-	DirImageFrameProcessing(ConfigExample* mConfigExample, ImageAnalyser* mImageAnalyser, SourcePath* sourcePath);
+	DirImageFrameProcessing(AppConfig* mAppConfig, ImageAnalyser* mImageAnalyser, SourcePath* sourcePath);
 
     void start();
 	void quit();
