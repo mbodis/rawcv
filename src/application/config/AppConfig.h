@@ -99,24 +99,7 @@ public:
 	double FONT_SIZE_SM = 0.4;
 	int ROW = 10; // row height
 
-	static ServoIface* getServoConfiguration(int idx){
-		switch(idx){
-		case 0:
-			return new ServoRotationLR(SERVO_IDX_BASE, "base", 430, 2520, 1, -1, 10.55);
-		case 1:
-			return new ServoRotationFB(SERVO_IDX_BOTTOM_JOINT, "bottom joint", 430, 2520, -1, 1, 10.55);
-		case 2:
-			return new ServoRotationFB(SERVO_IDX_MIDDLE_JOINT, "middle joint", 430, 2520, 1, -1, 10.55);
-		case 3:
-			return new ServoRotationFB(SERVO_IDX_UPPER_JOINT, "upper joint", 430, 2520, -1, 1, 10.55);
-		case 4:
-			return new ServoRotationLR(SERVO_IDX_CLAW_ROTATE, "claw rotation", 430, 2520, 1, -1, 10.55);
-		case 5:
-			return new ServoRange(SERVO_IDX_CLAWS, "claws", 1500, 2520, 1, -1, 2.04, 500);
-		}
-
-		return NULL;
-	}
+	static ServoIface* getServoConfiguration(int);
 
 };
 

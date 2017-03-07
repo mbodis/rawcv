@@ -26,12 +26,12 @@ public:
 	 */
 	RoboticArmMove(){
 		// custom setup
-		this->servoMoveSetup.push_back(new ServoMove(DIRECTION_UNDEFINED, 0, SERVO_IDX_BASE));
-		this->servoMoveSetup.push_back(new ServoMove(DIRECTION_UNDEFINED, 0, SERVO_IDX_BOTTOM_JOINT));
-		this->servoMoveSetup.push_back(new ServoMove(DIRECTION_UNDEFINED, 0, SERVO_IDX_MIDDLE_JOINT));
-		this->servoMoveSetup.push_back(new ServoMove(DIRECTION_UNDEFINED, 0, SERVO_IDX_UPPER_JOINT));
-		this->servoMoveSetup.push_back(new ServoMove(DIRECTION_UNDEFINED, 0, SERVO_IDX_CLAW_ROTATE));
-		this->servoMoveSetup.push_back(new ServoMove(DIRECTION_UNDEFINED, 0, SERVO_IDX_CLAWS));
+		this->servoMoveSetup.push_back(new ServoMove(SERVO_IDX_BASE, DIRECTION_UNDEFINED, 0, 0));
+		this->servoMoveSetup.push_back(new ServoMove(SERVO_IDX_BOTTOM_JOINT, DIRECTION_UNDEFINED, 0, 0));
+		this->servoMoveSetup.push_back(new ServoMove(SERVO_IDX_MIDDLE_JOINT, DIRECTION_UNDEFINED, 0, 0));
+		this->servoMoveSetup.push_back(new ServoMove(SERVO_IDX_UPPER_JOINT, DIRECTION_UNDEFINED, 0, 0));
+		this->servoMoveSetup.push_back(new ServoMove(SERVO_IDX_CLAW_ROTATE, DIRECTION_UNDEFINED, 0, 0));
+		this->servoMoveSetup.push_back(new ServoMove(SERVO_IDX_CLAWS, DIRECTION_UNDEFINED, 0, 0));
 	}
 
 	void setObjectIndex(int objectIdx){
@@ -62,6 +62,16 @@ public:
 		return 0;
 	}
 
+	int getMmForServo(int servoIdx){
+		for(int i=0; i< servoMoveSetup.size(); i++){
+			if (this->servoMoveSetup[i]->type == servoIdx){
+				return this->servoMoveSetup[i]->mm;
+			}
+		}
+
+		return 0;
+	}
+
 	int getDirectionForServo(int servoIdx){
 		for(int i=0; i< servoMoveSetup.size(); i++){
 			if (this->servoMoveSetup[i]->type == servoIdx){
@@ -72,18 +82,19 @@ public:
 		return DIRECTION_UNDEFINED;
 	}
 
-	void setServo(int type, int direction, int angle){
+	void setServo(int type, int direction, int angle, int mm){
 		for(int i=0; i< servoMoveSetup.size(); i++){
 			if (servoMoveSetup[i]->type == type){
 				servoMoveSetup[i]->direction = direction;
 				servoMoveSetup[i]->angle = angle;
+				servoMoveSetup[i]->mm = mm;
 			}
 		}
 	}
 
 	bool isMoveDefault(){
 		for(int i=0; i< servoMoveSetup.size(); i++){
-			if (servoMoveSetup[i]->angle != 0){
+			if (servoMoveSetup[i]->angle != 0 || servoMoveSetup[i]->mm != 0){
 				return false;
 			}
 		}
@@ -111,7 +122,7 @@ public:
 		this->servoMoveSetup[SERVO_IDX_CLAW_ROTATE]->angle = 0;
 
 		this->servoMoveSetup[SERVO_IDX_CLAWS]->direction = DIRECTION_OPEN;
-		this->servoMoveSetup[SERVO_IDX_CLAWS]->angle = 0;
+		this->servoMoveSetup[SERVO_IDX_CLAWS]->mm = 500;
 	}
 
 };

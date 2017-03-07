@@ -27,6 +27,7 @@ public:
 	 * show last move - skip default (not interesting)
 	 */
 	static void showArmPositionTopView(ImageStorage *mImageStorage, RoboticArm *arm, ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+		if (!mImagePreprocessItem->hasContent()) return;
 		if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "MainLogic::showArmPosition" << endl;
 
 		/*
@@ -86,6 +87,8 @@ public:
 	 * note: input values are in millimeters -> scaled with some ratio for better visualization
 	 */
 	static void showArmPositionSideView(ImageStorage *mImageStorage, RoboticArm *arm, ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+		if (!mImagePreprocessItem->hasContent()) return;
+
 		if (!arm->getNextMove()->isMoveDefault()){
 
 			int ARM_PART_1_PX = ARM_PART_1_MM * mImagePreprocessItem->oneMmInPx;

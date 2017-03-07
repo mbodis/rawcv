@@ -25,6 +25,7 @@
 class MainLogic{
 private:
 	bool DEBUG_LOCAL = false;
+	int LOOP_SLEEP_TIME = 500000; //0.5 sec
 
 	/*
 	 * servo setup for robotic arm

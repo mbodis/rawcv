@@ -45,12 +45,14 @@ MainLogic::~MainLogic(){
 void MainLogic::process(){
 
 	arm->resetNextMove();
+	ImagePreprocessItem mImagePreprocessItem;
 
-	// new content from preprocessing
+
+	// IMAGE TRIGGER: new content from preprocessing
 	if (mImageStorage->getProcessingQueueSize() > 0){
-		cout << "MainLogic::process new IMG ----------------" << endl;
+		if (DEBUG_LOCAL) cout << "MainLogic::IMAGE TRIGGER----------------" << endl;
 
-		ImagePreprocessItem mImagePreprocessItem = (mImageStorage->getImgFromProcessingQueue());
+		mImagePreprocessItem = (mImageStorage->getImgFromProcessingQueue());
 
 		// continue / start module
 		if (isAnyModulActive()){
@@ -59,16 +61,26 @@ void MainLogic::process(){
 			detectModuleToStartWith(&mImagePreprocessItem, arm->getNextMove());
 		}
 
-		// execute possible changes
-		if (arm->getNextMove()->hasChanged()){
-			// move arm
-			mRoboticArmController->addToStack(arm->composeNextMove());
-
-			// show arm
-			MoveVisualization::showArmPositionTopView(mImageStorage, arm, &mImagePreprocessItem, this->arm->getNextMove());
-			MoveVisualization::showArmPositionSideView(mImageStorage, arm, &mImagePreprocessItem, this->arm->getNextMove());
+	// TIME TRIGGER: change move by time
+	}else{
+		if (DEBUG_LOCAL) cout << "MainLogic::TIME TRIGGER----------------" << endl;
+		if (isAnyModulActive()){
+			continueInActiveModule(&mImagePreprocessItem, arm->getNextMove());
 		}
 	}
+
+	// execute possible changes
+	if (arm->getNextMove()->hasChanged()){
+		if (DEBUG_LOCAL) cout << "move has changed" << endl;
+		// move arm
+		mRoboticArmController->addToStack(arm->composeNextMove());
+
+		// show arm
+		MoveVisualization::showArmPositionTopView(mImageStorage, arm, &mImagePreprocessItem, this->arm->getNextMove());
+		MoveVisualization::showArmPositionSideView(mImageStorage, arm, &mImagePreprocessItem, this->arm->getNextMove());
+	}
+
+	usleep(LOOP_SLEEP_TIME);
 }
 
 /*

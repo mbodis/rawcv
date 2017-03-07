@@ -90,20 +90,20 @@ string MessageComposer::composeControllerFullMessage(int servo1Milis, int servo2
  * #servo-indexPtime-in-milis-as-rotation#servo-indexPtime-in-milis-as-rotation...Ttime-for-execution\r\n
  */
 string MessageComposer::composeControllerFullMessage(
-		ServoIface *servo1, int direction1, int angle1,
-		ServoIface *servo2, int direction2, int angle2,
-		ServoIface *servo3, int direction3, int angle3,
-		ServoIface *servo4, int direction4, int angle4,
-		ServoIface *servo5, int direction5, int angle5,
-		ServoIface *servo6, int direction6, int angle6
+		ServoIface *servo1, int direction1, int angleMm1,
+		ServoIface *servo2, int direction2, int angleMm2,
+		ServoIface *servo3, int direction3, int angleMm3,
+		ServoIface *servo4, int direction4, int angleMm4,
+		ServoIface *servo5, int direction5, int angleMm5,
+		ServoIface *servo6, int direction6, int angleMm6
 		){
 
-	int servo1Milis = servo1->convertAngleMmToMilis(direction1, angle1);
-	int servo2Milis = servo2->convertAngleMmToMilis(direction2, angle2);
-	int servo3Milis = servo3->convertAngleMmToMilis(direction3, angle3);
-	int servo4Milis = servo4->convertAngleMmToMilis(direction4, angle4);
-	int servo5Milis = servo5->convertAngleMmToMilis(direction5, angle5);
-	int servo6Milis = servo6->convertAngleMmToMilis(direction6, angle6);
+	int servo1Milis = servo1->convertAngleMmToMilis(direction1, angleMm1);
+	int servo2Milis = servo2->convertAngleMmToMilis(direction2, angleMm2);
+	int servo3Milis = servo3->convertAngleMmToMilis(direction3, angleMm3);
+	int servo4Milis = servo4->convertAngleMmToMilis(direction4, angleMm4);
+	int servo5Milis = servo5->convertAngleMmToMilis(direction5, angleMm5);
+	int servo6Milis = servo6->convertAngleMmToMilis(direction6, angleMm6);
 
 	return composeControllerFullMessage(servo1Milis, servo2Milis,
 			servo3Milis, servo4Milis, servo5Milis, servo6Milis, SERVO_SPEED_NORMAL);

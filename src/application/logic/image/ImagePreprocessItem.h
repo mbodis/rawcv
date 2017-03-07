@@ -11,7 +11,13 @@
 
 
 class ImagePreprocessItem{
+private:
+	bool contentIsSet;
 public:
+
+	ImagePreprocessItem(){
+		this->contentIsSet = false;
+	}
 
 	ImagePreprocessItem(Mat fullInputFrame, Mat preprocessFrame, Point armCenter, vector<RotatedRect> detectedObjects, double oneMmInPx ){
 		this->fullInputFrame = fullInputFrame;
@@ -19,7 +25,14 @@ public:
 		this->armCenter = armCenter;
 		this->detectedObjects = detectedObjects;
 		this->oneMmInPx = oneMmInPx;
+
+		this->contentIsSet = true;
 	}
+
+	bool hasContent(){
+		return this->contentIsSet;
+	}
+
 
 	// raw input
 	Mat fullInputFrame;

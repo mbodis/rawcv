@@ -178,3 +178,22 @@ void AppConfig::debugPrintOut(){
 
 }
 
+
+ServoIface* AppConfig::getServoConfiguration(int idx){
+		switch(idx){
+		case SERVO_IDX_BASE:
+			return new ServoRotationLR(SERVO_IDX_BASE, "base", 430, 2520, 1, -1, 10.55);
+		case SERVO_IDX_BOTTOM_JOINT:
+			return new ServoRotationFB(SERVO_IDX_BOTTOM_JOINT, "bottom joint", 430, 2520, -1, 1, 10.55);
+		case SERVO_IDX_MIDDLE_JOINT:
+			return new ServoRotationFB(SERVO_IDX_MIDDLE_JOINT, "middle joint", 430, 2520, 1, -1, 10.55);
+		case SERVO_IDX_UPPER_JOINT:
+			return new ServoRotationFB(SERVO_IDX_UPPER_JOINT, "upper joint", 430, 2520, -1, 1, 10.55);
+		case SERVO_IDX_CLAW_ROTATE:
+			return new ServoRotationLR(SERVO_IDX_CLAW_ROTATE, "claw rotation", 430, 2520, 1, -1, 10.55);
+		case SERVO_IDX_CLAWS:
+			return new ServoRange(SERVO_IDX_CLAWS, "claws", 1500, 2520, 1, -1, 2.04, 500);
+		}
+
+		return NULL;
+	}

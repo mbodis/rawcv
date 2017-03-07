@@ -34,6 +34,11 @@ protected:
 	int numberStates = MODULE_STATE_NONE;
 	int currentState = MODULE_STATE_NONE;
 
+	long lastMoveMilis = 0;
+	int timeTriggerSec = -1;
+	ImagePreprocessItem *lastMovePreprocessItem;
+	RoboticArmMove *lastMove;
+
 	/*
 	 * arm rotation
 	 */
@@ -62,7 +67,7 @@ protected:
 			angle += 90;
 		}
 
-		mRoboticArmMove->setServo(SERVO_IDX_BASE, direction, angle);
+		mRoboticArmMove->setServo(SERVO_IDX_BASE, direction, angle, 0);
 		if (DEBUG_LOCAL) cout << "direction: " << (direction==DIRECTION_LEFT ? "left" : "right") << " " << angle << " degree" << endl;
 	}
 
@@ -149,15 +154,11 @@ protected:
 
 		cout << "OBJECT DETECTED angle1=" << minAngle1 << "° angle2=" << minAngle2 << "° angle3=" << minAngle3 << "° minDistance=" << minDistance <<  " y:" << yCord << endl;
 
-		mRoboticArmMove->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, minAngle1);
-		mRoboticArmMove->setServo(SERVO_IDX_MIDDLE_JOINT, DIRECTION_FORWARD, minAngle2);
-		mRoboticArmMove->setServo(SERVO_IDX_UPPER_JOINT, DIRECTION_FORWARD, minAngle3);
+		mRoboticArmMove->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, minAngle1, 0);
+		mRoboticArmMove->setServo(SERVO_IDX_MIDDLE_JOINT, DIRECTION_FORWARD, minAngle2, 0);
+		mRoboticArmMove->setServo(SERVO_IDX_UPPER_JOINT, DIRECTION_FORWARD, minAngle3, 0);
 	}
 
-
-	void calculateClaws(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
-		mRoboticArmMove->setServo(SERVO_IDX_CLAWS, DIRECTION_FORWARD, 1800);
-	}
 
 public:
 
@@ -167,6 +168,57 @@ public:
 
 	~CVModule(){
 
+	}
+
+	void setTimeTrigger(int sec){
+		this->timeTriggerSec = sec;
+	}
+	void unsetTimeTrigger(){
+		this->timeTriggerSec = -1;
+	}
+	bool executeTimeTrigger(){
+		if (this->timeTriggerSec == -1){
+			return false;
+		}
+
+		struct timeval tp;
+		gettimeofday(&tp, NULL);
+		long now = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+
+		if (now - this->lastMoveMilis / 1000 > this->timeTriggerSec){
+			unsetTimeTrigger();
+			return true;
+		}
+
+		return false;
+	}
+
+
+	// save last move Obj
+	void saveLastMoveObj(ImagePreprocessItem *mImagePreprocessItem){
+		if (!mImagePreprocessItem->hasContent()) return;
+
+		lastMovePreprocessItem = mImagePreprocessItem;
+	}
+
+	void restoreArmMove(RoboticArmMove *mRoboticArmMove){
+		mRoboticArmMove->setServo(SERVO_IDX_BASE, lastMove->getDirectionForServo(SERVO_IDX_BASE), lastMove->getAngleForServo(SERVO_IDX_BASE), 0);
+		mRoboticArmMove->setServo(SERVO_IDX_BOTTOM_JOINT, lastMove->getDirectionForServo(SERVO_IDX_BOTTOM_JOINT), lastMove->getAngleForServo(SERVO_IDX_BOTTOM_JOINT), 0);
+		mRoboticArmMove->setServo(SERVO_IDX_MIDDLE_JOINT, lastMove->getDirectionForServo(SERVO_IDX_MIDDLE_JOINT), lastMove->getAngleForServo(SERVO_IDX_MIDDLE_JOINT), 0);
+		mRoboticArmMove->setServo(SERVO_IDX_UPPER_JOINT, lastMove->getDirectionForServo(SERVO_IDX_UPPER_JOINT), lastMove->getAngleForServo(SERVO_IDX_UPPER_JOINT), 0);
+		mRoboticArmMove->setServo(SERVO_IDX_CLAW_ROTATE, lastMove->getDirectionForServo(SERVO_IDX_CLAW_ROTATE), lastMove->getAngleForServo(SERVO_IDX_CLAW_ROTATE), 0);
+		mRoboticArmMove->setServo(SERVO_IDX_CLAWS, lastMove->getDirectionForServo(SERVO_IDX_CLAWS), 0, lastMove->getMmForServo(SERVO_IDX_CLAWS));
+	}
+
+	void saveLastMove(RoboticArmMove *mRoboticArmMove){
+		this->lastMove = mRoboticArmMove;
+	}
+
+	// save last move time
+	void saveLastMoveTime(){
+		struct timeval tp;
+		gettimeofday(&tp, NULL);
+		lastMoveMilis = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 	}
 
 	virtual bool initialObjectDetection(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
@@ -220,6 +272,7 @@ public:
 	void pickupObject(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 		pickupObjectCalculateArmRotation(mImagePreprocessItem, mRoboticArmMove);
 		pickupObjectCalculateArmLean(mImagePreprocessItem, mRoboticArmMove);
+		mRoboticArmMove->setServo(SERVO_IDX_CLAWS, DIRECTION_OPEN, 0, 500);
 	}
 
 };

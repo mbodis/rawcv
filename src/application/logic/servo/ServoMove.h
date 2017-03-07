@@ -15,11 +15,13 @@ public:
 	int type = -1;
 	int direction = DIRECTION_UNDEFINED;
 	int angle = 0;
+	int mm = 0;
 
-	ServoMove(int direction, int angle, int type){
+	ServoMove(int type, int direction, int angle, int mm){
 		this->direction = direction;
 		this->angle = angle;
 		this->type = type;
+		this->mm = mm;
 	}
 };
 

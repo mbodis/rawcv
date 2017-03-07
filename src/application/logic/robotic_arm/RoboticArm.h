@@ -71,7 +71,7 @@ public:
 				this->servo[2], this->nextMove->getDirectionForServo(SERVO_IDX_MIDDLE_JOINT), this->nextMove->getAngleForServo(SERVO_IDX_MIDDLE_JOINT),
 				this->servo[3], this->nextMove->getDirectionForServo(SERVO_IDX_UPPER_JOINT), this->nextMove->getAngleForServo(SERVO_IDX_UPPER_JOINT),
 				this->servo[4], this->nextMove->getDirectionForServo(SERVO_IDX_CLAW_ROTATE), this->nextMove->getAngleForServo(SERVO_IDX_CLAW_ROTATE),
-				this->servo[5], this->nextMove->getDirectionForServo(SERVO_IDX_CLAWS), this->nextMove->getAngleForServo(SERVO_IDX_CLAWS)
+				this->servo[5], this->nextMove->getDirectionForServo(SERVO_IDX_CLAWS), this->nextMove->getMmForServo(SERVO_IDX_CLAWS)
 				);
 
 	}
