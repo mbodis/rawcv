@@ -16,7 +16,6 @@ using namespace std;
 
 class RoboticArmMove{
 private:
-	int objectIdx = -1;
 	vector<ServoMove*> servoMoveSetup;
 
 public:
@@ -34,12 +33,11 @@ public:
 		this->servoMoveSetup.push_back(new ServoMove(SERVO_IDX_CLAWS, DIRECTION_UNDEFINED, 0, 0));
 	}
 
-	void setObjectIndex(int objectIdx){
-		this->objectIdx = objectIdx;
-	}
-
-	int getObjectIndex(){
-		return this->objectIdx;
+	static void logMove(RoboticArmMove *armMove){
+		for(int i=0; i<armMove->servoMoveSetup.size(); i++){
+			cout << i << " type: " << armMove->servoMoveSetup[i]->type << " angle:" << armMove->servoMoveSetup[i]->angle
+					<< " mm:" << armMove->servoMoveSetup[i]->mm << " direction:" << armMove->servoMoveSetup[i]->direction << endl;
+		}
 	}
 
 	bool hasChanged(){
@@ -122,7 +120,7 @@ public:
 		this->servoMoveSetup[SERVO_IDX_CLAW_ROTATE]->angle = 0;
 
 		this->servoMoveSetup[SERVO_IDX_CLAWS]->direction = DIRECTION_OPEN;
-		this->servoMoveSetup[SERVO_IDX_CLAWS]->mm = 500;
+		this->servoMoveSetup[SERVO_IDX_CLAWS]->mm = CLAWS_OBJECT_MAX_MM;
 	}
 
 };

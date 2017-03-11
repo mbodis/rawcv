@@ -5,19 +5,19 @@
  *      Author: mbodis
  */
 
-#ifndef SRC_APPLICATION_LOGIC_IMAGE_IMAGESTORAGE_H_
-#define SRC_APPLICATION_LOGIC_IMAGE_IMAGESTORAGE_H_
+#ifndef SRC_APPLICATION_LOGIC_INPUTSTORAGE_H_
+#define SRC_APPLICATION_LOGIC_INPUTSTORAGE_H_
 
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "ImageDisplayItem.h"
-#include "ImagePreprocessItem.h"
+#include "image/ImageDisplayItem.h"
+#include "image/ImagePreprocessItem.h"
 using namespace cv;
 
-#include "../../../system/config/Constants.h"
+#include "../../system/config/Constants.h"
 
 #include <queue>          // std::stack
 #include <iostream>
@@ -31,22 +31,23 @@ static string IMAGE_VIEW_SIDE = "view_side";
 /*
  *
  */
-class ImageStorage{
+class InputStorage{
 
 private:
-	ImageStorage();	// Private so that it can  not be called
-	ImageStorage(ImageStorage const&){};	// copy constructor is private
-	ImageStorage& operator=(ImageStorage const&){};  // assignment operator is private
-	static ImageStorage* m_pInstance;
+	InputStorage();	// Private so that it can  not be called
+	InputStorage(InputStorage const&){};	// copy constructor is private
+	InputStorage& operator=(InputStorage const&){};  // assignment operator is private
+	static InputStorage* m_pInstance;
 
 	std::queue<ImageStoreItem> displayImgQueue;
 	std::queue<ImagePreprocessItem> processingImgImgQueue;
+	std::queue<char> keyPressQueue;
 
 public:
 
-	static ImageStorage* Instance();
-	static ImageStorage& getInstance(){
-	static ImageStorage instance;
+	static InputStorage* Instance();
+	static InputStorage& getInstance(){
+	static InputStorage instance;
 		return instance;
 	}
 
@@ -64,6 +65,13 @@ public:
 	ImagePreprocessItem getImgFromProcessingQueue();
 	int getProcessingQueueSize();
 
+	/*
+	 * keyboard queue
+	 */
+	void addToKeyPressQueue(char key);
+	char getKeyFromKeyPressQueue();
+	int getKeyPressQueueSize();
+
 };
 
-#endif /* SRC_APPLICATION_LOGIC_IMAGE_IMAGESTORAGE_H_ */
+#endif /* SRC_APPLICATION_LOGIC_INPUTSTORAGE_H_ */

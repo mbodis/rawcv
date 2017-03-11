@@ -10,6 +10,10 @@
 
 UsbCommunicator::UsbCommunicator(){
 	cout << "-- -- -- CONSTRUCTOR: UsbCommunicator-- -- --" << endl;
+
+	AppConfig &mAppConfig = AppConfig::getInstance();
+	USB_PORT = (char*)mAppConfig.USB_PORT.c_str();
+
 	fd = open(USB_PORT, O_RDWR);
 	if (fd == -1) {
 		 perror(USB_PORT);

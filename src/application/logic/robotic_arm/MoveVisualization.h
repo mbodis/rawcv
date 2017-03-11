@@ -26,7 +26,7 @@ public:
 	 * TOP VIEW
 	 * show last move - skip default (not interesting)
 	 */
-	static void showArmPositionTopView(ImageStorage *mImageStorage, RoboticArm *arm, ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+	static void showArmPositionTopView(InputStorage *mImageStorage, RoboticArm *arm, ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 		if (!mImagePreprocessItem->hasContent()) return;
 		if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "MainLogic::showArmPosition" << endl;
 
@@ -34,7 +34,7 @@ public:
 		 * TOP VIEW
 		 * show last move - skip default (not interesting)
 		 */
-		int objectIdx = arm->getNextMove()->getObjectIndex();
+		int objectIdx = mImagePreprocessItem->getObjectIndex();
 		if (!arm->getNextMove()->isMoveDefault() && objectIdx != -1){
 
 			Mat viewTopMat = Mat::zeros(Size(mImagePreprocessItem->preprocessFrame.cols, mImagePreprocessItem->preprocessFrame.rows), 16);
@@ -86,7 +86,7 @@ public:
 	 *
 	 * note: input values are in millimeters -> scaled with some ratio for better visualization
 	 */
-	static void showArmPositionSideView(ImageStorage *mImageStorage, RoboticArm *arm, ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+	static void showArmPositionSideView(InputStorage *mImageStorage, RoboticArm *arm, ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 		if (!mImagePreprocessItem->hasContent()) return;
 
 		if (!arm->getNextMove()->isMoveDefault()){
@@ -103,13 +103,13 @@ public:
 			int marginRightPx = 300;
 
 			// object px -> mm
-			int objectWidthPx = max(mImagePreprocessItem->detectedObjects[mRoboticArmMove->getObjectIndex()].boundingRect().width, mImagePreprocessItem->detectedObjects[mRoboticArmMove->getObjectIndex()].boundingRect().height);
+			int objectWidthPx = max(mImagePreprocessItem->detectedObjects[mImagePreprocessItem->getObjectIndex()].boundingRect().width, mImagePreprocessItem->detectedObjects[mImagePreprocessItem->getObjectIndex()].boundingRect().height);
 			int objectWidthMm = objectWidthPx * mImagePreprocessItem->oneMmInPx;
 			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "objectWidthPx: " << objectWidthPx << endl;
 			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "objectWidthMm: " << objectWidthMm << endl;
 
 			// object distance px -> mm
-			int objectDistanceFromArmPx = cv::norm((Point)mImagePreprocessItem->armCenter - (Point) mImagePreprocessItem->detectedObjects[mRoboticArmMove->getObjectIndex()].center );
+			int objectDistanceFromArmPx = cv::norm((Point)mImagePreprocessItem->armCenter - (Point) mImagePreprocessItem->detectedObjects[mImagePreprocessItem->getObjectIndex()].center );
 			int objectDistanceFromArmMm = objectDistanceFromArmPx * mImagePreprocessItem->oneMmInPx;
 			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "objectDistanceFromArmPx: " << objectDistanceFromArmPx << endl;
 			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "objectDistanceFromArmMm: " << objectDistanceFromArmMm << endl;

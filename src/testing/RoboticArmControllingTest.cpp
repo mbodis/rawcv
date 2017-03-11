@@ -26,32 +26,32 @@ void RoboticArmControllingTest::dummyTestCommunicaion(){
 
 void RoboticArmControllingTest::testRealValuesStepsMilis(){
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(1, 750, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(2, 1800, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(3, 1900, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(4, 1200, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(5, 2200, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(6, 2520, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 }
 
 void RoboticArmControllingTest::resetToDefaultPositionStepsMilis(){
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(1, SERVO_POSITION_DEFAULT_MILIS, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(2, SERVO_POSITION_DEFAULT_MILIS, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(3, SERVO_POSITION_DEFAULT_MILIS, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(4, SERVO_POSITION_DEFAULT_MILIS, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(5, SERVO_POSITION_DEFAULT_MILIS, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(6, SERVO_POSITION_DEFAULT_MILIS, SERVO_SPEED_NORMAL));
-	sleep(1);
+	sleep(2);
 }
 
 void RoboticArmControllingTest::testRealValuesAllMilis(){
@@ -66,38 +66,38 @@ void RoboticArmControllingTest::resetToDefaultPositionAllMilis(){
 }
 
 void RoboticArmControllingTest::testRealValuesStepsAngle(){
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_BASE), DIRECTION_LEFT, 30));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(1, arm->getServo(SERVO_IDX_BASE), DIRECTION_LEFT, 30));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_BASE), DIRECTION_RIGHT, 30));
-	sleep(2);
-
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_FORWARD, 30));
-	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_BACKWARD, 30));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(1, arm->getServo(SERVO_IDX_BASE), DIRECTION_RIGHT, 30));
 	sleep(2);
 
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 30));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(2, arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_FORWARD, 30));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 30));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(2, arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_BACKWARD, 30));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_LEFT, 30));
+
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(3, arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 30));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, 300));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(4, arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 30));
+	sleep(2);
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(5, arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_LEFT, 30));
+	sleep(2);
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(6, arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, 40));
 	sleep(2);
 }
 
 void RoboticArmControllingTest::resetToDefaultPositionStepsAngle(){
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_BASE), DIRECTION_LEFT, 0));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(1, arm->getServo(SERVO_IDX_BASE), DIRECTION_LEFT, 0));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_FORWARD, 0));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(2, arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_FORWARD, 0));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 0));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(3, arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 0));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 0));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(4, arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 0));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_LEFT, 0));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(5, arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_LEFT, 0));
 	sleep(2);
-	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, 0));
+	mRoboticArmController->addToStack(MessageComposer::composeControllerMessage(6, arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, 0));
 	sleep(2);
 }
 
@@ -211,6 +211,7 @@ void RoboticArmControllingTest::stupido(){
 
 void RoboticArmControllingTest::runTest(){
 	mRoboticArmController->start();
+//	dummyTestCommunicaion();
 
 //	testRealValuesStepsMilis();
 //	resetToDefaultPositionStepsMilis();
@@ -227,6 +228,7 @@ void RoboticArmControllingTest::runTest(){
 //	stupido();
 //	resetToDefaultPositionAllAngle();
 
+	sleep(4);
 	mRoboticArmController->end();
 
 }

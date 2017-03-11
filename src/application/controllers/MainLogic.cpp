@@ -22,13 +22,12 @@ MainLogic::MainLogic(){
 	this->mRoboticArmController->addToStack(arm->composeNextMove());
 
 	// modules
+	this->modules.clear();
 	this->modules.push_back(new PickUpObject("PickUpObject"));
 
 	// img storage
-	this->mImageStorage = &ImageStorage::getInstance();
-
+	this->mImageStorage = &InputStorage::getInstance();
 }
-
 
 MainLogic::~MainLogic(){
 	cout << "-- -- -- DESTRUCTOR: MainLogic -- -- --" << endl;
@@ -47,6 +46,7 @@ void MainLogic::process(){
 	arm->resetNextMove();
 	ImagePreprocessItem mImagePreprocessItem;
 
+	executeInputFromKeyboard();
 
 	// IMAGE TRIGGER: new content from preprocessing
 	if (mImageStorage->getProcessingQueueSize() > 0){
@@ -56,7 +56,7 @@ void MainLogic::process(){
 
 		// continue / start module
 		if (isAnyModulActive()){
-			continueInActiveModule(&mImagePreprocessItem, arm->getNextMove());
+			continueInActiveModuleFrameTrigger(&mImagePreprocessItem, arm->getNextMove());
 		}else{
 			detectModuleToStartWith(&mImagePreprocessItem, arm->getNextMove());
 		}
@@ -65,7 +65,7 @@ void MainLogic::process(){
 	}else{
 		if (DEBUG_LOCAL) cout << "MainLogic::TIME TRIGGER----------------" << endl;
 		if (isAnyModulActive()){
-			continueInActiveModule(&mImagePreprocessItem, arm->getNextMove());
+			continueInActiveModuleTimeTrigger(arm->getNextMove());
 		}
 	}
 
@@ -81,6 +81,24 @@ void MainLogic::process(){
 	}
 
 	usleep(LOOP_SLEEP_TIME);
+}
+
+void MainLogic::executeInputFromKeyboard(){
+	if (mImageStorage->getKeyPressQueueSize() > 0 ){
+		char key = mImageStorage->getKeyFromKeyPressQueue();
+		cout << "new key input: " << (int)key << endl;
+		switch((int)key){
+		case 114: // 'r'
+			cout << "reset active modules " << endl;
+			for (int i=0; i<1;i++){
+				if (modules[i]->isModulActive()){
+					modules[i]->resetContent();
+				}
+			}
+			break;
+		}
+
+	}
 }
 
 /*
@@ -99,11 +117,23 @@ bool MainLogic::isAnyModulActive(){
 /*
  * loop through all modules, continue in active module
  */
-void MainLogic::continueInActiveModule(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+void MainLogic::continueInActiveModuleFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
 	if (DEBUG_LOCAL) cout << "MainLogic::continueInActiveModule" << endl;
 	for (int i=0; i<1;i++){
 		if (modules[i]->isModulActive()){
-			modules[i]->processNextState(mImagePreprocessItem, mRoboticArmMove);
+			modules[i]->processNextStateFrameTrigger(mImagePreprocessItem, mRoboticArmMove);
+		}
+	}
+}
+
+/*
+ * loop through all modules, continue in active module
+ */
+void MainLogic::continueInActiveModuleTimeTrigger(RoboticArmMove *mRoboticArmMove){
+	if (DEBUG_LOCAL) cout << "MainLogic::continueInActiveModule" << endl;
+	for (int i=0; i<1;i++){
+		if (modules[i]->isModulActive()){
+			modules[i]->processNextStateTimeTrigger(mRoboticArmMove);
 		}
 	}
 }

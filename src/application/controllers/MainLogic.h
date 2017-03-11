@@ -15,11 +15,11 @@
 #include "../modules/PickUpObject.h"
 #include "RoboticArmController.h"
 #include "../../system/helper/FileSystemHelper.h"
-#include "../logic/image/ImageStorage.h"
 #include "../logic/image/ImageDisplayItem.h"
 #include "../logic/image/ImagePreprocessItem.h"
 #include "../logic/robotic_arm/RoboticArmMove.h"
 #include "../../system/helper/RotateBBHelper.h"
+#include "../logic/InputStorage.h"
 #include "../logic/robotic_arm/MoveVisualization.h"
 
 class MainLogic{
@@ -40,16 +40,18 @@ private:
 	/*
 	 * queue for images process/display
 	 */
-	ImageStorage *mImageStorage;
+	InputStorage *mImageStorage;
 
 public:
 	MainLogic();
 	~MainLogic();
 
 	void process();
+	void executeInputFromKeyboard();
 
 	bool isAnyModulActive();
-	void continueInActiveModule(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
+	void continueInActiveModuleFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
+	void continueInActiveModuleTimeTrigger(RoboticArmMove *mRoboticArmMove);
 	void detectModuleToStartWith(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
 
 	void showArmPositionTopView(ImagePreprocessItem *ImagePreprocessItem, RoboticArmMove *mRoboticArmMove);

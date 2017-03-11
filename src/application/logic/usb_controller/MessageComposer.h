@@ -28,7 +28,7 @@ private:
 
 public:
 	static string composeControllerMessage(int servoIdx, int servoMilis, int timeMilis);
-	static string composeControllerMessage(ServoIface *servo, int direcion, int angle);
+	static string composeControllerMessage(int servoIdx, ServoIface *servo, int direcion, int angle);
 
 	static string composeControllerFullMessage(int servo1Milis, int servo2Milis,
 			int servo3Milis, int servo4Milis, int servo5Milis, int servo6Milis, int timeMilis);

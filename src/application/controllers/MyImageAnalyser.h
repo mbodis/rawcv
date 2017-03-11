@@ -16,8 +16,8 @@
 
 #include "../../system/controllers/ImageAnalyser.h"
 #include "../config/AppConfig.h"
-#include "../logic/image/ImageStorage.h"
 #include "../../system/helper/RotateBBHelper.h"
+#include "../logic/InputStorage.h"
 
 using namespace cv;
 using namespace std;
@@ -31,7 +31,7 @@ private:
 
 	bool DEBUG_LOCAL = false;
 
-	ImageStorage *mImageStorage;
+	InputStorage *mInputStorage;
 
 	// video time
 	long video_time = 0;
@@ -102,6 +102,8 @@ private:
 
 	//output
 	void drawOutputInfo(Mat);
+	void propagatePresedKeyToBackend();
+
 
 	// GUI trackball slider
 	const int slider_max = 255;
@@ -114,7 +116,7 @@ private:
 
 public:
 	MyImageAnalyser() : ImageAnalyser(){
-		this->mImageStorage = &ImageStorage::getInstance();
+		this->mInputStorage = &InputStorage::getInstance();
 		initTrackball();
 	}
 	~MyImageAnalyser(){ }

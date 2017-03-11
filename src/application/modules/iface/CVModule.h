@@ -18,6 +18,7 @@ const int MODULE_STATE_START = 1;
 #include "../../logic/image/ImagePreprocessItem.h"
 #include "../../../system/helper/MathHelper.h"
 #include "../../config/AppConfig.h"
+#include "../../logic/InputStorage.h"
 
 using namespace std;
 using namespace cv;
@@ -28,7 +29,7 @@ class CVModule{
 protected:
 
 	bool DEBUG_LOCAL = false;
-	bool finished = true;
+	bool finished = false;
 	bool enabled = true;
 	string moduleName;
 	int numberStates = MODULE_STATE_NONE;
@@ -85,7 +86,7 @@ protected:
 		int baseJointX = 0;
 		int baseJointY = 0;
 
-		int objectX = cv::norm((Point)mImagePreprocessItem->armCenter - (Point) mImagePreprocessItem->detectedObjects[mRoboticArmMove->getObjectIndex()].center );
+		int objectX = cv::norm((Point)mImagePreprocessItem->armCenter - (Point) mImagePreprocessItem->detectedObjects[mImagePreprocessItem->getObjectIndex()].center );
 		int objectY = 0;
 		if (DEBUG_LOCAL) cout << "objectX: " << objectX << " objectY: " << objectY << endl;
 
@@ -152,7 +153,7 @@ protected:
 			}
 		}
 
-		cout << "OBJECT DETECTED angle1=" << minAngle1 << "° angle2=" << minAngle2 << "° angle3=" << minAngle3 << "° minDistance=" << minDistance <<  " y:" << yCord << endl;
+		cout << "OBJECT DETECTED angle1=" << minAngle1 << "° angle2=" << minAngle2 << "° angle3=" << minAngle3 << "° minDistance=" << minDistance <<  endl;
 
 		mRoboticArmMove->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, minAngle1, 0);
 		mRoboticArmMove->setServo(SERVO_IDX_MIDDLE_JOINT, DIRECTION_FORWARD, minAngle2, 0);
@@ -171,6 +172,7 @@ public:
 	}
 
 	void setTimeTrigger(int sec){
+		saveLastMoveTime();
 		this->timeTriggerSec = sec;
 	}
 	void unsetTimeTrigger(){
@@ -185,7 +187,7 @@ public:
 		gettimeofday(&tp, NULL);
 		long now = tp.tv_sec * 1000 + tp.tv_usec / 1000;
 
-		if (now - this->lastMoveMilis / 1000 > this->timeTriggerSec){
+		if ((now - this->lastMoveMilis) / 1000 > this->timeTriggerSec){
 			unsetTimeTrigger();
 			return true;
 		}
@@ -194,13 +196,23 @@ public:
 	}
 
 
-	// save last move Obj
-	void saveLastMoveObj(ImagePreprocessItem *mImagePreprocessItem){
-		if (!mImagePreprocessItem->hasContent()) return;
+	/*
+	 * save move Obj
+	 * optimize later - clone object
+	 */
+	void saveMoveObj(ImagePreprocessItem *newImagePreprocessItem){
+		if (!newImagePreprocessItem->hasContent()) return;
 
-		lastMovePreprocessItem = mImagePreprocessItem;
+		lastMovePreprocessItem = new ImagePreprocessItem();
+		lastMovePreprocessItem->setObjectIndex(newImagePreprocessItem->getObjectIndex());
+		lastMovePreprocessItem->fullInputFrame = newImagePreprocessItem->fullInputFrame;
+		lastMovePreprocessItem->preprocessFrame = newImagePreprocessItem->preprocessFrame;
+		lastMovePreprocessItem->armCenter = newImagePreprocessItem->armCenter;
+		lastMovePreprocessItem->detectedObjects = newImagePreprocessItem->detectedObjects;
+		lastMovePreprocessItem->oneMmInPx = newImagePreprocessItem->oneMmInPx;
 	}
 
+	// optimize later - clone object
 	void restoreArmMove(RoboticArmMove *mRoboticArmMove){
 		mRoboticArmMove->setServo(SERVO_IDX_BASE, lastMove->getDirectionForServo(SERVO_IDX_BASE), lastMove->getAngleForServo(SERVO_IDX_BASE), 0);
 		mRoboticArmMove->setServo(SERVO_IDX_BOTTOM_JOINT, lastMove->getDirectionForServo(SERVO_IDX_BOTTOM_JOINT), lastMove->getAngleForServo(SERVO_IDX_BOTTOM_JOINT), 0);
@@ -210,8 +222,15 @@ public:
 		mRoboticArmMove->setServo(SERVO_IDX_CLAWS, lastMove->getDirectionForServo(SERVO_IDX_CLAWS), 0, lastMove->getMmForServo(SERVO_IDX_CLAWS));
 	}
 
+	// optimize later - clone object
 	void saveLastMove(RoboticArmMove *mRoboticArmMove){
-		this->lastMove = mRoboticArmMove;
+		lastMove = new RoboticArmMove();
+		lastMove->setServo(SERVO_IDX_BASE, mRoboticArmMove->getDirectionForServo(SERVO_IDX_BASE), mRoboticArmMove->getAngleForServo(SERVO_IDX_BASE), 0);
+		lastMove->setServo(SERVO_IDX_BOTTOM_JOINT, mRoboticArmMove->getDirectionForServo(SERVO_IDX_BOTTOM_JOINT), mRoboticArmMove->getAngleForServo(SERVO_IDX_BOTTOM_JOINT), 0);
+		lastMove->setServo(SERVO_IDX_MIDDLE_JOINT, mRoboticArmMove->getDirectionForServo(SERVO_IDX_MIDDLE_JOINT), mRoboticArmMove->getAngleForServo(SERVO_IDX_MIDDLE_JOINT), 0);
+		lastMove->setServo(SERVO_IDX_UPPER_JOINT, mRoboticArmMove->getDirectionForServo(SERVO_IDX_UPPER_JOINT), mRoboticArmMove->getAngleForServo(SERVO_IDX_UPPER_JOINT), 0);
+		lastMove->setServo(SERVO_IDX_CLAW_ROTATE, mRoboticArmMove->getDirectionForServo(SERVO_IDX_CLAW_ROTATE), mRoboticArmMove->getAngleForServo(SERVO_IDX_CLAW_ROTATE), 0);
+		lastMove->setServo(SERVO_IDX_CLAWS, mRoboticArmMove->getDirectionForServo(SERVO_IDX_CLAWS), 0, mRoboticArmMove->getMmForServo(SERVO_IDX_CLAWS));
 	}
 
 	// save last move time
@@ -226,8 +245,12 @@ public:
 		throw std::logic_error(" CVmodule initialObjectDeection - method not implemented");
 	}
 
-	virtual void processNextState(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
-		throw std::logic_error(" CVmodule processNextState - method not implemented ");
+	virtual void processNextStateFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+		throw std::logic_error(" CVmodule processNextStateFrameTrigger - method not implemented ");
+	}
+
+	virtual void processNextStateTimeTrigger(RoboticArmMove *mRoboticArmMove){
+		throw std::logic_error(" CVmodule processNextStateTimeTrigger - method not implemented ");
 	}
 
 	virtual void resetContent(){

@@ -18,10 +18,11 @@
 #include <iostream>
 #include <stdio.h>
 
+#include "../../application/config/AppConfig.h"
 
 using namespace std;
 
-static char* USB_PORT = "/dev/ttyACM0"; // TODO constant ?? // ttyAMA0
+static char* USB_PORT;
 
 class UsbCommunicator {
 private:

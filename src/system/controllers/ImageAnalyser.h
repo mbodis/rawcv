@@ -20,6 +20,7 @@ private:
 public:
     DebugFrames* mDebugFrames;
     Mat inputFrame;
+    char lastKey = -1;
     ImageAnalyser();
     ~ImageAnalyser();
 

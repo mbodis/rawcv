@@ -37,6 +37,7 @@ bool ImageAnalyser::keyaboardInput(Mat *frame){
     // keyboard input action
     char key = (char) waitKey(40);
     mDebugFrames->keyInput(key, frame);
+    lastKey = key;
     if (key == 27) return false;
     
     return true;

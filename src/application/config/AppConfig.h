@@ -60,6 +60,9 @@ const int SERVO_IDX_UPPER_JOINT = 3;
 const int SERVO_IDX_CLAW_ROTATE = 4;
 const int SERVO_IDX_CLAWS = 5;
 
+const int CLAWS_OBJECT_MIN_MM = 5;
+const int CLAWS_OBJECT_MAX_MM = 50;
+
 /*
  * TODO desc
  */
@@ -91,6 +94,7 @@ public:
 	int printMode;
     string URL;
     int CAMERA_IDX;
+    string USB_PORT = "/dev/ttyACM0";
     
     int IMG_WIDTH;
 	int IMG_HEIGHT;

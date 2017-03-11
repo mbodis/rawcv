@@ -36,7 +36,8 @@ int main(int argc, char **argv) {
 
 	cout << cv::getBuildInformation() << endl;
 	AppConfig &mAppConfig = AppConfig::getInstance();
-	mAppConfig.CAMERA_IDX = 1; // TODO changing param !!
+	mAppConfig.CAMERA_IDX = 2;
+	mAppConfig.USB_PORT = "/dev/ttyACM0";
 
 	// main logic
 	StateController *mStateController = new StateController();

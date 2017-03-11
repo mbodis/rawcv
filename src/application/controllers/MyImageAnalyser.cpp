@@ -57,6 +57,8 @@ void MyImageAnalyser::executeCustomLogic(Mat frame, long videoTime){
 
 	// 1) has something move - reset
 	detectMovementResetStates();
+
+	propagatePresedKeyToBackend();
 }
 
 /**
@@ -463,7 +465,7 @@ void MyImageAnalyser::saveImageForProcessing(){
 	if (DEBUG_LOCAL) cout << "MyImageAnalyser::saveImageForProcessing" << endl;
 
 	if (interestingFrame && isObjectDetected){
-		mImageStorage->addToProcessingQueue(originalColorFrame, binaryWithoutArm, armCenter, detectedObjects, oneMmInPx);
+		mInputStorage->addToProcessingQueue(originalColorFrame, binaryWithoutArm, armCenter, detectedObjects, oneMmInPx);
 
 
 		// show next processing frame
@@ -528,8 +530,8 @@ void MyImageAnalyser::showOutput(){
 void MyImageAnalyser::showImageFromBackground(){
 	if (DEBUG_LOCAL) cout << "MyImageAnalyser::showOutput" << endl;
 
-	while (mImageStorage->getDisplayQueueSize() >0){
-		ImageStoreItem mImageStoreItem = mImageStorage->getImgFromDiplayQueue();
+	while (mInputStorage->getDisplayQueueSize() >0){
+		ImageStoreItem mImageStoreItem = mInputStorage->getImgFromDiplayQueue();
 		this->showImg(mImageStoreItem.mMat, mImageStoreItem.name);
 	}
 }
@@ -550,4 +552,11 @@ void MyImageAnalyser::showImg(Mat frame, String frameName){
 void MyImageAnalyser::initTrackball(){
     namedWindow("tools", 1);
     createTrackbar( "th background", "tools", &sliderThresholdBg, slider_max, on_trackbar);
+}
+
+void MyImageAnalyser::propagatePresedKeyToBackend(){
+	if (lastKey != -1){
+		mInputStorage->addToKeyPressQueue(lastKey);
+		lastKey = -1;
+	}
 }

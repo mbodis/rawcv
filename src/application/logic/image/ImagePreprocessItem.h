@@ -13,6 +13,8 @@
 class ImagePreprocessItem{
 private:
 	bool contentIsSet;
+	int objectIdx = -1;
+
 public:
 
 	ImagePreprocessItem(){
@@ -33,6 +35,13 @@ public:
 		return this->contentIsSet;
 	}
 
+	void setObjectIndex(int objectIdx){
+		this->objectIdx = objectIdx;
+	}
+
+	int getObjectIndex(){
+		return this->objectIdx;
+	}
 
 	// raw input
 	Mat fullInputFrame;
