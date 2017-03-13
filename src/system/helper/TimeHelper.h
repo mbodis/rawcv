@@ -28,6 +28,7 @@ public:
 	long int getTimeDiffNowMilis();
 	string getTimeDiffNowStr();
 
+	static long getSystemTimeMilis();
 };
 
 #endif /* SRC_HELPER_TIMEHELPER_H_ */

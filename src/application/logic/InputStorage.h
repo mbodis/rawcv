@@ -20,6 +20,8 @@ using namespace cv;
 #include "../../system/config/Constants.h"
 
 #include <queue>          // std::stack
+#include <list>          // std::stack
+#include <map>          // std::stack
 #include <iostream>
 #include <sys/time.h>
 

@@ -95,3 +95,5 @@ char InputStorage::getKeyFromKeyPressQueue(){
 int InputStorage::getKeyPressQueueSize(){
 	return keyPressQueue.size();
 }
+
+

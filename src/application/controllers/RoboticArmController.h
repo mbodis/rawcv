@@ -11,6 +11,8 @@
 #include <queue>
 #include <thread>
 #include "../../libs/usb/UsbCommunicator.h"
+#include "../logic/message/StatusMessageStorage.h"
+#include "../logic/message/StatusMessageItem.h"
 using namespace std;
 
 
@@ -19,7 +21,6 @@ static double TIME_DELAY_WAIT_AFTER_COMMAND = 2.0; // seconds
 
 class RoboticArmController {
 private:
-
 
 public:
 
@@ -34,7 +35,9 @@ public:
 	void end();
 
 	static void executeCommandsLoop();
-	void addToStack(string);
+	void executeCommand(string);
+	void executeCommandWithCallback(string, string);
+	bool wasCommandExecuted(string);
 	int getStackSize();
 
 

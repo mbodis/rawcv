@@ -13,8 +13,8 @@
 #include "../servo/ServoRotationFB.h"
 #include "../servo/ServoRotationLR.h"
 #include "RoboticArmMove.h"
-#include "../usb_controller/MessageComposer.h"
 #include "../../config/AppConfig.h"
+#include "../message/MessageComposer.h"
 
 const int SERVO_COUNT = 6;
 

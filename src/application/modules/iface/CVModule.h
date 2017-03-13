@@ -19,6 +19,7 @@ const int MODULE_STATE_START = 1;
 #include "../../../system/helper/MathHelper.h"
 #include "../../config/AppConfig.h"
 #include "../../logic/InputStorage.h"
+#include "../../controllers/RoboticArmController.h"
 
 using namespace std;
 using namespace cv;
@@ -27,6 +28,7 @@ using namespace cv;
 class CVModule{
 
 protected:
+	RoboticArmController *mRoboticArmController;
 
 	bool DEBUG_LOCAL = false;
 	bool finished = false;
@@ -163,7 +165,8 @@ protected:
 
 public:
 
-	CVModule(string moduleName){
+	CVModule(string moduleName, RoboticArmController *mRoboticArmController){
+		this->mRoboticArmController = mRoboticArmController;
 		this->moduleName = moduleName;
 	}
 
@@ -183,9 +186,7 @@ public:
 			return false;
 		}
 
-		struct timeval tp;
-		gettimeofday(&tp, NULL);
-		long now = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+		long now = TimeHelper::getSystemTimeMilis();
 
 		if ((now - this->lastMoveMilis) / 1000 > this->timeTriggerSec){
 			unsetTimeTrigger();
@@ -201,8 +202,6 @@ public:
 	 * optimize later - clone object
 	 */
 	void saveMoveObj(ImagePreprocessItem *newImagePreprocessItem){
-		if (!newImagePreprocessItem->hasContent()) return;
-
 		lastMovePreprocessItem = new ImagePreprocessItem();
 		lastMovePreprocessItem->setObjectIndex(newImagePreprocessItem->getObjectIndex());
 		lastMovePreprocessItem->fullInputFrame = newImagePreprocessItem->fullInputFrame;
@@ -235,21 +234,19 @@ public:
 
 	// save last move time
 	void saveLastMoveTime(){
-		struct timeval tp;
-		gettimeofday(&tp, NULL);
-		lastMoveMilis = tp.tv_sec * 1000 + tp.tv_usec / 1000;
+		lastMoveMilis = TimeHelper::getSystemTimeMilis();
 	}
 
-	virtual bool initialObjectDetection(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+	virtual bool initialObjectDetection(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
 		if (DEBUG_LOCAL) cout << "CVmodule initialObjectDetection" << endl;
 		throw std::logic_error(" CVmodule initialObjectDeection - method not implemented");
 	}
 
-	virtual void processNextStateFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+	virtual void processNextStateFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
 		throw std::logic_error(" CVmodule processNextStateFrameTrigger - method not implemented ");
 	}
 
-	virtual void processNextStateTimeTrigger(RoboticArmMove *mRoboticArmMove){
+	virtual void processNextStateTimeTrigger(RoboticArm *mRoboticArm){
 		throw std::logic_error(" CVmodule processNextStateTimeTrigger - method not implemented ");
 	}
 

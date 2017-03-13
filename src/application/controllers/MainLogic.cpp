@@ -19,11 +19,11 @@ MainLogic::MainLogic(){
 	this->arm = new RoboticArm();
 	// go to default position
 	this->arm->getNextMove()->setDefaultPosition();
-	this->mRoboticArmController->addToStack(arm->composeNextMove());
+	this->mRoboticArmController->executeCommand(arm->composeNextMove());
 
 	// modules
 	this->modules.clear();
-	this->modules.push_back(new PickUpObject("PickUpObject"));
+	this->modules.push_back(new PickUpObject("PickUpObject", mRoboticArmController));
 
 	// img storage
 	this->mImageStorage = &InputStorage::getInstance();
@@ -45,39 +45,41 @@ void MainLogic::process(){
 
 	arm->resetNextMove();
 	ImagePreprocessItem mImagePreprocessItem;
+	bool showArmView = false;
 
 	executeInputFromKeyboard();
 
-	// IMAGE TRIGGER: new content from preprocessing
+	// IMAGE TRIGGER: new content from pro-processing
 	if (mImageStorage->getProcessingQueueSize() > 0){
 		if (DEBUG_LOCAL) cout << "MainLogic::IMAGE TRIGGER----------------" << endl;
 
+		showArmView = true;
 		mImagePreprocessItem = (mImageStorage->getImgFromProcessingQueue());
 
 		// continue / start module
 		if (isAnyModulActive()){
-			continueInActiveModuleFrameTrigger(&mImagePreprocessItem, arm->getNextMove());
+			continueInActiveModuleFrameTrigger(&mImagePreprocessItem, arm);
 		}else{
-			detectModuleToStartWith(&mImagePreprocessItem, arm->getNextMove());
+			detectModuleToStartWith(&mImagePreprocessItem, arm);
 		}
 
 	// TIME TRIGGER: change move by time
 	}else{
 		if (DEBUG_LOCAL) cout << "MainLogic::TIME TRIGGER----------------" << endl;
 		if (isAnyModulActive()){
-			continueInActiveModuleTimeTrigger(arm->getNextMove());
+			continueInActiveModuleTimeTrigger(arm);
 		}
 	}
 
 	// execute possible changes
 	if (arm->getNextMove()->hasChanged()){
 		if (DEBUG_LOCAL) cout << "move has changed" << endl;
-		// move arm
-		mRoboticArmController->addToStack(arm->composeNextMove());
 
-		// show arm
-		MoveVisualization::showArmPositionTopView(mImageStorage, arm, &mImagePreprocessItem, this->arm->getNextMove());
-		MoveVisualization::showArmPositionSideView(mImageStorage, arm, &mImagePreprocessItem, this->arm->getNextMove());
+		if (showArmView){
+			// show arm
+			MoveVisualization::showArmPositionTopView(mImageStorage, arm, &mImagePreprocessItem, this->arm->getNextMove());
+			MoveVisualization::showArmPositionSideView(mImageStorage, arm, &mImagePreprocessItem, this->arm->getNextMove());
+		}
 	}
 
 	usleep(LOOP_SLEEP_TIME);
@@ -117,11 +119,11 @@ bool MainLogic::isAnyModulActive(){
 /*
  * loop through all modules, continue in active module
  */
-void MainLogic::continueInActiveModuleFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+void MainLogic::continueInActiveModuleFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
 	if (DEBUG_LOCAL) cout << "MainLogic::continueInActiveModule" << endl;
 	for (int i=0; i<1;i++){
 		if (modules[i]->isModulActive()){
-			modules[i]->processNextStateFrameTrigger(mImagePreprocessItem, mRoboticArmMove);
+			modules[i]->processNextStateFrameTrigger(mImagePreprocessItem, mRoboticArm);
 		}
 	}
 }
@@ -129,11 +131,11 @@ void MainLogic::continueInActiveModuleFrameTrigger(ImagePreprocessItem *mImagePr
 /*
  * loop through all modules, continue in active module
  */
-void MainLogic::continueInActiveModuleTimeTrigger(RoboticArmMove *mRoboticArmMove){
+void MainLogic::continueInActiveModuleTimeTrigger(RoboticArm *mRoboticArm){
 	if (DEBUG_LOCAL) cout << "MainLogic::continueInActiveModule" << endl;
 	for (int i=0; i<1;i++){
 		if (modules[i]->isModulActive()){
-			modules[i]->processNextStateTimeTrigger(mRoboticArmMove);
+			modules[i]->processNextStateTimeTrigger(mRoboticArm);
 		}
 	}
 }
@@ -141,11 +143,11 @@ void MainLogic::continueInActiveModuleTimeTrigger(RoboticArmMove *mRoboticArmMov
 /*
  * loop through all modules, try to start some module
  */
-void MainLogic::detectModuleToStartWith(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+void MainLogic::detectModuleToStartWith(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
 	if (DEBUG_LOCAL) cout << "MainLogic::detectModuleToStartWith" << endl;
 	for (int i=0; i<1;i++){
 		if (DEBUG_LOCAL) cout << "i="<<i << endl;
-		if (modules[i]->initialObjectDetection(mImagePreprocessItem, mRoboticArmMove)){
+		if (modules[i]->initialObjectDetection(mImagePreprocessItem, mRoboticArm)){
 			if (DEBUG_LOCAL) cout << "starting module "<< modules[i]->getName() << endl;
 		}
 	}

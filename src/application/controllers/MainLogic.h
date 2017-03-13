@@ -50,9 +50,9 @@ public:
 	void executeInputFromKeyboard();
 
 	bool isAnyModulActive();
-	void continueInActiveModuleFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
-	void continueInActiveModuleTimeTrigger(RoboticArmMove *mRoboticArmMove);
-	void detectModuleToStartWith(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
+	void continueInActiveModuleFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm);
+	void continueInActiveModuleTimeTrigger(RoboticArm *mRoboticArm);
+	void detectModuleToStartWith(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm);
 
 	void showArmPositionTopView(ImagePreprocessItem *ImagePreprocessItem, RoboticArmMove *mRoboticArmMove);
 	void showArmPositionSideView(ImagePreprocessItem *ImagePreprocessItem, RoboticArmMove *mRoboticArmMove);

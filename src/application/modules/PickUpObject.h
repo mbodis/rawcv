@@ -22,16 +22,21 @@ const int MODULE_STATE_PICKUP_OBJECT_FINISHED_FAILED = 7;
 #include "../logic/image/ImagePreprocessItem.h"
 using namespace std;
 
+static string KEY_VERIFY_STATUS = "PickUpObject-VerifyStatus";
+
 class PickUpObject : public CVModule{
 private:
 	ImagePreprocessItem *objectDetectedPreprocessItem;
+	InputStorage *mInputStorage;
 
 protected:
 	bool DEBUG_LOCAL = false;
 
 public:
-	PickUpObject(string moduleName):CVModule(moduleName){
+
+	PickUpObject(string moduleName, RoboticArmController *mRoboticArmController):CVModule(moduleName, mRoboticArmController){
 		if (DEBUG_LOCAL) cout << "-- -- -- CONSTRUCTOR: PickUpObject -- -- --" << endl;
+		mInputStorage = &InputStorage::getInstance();
 	}
 
 	/*
@@ -42,7 +47,7 @@ public:
 	 * update pickup tries counter
 	 * update state
 	 */
-	bool initialObjectDetection(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+	bool initialObjectDetection(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
 		if (DEBUG_LOCAL) cout << "PickUpObject :: initialObjectDetection" << endl;
 
 		// is there one object ?
@@ -66,17 +71,18 @@ public:
 
 		mImagePreprocessItem->setObjectIndex(0);
 
-		pickupObject(mImagePreprocessItem, mRoboticArmMove);
+		pickupObject(mImagePreprocessItem, mRoboticArm->getNextMove());
 
 		saveMoveObj(mImagePreprocessItem);
 		saveDetectedObj(mImagePreprocessItem);
-		saveLastMove(mRoboticArmMove);
+		saveLastMove(mRoboticArm->getNextMove());
 
 		cout << "object selected with index: 0, size:" <<  obj.size.width*mImagePreprocessItem->oneMmInPx
 				<< "x" << obj.size.height*mImagePreprocessItem->oneMmInPx << "mm "<< endl;
 
 		setModulState(MODULE_STATE_PICKUP_OBJECT_MOVE_CLOSE_TO_OBJECT);
 
+		mRoboticArmController->executeCommand(mRoboticArm->composeNextMove());
 		return true;
 	}
 
@@ -84,14 +90,14 @@ public:
 	 * process states of picking object with arm
 	 * input from interesting frame (a movement has been detected and stops)
 	 */
-	void processNextStateFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+	void processNextStateFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
 		if (DEBUG_LOCAL) cout << "PickUpObject :: processNextStateFrameTrigger " << this->currentState << endl;
 		if (finished) return;
 
 		saveMoveObj(mImagePreprocessItem);
 
 		switch(this->currentState){
-
+			// add states that should be triggered on interesting frame
 		}
 	}
 
@@ -99,7 +105,7 @@ public:
 	 * process states of picking object with arm
 	 * input from by time (some time has passed - check if something has changed)
 	 */
-	void processNextStateTimeTrigger(RoboticArmMove *mRoboticArmMove){
+	void processNextStateTimeTrigger(RoboticArm *mRoboticArm){
 		if (DEBUG_LOCAL) cout << "PickUpObject :: processNextStateTimeTrigger " << this->currentState << endl;
 		if (finished) return;
 
@@ -114,11 +120,12 @@ public:
 
 			if (DEBUG_LOCAL) cout << "PickUpObject :: pick object that is " << clawsOpenMm << " mm width" << endl;
 
-			restoreArmMove(mRoboticArmMove);
-			mRoboticArmMove->setServo(SERVO_IDX_CLAWS, DIRECTION_OPEN, 0, clawsOpenMm);
+			restoreArmMove(mRoboticArm->getNextMove());
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_CLAWS, DIRECTION_OPEN, 0, clawsOpenMm);
 
 			// update state
 			setModulState(MODULE_STATE_PICKUP_OBJECT_PICK_OBJECT_WITH_CLAWS);
+			mRoboticArmController->executeCommand(mRoboticArm->composeNextMove());
 			break;
 
 		//move object to predefined position
@@ -129,43 +136,47 @@ public:
 			objHeightMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.height * objectDetectedPreprocessItem->oneMmInPx;
 			clawsOpenMm = min(objHeightMm, objWidthMm);
 
-			mRoboticArmMove->setServo(SERVO_IDX_BASE, DIRECTION_LEFT, 0, 0);
-			mRoboticArmMove->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, 37, 0);
-			mRoboticArmMove->setServo(SERVO_IDX_MIDDLE_JOINT, DIRECTION_FORWARD, 67, 0);
-			mRoboticArmMove->setServo(SERVO_IDX_UPPER_JOINT, DIRECTION_FORWARD, 16, 0);
-			mRoboticArmMove->setServo(SERVO_IDX_CLAW_ROTATE, DIRECTION_LEFT, 0, 0);
-			mRoboticArmMove->setServo(SERVO_IDX_CLAWS, DIRECTION_OPEN, 0, clawsOpenMm);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BASE, DIRECTION_LEFT, 0, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, 37, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_MIDDLE_JOINT, DIRECTION_FORWARD, 67, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_UPPER_JOINT, DIRECTION_FORWARD, 16, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_CLAW_ROTATE, DIRECTION_LEFT, 0, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_CLAWS, DIRECTION_OPEN, 0, clawsOpenMm);
 			setModulState(MODULE_STATE_PICKUP_OBJECT_MOVE_OBJECT_TO_POSITION);
+			mRoboticArmController->executeCommand(mRoboticArm->composeNextMove());
 			break;
 
 		//release object
 		case MODULE_STATE_PICKUP_OBJECT_MOVE_OBJECT_TO_POSITION:
 			if (DEBUG_LOCAL) cout << "PickUpObject :: release object" << endl;
 
-			mRoboticArmMove->setServo(SERVO_IDX_BASE, DIRECTION_LEFT, 0, 0);
-			mRoboticArmMove->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, 37, 0);
-			mRoboticArmMove->setServo(SERVO_IDX_MIDDLE_JOINT, DIRECTION_FORWARD, 67, 0);
-			mRoboticArmMove->setServo(SERVO_IDX_UPPER_JOINT, DIRECTION_FORWARD, 16, 0);
-			mRoboticArmMove->setServo(SERVO_IDX_CLAW_ROTATE, DIRECTION_LEFT, 0, 0);
-			mRoboticArmMove->setServo(SERVO_IDX_CLAWS, DIRECTION_OPEN, 0, CLAWS_OBJECT_MAX_MM);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BASE, DIRECTION_LEFT, 0, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, 37, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_MIDDLE_JOINT, DIRECTION_FORWARD, 67, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_UPPER_JOINT, DIRECTION_FORWARD, 16, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_CLAW_ROTATE, DIRECTION_LEFT, 0, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_CLAWS, DIRECTION_OPEN, 0, CLAWS_OBJECT_MAX_MM);
 			setModulState(MODULE_STATE_PICKUP_OBJECT_RELEASE_OBJECT);
+			mRoboticArmController->executeCommand(mRoboticArm->composeNextMove());
 			break;
 
 		// return back to default position
 		case MODULE_STATE_PICKUP_OBJECT_RELEASE_OBJECT:
 			if (DEBUG_LOCAL) cout << "PickUpObject :: return to default position" << endl;
 
-			mRoboticArmMove->setDefaultPosition();
+			mRoboticArm->getNextMove()->setDefaultPosition();
 			setModulState(MODULE_STATE_PICKUP_OBJECT_CONFIRM_OBJECT_IS_MISSING);
-
-			setTimeTrigger(10);
+			mRoboticArmController->executeCommandWithCallback(mRoboticArm->composeNextMove(), KEY_VERIFY_STATUS);
 			break;
 
 		case MODULE_STATE_PICKUP_OBJECT_CONFIRM_OBJECT_IS_MISSING:
-			if (executeTimeTrigger()){
-				// TODO compare detected object with object that was picked up
-				// object has been picked up
 
+			if (mRoboticArmController->wasCommandExecuted(KEY_VERIFY_STATUS)){
+				if (DEBUG_LOCAL) cout << "PickUpObject :: return to default position" << endl;
+
+				// TODO test if object was moved
+
+				// object moved
 				if (lastMovePreprocessItem->detectedObjects.size() == 0){
 					cout << "PickUpObject :: success object was moved" << endl;
 					setModulState(MODULE_STATE_PICKUP_OBJECT_FINISHED_SUCCESS);
@@ -205,7 +216,6 @@ public:
 	 * TODO optimize
 	 */
 	void saveDetectedObj(ImagePreprocessItem *newImagePreprocessItem){
-		if (!newImagePreprocessItem->hasContent()) return;
 
 		objectDetectedPreprocessItem = new ImagePreprocessItem();
 		objectDetectedPreprocessItem->setObjectIndex(newImagePreprocessItem->getObjectIndex());

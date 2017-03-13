@@ -12,13 +12,11 @@
 
 class ImagePreprocessItem{
 private:
-	bool contentIsSet;
 	int objectIdx = -1;
 
 public:
 
 	ImagePreprocessItem(){
-		this->contentIsSet = false;
 	}
 
 	ImagePreprocessItem(Mat fullInputFrame, Mat preprocessFrame, Point armCenter, vector<RotatedRect> detectedObjects, double oneMmInPx ){
@@ -27,12 +25,6 @@ public:
 		this->armCenter = armCenter;
 		this->detectedObjects = detectedObjects;
 		this->oneMmInPx = oneMmInPx;
-
-		this->contentIsSet = true;
-	}
-
-	bool hasContent(){
-		return this->contentIsSet;
 	}
 
 	void setObjectIndex(int objectIdx){
