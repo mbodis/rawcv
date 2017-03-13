@@ -58,7 +58,7 @@ void RoboticArmController::executeCommandsLoop(){
 
 			// set message as progress
 			if (newCommand.getKey().length() > 0){
-				mStatusMessageStorage->setStatusMessageByKey(newCommand.getKey(), MSG_STATUS_IN_PROGRESS, SERVO_SPEED_NORMAL);
+				mStatusMessageStorage->setStatusMessageByKey(newCommand.getKey(), MSG_STATUS_IN_PROGRESS, SERVO_SPEED_NORMAL + 3000);
 			}
 
 			armCommandsStack.pop();

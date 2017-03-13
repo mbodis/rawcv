@@ -46,7 +46,6 @@ protected:
 	 * arm rotation
 	 */
 	void pickupObjectCalculateArmRotation(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
-		if (DEBUG_LOCAL) cout << "train rotation" << endl;
 		if (DEBUG_LOCAL) cout << "plane: " << mImagePreprocessItem->preprocessFrame.cols << " x " << mImagePreprocessItem->preprocessFrame.rows << endl;
 		if (DEBUG_LOCAL) cout << "arm: [" << mImagePreprocessItem->armCenter.x << "," << mImagePreprocessItem->armCenter.y << "]" << endl;
 		if (DEBUG_LOCAL) cout << "object: [" << (int)mImagePreprocessItem->detectedObjects[0].center.x << "," << (int)mImagePreprocessItem->detectedObjects[0].center.y << "]" << endl;
@@ -196,6 +195,10 @@ public:
 		return false;
 	}
 
+	// save last move time
+	void saveLastMoveTime(){
+		lastMoveMilis = TimeHelper::getSystemTimeMilis();
+	}
 
 	/*
 	 * save move Obj
@@ -209,6 +212,10 @@ public:
 		lastMovePreprocessItem->armCenter = newImagePreprocessItem->armCenter;
 		lastMovePreprocessItem->detectedObjects = newImagePreprocessItem->detectedObjects;
 		lastMovePreprocessItem->oneMmInPx = newImagePreprocessItem->oneMmInPx;
+
+		InputStorage *mInputStorage = &InputStorage::getInstance();
+		mInputStorage->addToDisplayQueue("a1", lastMovePreprocessItem->fullInputFrame);
+		mInputStorage->addToDisplayQueue("a1", lastMovePreprocessItem->preprocessFrame);
 	}
 
 	// optimize later - clone object
@@ -232,13 +239,7 @@ public:
 		lastMove->setServo(SERVO_IDX_CLAWS, mRoboticArmMove->getDirectionForServo(SERVO_IDX_CLAWS), 0, mRoboticArmMove->getMmForServo(SERVO_IDX_CLAWS));
 	}
 
-	// save last move time
-	void saveLastMoveTime(){
-		lastMoveMilis = TimeHelper::getSystemTimeMilis();
-	}
-
 	virtual bool initialObjectDetection(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
-		if (DEBUG_LOCAL) cout << "CVmodule initialObjectDetection" << endl;
 		throw std::logic_error(" CVmodule initialObjectDeection - method not implemented");
 	}
 

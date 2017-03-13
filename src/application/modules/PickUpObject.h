@@ -30,7 +30,7 @@ private:
 	InputStorage *mInputStorage;
 
 protected:
-	bool DEBUG_LOCAL = false;
+	bool DEBUG_LOCAL = true;
 
 public:
 
@@ -174,20 +174,33 @@ public:
 			if (mRoboticArmController->wasCommandExecuted(KEY_VERIFY_STATUS)){
 				if (DEBUG_LOCAL) cout << "PickUpObject :: return to default position" << endl;
 
-				// TODO test if object was moved
 
-				// object moved
-				if (lastMovePreprocessItem->detectedObjects.size() == 0){
-					cout << "PickUpObject :: success object was moved" << endl;
-					setModulState(MODULE_STATE_PICKUP_OBJECT_FINISHED_SUCCESS);
-					setFinished(true);
+				if (lastMovePreprocessItem->detectedObjects.size() == 1){
 
-				// object still there
+					double distPx = cv::norm(objectDetectedPreprocessItem->detectedObjects[0].center
+						- lastMovePreprocessItem->detectedObjects[0].center);
+					double distMm = distPx * lastMovePreprocessItem->oneMmInPx;
+
+					// if object was moved more than 15mm
+					if (distMm > 15){
+						cout << "PickUpObject :: SUCCESS object was moved " << distMm << " mm" << endl;
+						setModulState(MODULE_STATE_PICKUP_OBJECT_FINISHED_SUCCESS);
+						setFinished(true);
+
+					// object still there
+					}else{
+						cout << "PickUpObject :: FAILED object was moved " << distMm << " mm" << endl;
+						setModulState(MODULE_STATE_PICKUP_OBJECT_FINISHED_FAILED);
+						setFinished(true);
+					}
+
+				// object undefined
 				}else{
-					cout << "PickUpObject :: failed object was not moved" << endl;
+					cout << "PickUpObject :: FAILED object not found #obj:" << lastMovePreprocessItem->detectedObjects.size() << endl;
 					setModulState(MODULE_STATE_PICKUP_OBJECT_FINISHED_FAILED);
 					setFinished(true);
 				}
+
 			}
 			break;
 

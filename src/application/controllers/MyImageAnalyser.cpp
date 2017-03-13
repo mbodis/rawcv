@@ -521,7 +521,7 @@ void MyImageAnalyser::showOutput(){
 //    this->showImg(outputColorFrame, "outpuColorFrame");
     this->showImg(outputColorStretchFrame, "outputColorStretchFrame");
 //    this->showImg(binaryTableCrop, "binaryTableCrop");
-    this->showImg(binaryWithoutArm, "binaryWithoutArm");
+//    this->showImg(binaryWithoutArm, "binaryWithoutArm");
 }
 
 /*
