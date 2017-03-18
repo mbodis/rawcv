@@ -30,7 +30,7 @@ private:
 	InputStorage *mInputStorage;
 
 protected:
-	bool DEBUG_LOCAL = true;
+	bool DEBUG_LOCAL = false;
 
 public:
 
@@ -64,17 +64,21 @@ public:
 			cout << "object too small to pick up: " << minMm << " mm" << endl;
 			return false;
 		}
-		if (maxMm > CLAWS_OBJECT_MAX_MM){
+		if (maxMm > CLAWS_OBJECT_MAX_MM + 30){
 			cout << "object too big to pick up: " << maxMm << " mm" << endl;
 			return false;
 		}
 
 		mImagePreprocessItem->setObjectIndex(0);
-
-		pickupObject(mImagePreprocessItem, mRoboticArm->getNextMove());
-
 		saveMoveObj(mImagePreprocessItem);
 		saveDetectedObj(mImagePreprocessItem);
+
+		pickupObjectRotation(objectDetectedPreprocessItem, mRoboticArm->getNextMove());
+		mRoboticArmController->executeCommand(mRoboticArm->composeNextMove());
+
+		pickupObjectLean(objectDetectedPreprocessItem, mRoboticArm->getNextMove());
+		mRoboticArmController->executeCommand(mRoboticArm->composeNextMove());
+
 		saveLastMove(mRoboticArm->getNextMove());
 
 		cout << "object selected with index: 0, size:" <<  obj.size.width*mImagePreprocessItem->oneMmInPx
@@ -82,7 +86,7 @@ public:
 
 		setModulState(MODULE_STATE_PICKUP_OBJECT_MOVE_CLOSE_TO_OBJECT);
 
-		mRoboticArmController->executeCommand(mRoboticArm->composeNextMove());
+
 		return true;
 	}
 
@@ -109,14 +113,14 @@ public:
 		if (DEBUG_LOCAL) cout << "PickUpObject :: processNextStateTimeTrigger " << this->currentState << endl;
 		if (finished) return;
 
-		int objWidthMm, objHeightMm, clawsOpenMm;
+		int objWidthMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.width * objectDetectedPreprocessItem->oneMmInPx;
+		int objHeightMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.height * objectDetectedPreprocessItem->oneMmInPx;
+		//int clawsOpenMm = min(objHeightMm, objWidthMm);
+		int clawsOpenMm = 20; // TODO object size
 		switch(this->currentState){
 
 		// pick up object with claws, stay on place open claws
 		case MODULE_STATE_PICKUP_OBJECT_MOVE_CLOSE_TO_OBJECT:
-			objWidthMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.width * objectDetectedPreprocessItem->oneMmInPx;
-			objHeightMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.height * objectDetectedPreprocessItem->oneMmInPx;
-			clawsOpenMm = min(objHeightMm, objWidthMm);
 
 			if (DEBUG_LOCAL) cout << "PickUpObject :: pick object that is " << clawsOpenMm << " mm width" << endl;
 
@@ -132,9 +136,13 @@ public:
 		case MODULE_STATE_PICKUP_OBJECT_PICK_OBJECT_WITH_CLAWS:
 			if (DEBUG_LOCAL) cout << "PickUpObject :: move object to predefined position" << endl;
 
-			objWidthMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.width * objectDetectedPreprocessItem->oneMmInPx;
-			objHeightMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.height * objectDetectedPreprocessItem->oneMmInPx;
-			clawsOpenMm = min(objHeightMm, objWidthMm);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BASE, DIRECTION_LEFT, 0, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, 19, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_MIDDLE_JOINT, DIRECTION_FORWARD, 33, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_UPPER_JOINT, DIRECTION_FORWARD, 8, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_CLAW_ROTATE, DIRECTION_LEFT, 0, 0);
+			mRoboticArm->getNextMove()->setServo(SERVO_IDX_CLAWS, DIRECTION_OPEN, 0, clawsOpenMm);
+			mRoboticArmController->executeCommand(mRoboticArm->composeNextMove());
 
 			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BASE, DIRECTION_LEFT, 0, 0);
 			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, 37, 0);
@@ -212,7 +220,7 @@ public:
 		setModulState(MODULE_STATE_NONE);
 		lastMoveMilis = 0;
 
-		finished = true;
+		finished = false;
 		enabled = true;
 		timeTriggerSec = -1;
 		lastMovePreprocessItem = new ImagePreprocessItem();
@@ -226,7 +234,7 @@ public:
 	}
 
 	/*
-	 * TODO optimize
+	 * save selected object from initial processing to use in later steps
 	 */
 	void saveDetectedObj(ImagePreprocessItem *newImagePreprocessItem){
 
