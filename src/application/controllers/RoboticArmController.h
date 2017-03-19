@@ -21,7 +21,7 @@ static double TIME_DELAY_WAIT_AFTER_COMMAND = 2.0; // seconds
 
 class RoboticArmController {
 private:
-
+	string TAG = "RoboticArmController";
 public:
 
 	/*

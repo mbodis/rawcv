@@ -26,16 +26,14 @@ static string KEY_VERIFY_STATUS = "PickUpObject-VerifyStatus";
 
 class PickUpObject : public CVModule{
 private:
+	string TAG = "PickUpObject";
 	ImagePreprocessItem *objectDetectedPreprocessItem;
 	InputStorage *mInputStorage;
-
-protected:
-	bool DEBUG_LOCAL = false;
 
 public:
 
 	PickUpObject(string moduleName, RoboticArmController *mRoboticArmController):CVModule(moduleName, mRoboticArmController){
-		if (DEBUG_LOCAL) cout << "-- -- -- CONSTRUCTOR: PickUpObject -- -- --" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "-- -- -- CONSTRUCTOR: PickUpObject -- -- --");
 		mInputStorage = &InputStorage::getInstance();
 	}
 
@@ -48,11 +46,11 @@ public:
 	 * update state
 	 */
 	bool initialObjectDetection(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
-		if (DEBUG_LOCAL) cout << "PickUpObject :: initialObjectDetection" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "PickUpObject :: initialObjectDetection");
 
 		// is there one object ?
 		if (mImagePreprocessItem->detectedObjects.size() != 1){
-			if (DEBUG_LOCAL) cout << "PickUpObject :: initialObjectDetection invalid number of objects" << mImagePreprocessItem->detectedObjects.size() << endl;
+			MyLog::log(LOG_DEBUG, TAG, "PickUpObject :: initialObjectDetection invalid number of objects" + to_string(mImagePreprocessItem->detectedObjects.size()));
 			return false;
 		}
 
@@ -81,8 +79,8 @@ public:
 
 		saveLastMove(mRoboticArm->getNextMove());
 
-		cout << "object selected with index: 0, size:" <<  obj.size.width*mImagePreprocessItem->oneMmInPx
-				<< "x" << obj.size.height*mImagePreprocessItem->oneMmInPx << "mm "<< endl;
+		MyLog::log(LOG_DEBUG, TAG, "object selected with index: 0, size:" +  to_string(obj.size.width*mImagePreprocessItem->oneMmInPx)
+				+ "x" + to_string(obj.size.height*mImagePreprocessItem->oneMmInPx) + "mm ");
 
 		setModulState(MODULE_STATE_PICKUP_OBJECT_MOVE_CLOSE_TO_OBJECT);
 
@@ -95,7 +93,7 @@ public:
 	 * input from interesting frame (a movement has been detected and stops)
 	 */
 	void processNextStateFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
-		if (DEBUG_LOCAL) cout << "PickUpObject :: processNextStateFrameTrigger " << this->currentState << endl;
+		MyLog::log(LOG_DEBUG, TAG, "PickUpObject :: processNextStateFrameTrigger " + to_string(this->currentState));
 		if (finished) return;
 
 		saveMoveObj(mImagePreprocessItem);
@@ -110,11 +108,11 @@ public:
 	 * input from by time (some time has passed - check if something has changed)
 	 */
 	void processNextStateTimeTrigger(RoboticArm *mRoboticArm){
-		if (DEBUG_LOCAL) cout << "PickUpObject :: processNextStateTimeTrigger " << this->currentState << endl;
+		MyLog::log(LOG_DEBUG, TAG, "PickUpObject :: processNextStateTimeTrigger " + to_string(this->currentState));
 		if (finished) return;
 
-		int objWidthMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.width * objectDetectedPreprocessItem->oneMmInPx;
-		int objHeightMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.height * objectDetectedPreprocessItem->oneMmInPx;
+		//int objWidthMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.width * objectDetectedPreprocessItem->oneMmInPx;
+		//int objHeightMm = objectDetectedPreprocessItem->detectedObjects[objectDetectedPreprocessItem->getObjectIndex()].size.height * objectDetectedPreprocessItem->oneMmInPx;
 		//int clawsOpenMm = min(objHeightMm, objWidthMm);
 		int clawsOpenMm = 20; // TODO object size
 		switch(this->currentState){
@@ -122,7 +120,7 @@ public:
 		// pick up object with claws, stay on place open claws
 		case MODULE_STATE_PICKUP_OBJECT_MOVE_CLOSE_TO_OBJECT:
 
-			if (DEBUG_LOCAL) cout << "PickUpObject :: pick object that is " << clawsOpenMm << " mm width" << endl;
+			MyLog::log(LOG_DEBUG, TAG, "PickUpObject :: pick object that is " + to_string(clawsOpenMm) + " mm width");
 
 			restoreArmMove(mRoboticArm->getNextMove());
 			mRoboticArm->getNextMove()->setServo(SERVO_IDX_CLAWS, DIRECTION_OPEN, 0, clawsOpenMm);
@@ -134,7 +132,7 @@ public:
 
 		//move object to predefined position
 		case MODULE_STATE_PICKUP_OBJECT_PICK_OBJECT_WITH_CLAWS:
-			if (DEBUG_LOCAL) cout << "PickUpObject :: move object to predefined position" << endl;
+			MyLog::log(LOG_DEBUG, TAG, "PickUpObject :: move object to predefined position");
 
 			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BASE, DIRECTION_LEFT, 0, 0);
 			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, 19, 0);
@@ -156,7 +154,7 @@ public:
 
 		//release object
 		case MODULE_STATE_PICKUP_OBJECT_MOVE_OBJECT_TO_POSITION:
-			if (DEBUG_LOCAL) cout << "PickUpObject :: release object" << endl;
+			MyLog::log(LOG_DEBUG, TAG, "PickUpObject :: release object");
 
 			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BASE, DIRECTION_LEFT, 0, 0);
 			mRoboticArm->getNextMove()->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, 37, 0);
@@ -170,7 +168,7 @@ public:
 
 		// return back to default position
 		case MODULE_STATE_PICKUP_OBJECT_RELEASE_OBJECT:
-			if (DEBUG_LOCAL) cout << "PickUpObject :: return to default position" << endl;
+			MyLog::log(LOG_DEBUG, TAG, "PickUpObject :: return to default position");
 
 			mRoboticArm->getNextMove()->setDefaultPosition();
 			setModulState(MODULE_STATE_PICKUP_OBJECT_CONFIRM_OBJECT_IS_MISSING);
@@ -180,7 +178,7 @@ public:
 		case MODULE_STATE_PICKUP_OBJECT_CONFIRM_OBJECT_IS_MISSING:
 
 			if (mRoboticArmController->wasCommandExecuted(KEY_VERIFY_STATUS)){
-				if (DEBUG_LOCAL) cout << "PickUpObject :: return to default position" << endl;
+				MyLog::log(LOG_DEBUG, TAG, "PickUpObject :: return to default position");
 
 
 				if (lastMovePreprocessItem->detectedObjects.size() == 1){
@@ -216,7 +214,7 @@ public:
 	}
 
 	void resetContent(){
-		if (DEBUG_LOCAL) cout << "-- -- -- resetContent -- -- --" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "-- -- -- resetContent -- -- --");
 		setModulState(MODULE_STATE_NONE);
 		lastMoveMilis = 0;
 
@@ -229,7 +227,7 @@ public:
 	}
 
 	~PickUpObject(){
-		if (DEBUG_LOCAL) cout << "-- -- -- DESTRUCTOR: PickUpObject -- -- --" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "-- -- -- DESTRUCTOR: PickUpObject -- -- --");
 
 	}
 

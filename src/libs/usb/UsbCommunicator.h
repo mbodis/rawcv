@@ -17,6 +17,7 @@
 #include <string.h>
 #include <iostream>
 #include <stdio.h>
+#include "../../system/helper/MyLog.h"
 
 #include "../../application/config/AppConfig.h"
 
@@ -26,6 +27,7 @@ static char* USB_PORT;
 
 class UsbCommunicator {
 private:
+	string TAG = "UsbCommunicator";
 	int fd;
 
 public:

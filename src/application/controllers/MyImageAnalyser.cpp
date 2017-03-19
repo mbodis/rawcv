@@ -5,14 +5,7 @@
  *      Author: mbodis
  */
 
-#include "../controllers/MyImageAnalyser.h"
-
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
-using namespace cv;
-using namespace std;
+#include "MyImageAnalyser.h"
 
 /*
  * Main logic - repeating loop with new input from camera
@@ -69,7 +62,7 @@ void MyImageAnalyser::executeCustomLogic(Mat frame, long videoTime){
  * return set local variable true/false [isFrameMoving]
  */
 void MyImageAnalyser::detectMovement(){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::detectMovement" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::detectMovement");
 
 	if (outputColorFrame.data == 0) return;
 
@@ -89,10 +82,10 @@ void MyImageAnalyser::detectMovement(){
 
 		whitePercentage = (double)countNonZero(actualDiffBw) * 100
 				/ (detectMovementGrayFrame.cols * detectMovementGrayFrame.rows);
-		if (DEBUG_LOCAL) cout << "display moves percentage: " << whitePercentage << endl;
-		if (DEBUG_LOCAL) cout << "video_time: " << video_time << " " << (video_time - last_move_time) << endl;
-		if (DEBUG_LOCAL) cout << "last_move_tim: " << last_move_time << endl;
-		if (DEBUG_LOCAL) cout << "----------------------" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "display moves percentage: " + to_string(whitePercentage));
+		MyLog::log(LOG_DEBUG, TAG, "video_time: " + to_string(video_time) + " " + to_string(video_time - last_move_time));
+		MyLog::log(LOG_DEBUG, TAG, "last_move_time: " + to_string(last_move_time));
+		MyLog::log(LOG_DEBUG, TAG, "----------------------");
 
 		if (whitePercentage > THRESHOLD_MOVE_PERCENTAGE) {
 			setFrameIsMoving(true);
@@ -111,7 +104,7 @@ void MyImageAnalyser::detectMovement(){
 }
 
 void MyImageAnalyser::drawOutputInfo(Mat frame){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::drawOutputInfo" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::drawOutputInfo");
 
 	// draw moving info
 	string movingTxt = isFrameMoving ? "moving" : "not moving";
@@ -142,7 +135,7 @@ void MyImageAnalyser::drawOutputInfo(Mat frame){
 }
 
 void MyImageAnalyser::setFrameIsMoving(bool newValue){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::setFrameIsMoving" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::setFrameIsMoving");
 
 	if (this->isFrameMoving && newValue == false){
 		this->interestingFrame = true;
@@ -160,7 +153,7 @@ void MyImageAnalyser::setFrameIsMoving(bool newValue){
  *
  */
 void MyImageAnalyser::cropAndStretchTableBg(){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::cropAndStretchTableBg" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::cropAndStretchTableBg");
 
 	if (originalColorFrame.data == 0) return;
 
@@ -203,7 +196,7 @@ void MyImageAnalyser::cropAndStretchTableBg(){
 			int bbSize = bbox.height * bbox.width;
 			int frameSize = morphBinaryFrame.cols * morphBinaryFrame.rows;
 			double perc = bbSize * 100 / frameSize;
-			if (DEBUG_LOCAL) cout << "contour[" << i << "] =  " << perc <<endl;
+			MyLog::log(LOG_DEBUG, TAG, "contour[" + to_string(i) + "] =  " + to_string(perc));
 			if (perc > 60 ){
 				tableBb = bbox;
 				findTable = true;
@@ -211,7 +204,7 @@ void MyImageAnalyser::cropAndStretchTableBg(){
 				 rectangle(morphBinaryFrame, Point(bbox.x, bbox.y), Point(bbox.x+bbox.width, bbox.y+bbox.height), colorBlack, CV_FILLED);
 			}
 		}
-		if (DEBUG_LOCAL) showImg(morphBinaryFrame, "morphBinaryFrame");
+		//showImg(morphBinaryFrame, "morphBinaryFrame");
 
 		if (!findTable) return;
 
@@ -245,11 +238,11 @@ void MyImageAnalyser::cropAndStretchTableBg(){
 			}
 		}
 
-		if (DEBUG_LOCAL) cout << "lt.x= " << lt.x << " lt.y= " << lt.y << endl;
-		if (DEBUG_LOCAL) cout << "lb.x= " << lb.x << " lb.y= " << lb.y << endl;
-		if (DEBUG_LOCAL) cout << "rt.x= " << rt.x << " rt.y= " << rt.y << endl;
-		if (DEBUG_LOCAL) cout << "rb.x= " << rb.x << " rb.y= " << rb.y << endl;
-		if (DEBUG_LOCAL) cout << "-----------------------------------" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "lt.x= " + to_string(lt.x) + " lt.y= " + to_string(lt.y));
+		MyLog::log(LOG_DEBUG, TAG, "lb.x= " + to_string(lb.x) + " lb.y= " + to_string(lb.y));
+		MyLog::log(LOG_DEBUG, TAG, "rt.x= " + to_string(rt.x) + " rt.y= " + to_string(rt.y));
+		MyLog::log(LOG_DEBUG, TAG, "rb.x= " + to_string(rb.x) + " rb.y= " + to_string(rb.y));
+		MyLog::log(LOG_DEBUG, TAG, "-----------------------------------");
 
 		// corner validation -> points should be in 10% position in frame corners
 		double d_ltx = lt.x / morphBinaryFrame.cols * 100;
@@ -268,11 +261,11 @@ void MyImageAnalyser::cropAndStretchTableBg(){
 			return;
 		}
 
-		if (DEBUG_LOCAL) cout << "d_ltx= " << d_ltx << " d_lty= " << d_lty << endl;
-		if (DEBUG_LOCAL) cout << "d_lbx= " << d_lbx << " d_lby= " << d_lby << endl;
-		if (DEBUG_LOCAL) cout << "d_rtx= " << d_rtx << " d_rty= " << d_rty << endl;
-		if (DEBUG_LOCAL) cout << "d_rbx= " << d_rbx << " d_rby= " << d_rby << endl;
-		if (DEBUG_LOCAL) cout << "-----------------------------------" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "d_ltx= " + to_string(d_ltx) + " d_lty= " + to_string(d_lty));
+		MyLog::log(LOG_DEBUG, TAG, "d_lbx= " + to_string(d_lbx) + " d_lby= " + to_string(d_lby));
+		MyLog::log(LOG_DEBUG, TAG, "d_rtx= " + to_string(d_rtx) + " d_rty= " + to_string(d_rty));
+		MyLog::log(LOG_DEBUG, TAG, "d_rbx= " + to_string(d_rbx) + " d_rby= " + to_string(d_rby));
+		MyLog::log(LOG_DEBUG, TAG, "-----------------------------------");
 
 		// skip if corners where detected wrong
 		if (abs(lt.x - lb.x) > 30 || abs (lt.y - rt.y) > 30
@@ -280,8 +273,8 @@ void MyImageAnalyser::cropAndStretchTableBg(){
 			return;
 		}
 
-		// debug - draw corners
-		if (DEBUG_LOCAL){
+		// draw corners
+		if (false){
 			Mat cornerFrame = resizedFrame.clone();
 			for( int i = 0; i < corners.size(); i++ ){
 				circle( cornerFrame, corners[i], 4, Scalar(255,0,0), -1, 8, 0 );
@@ -312,7 +305,7 @@ void MyImageAnalyser::cropAndStretchTableBg(){
 		Mat perspectiveMat = getPerspectiveTransform(ptsTableCorners, ptsCroppedTable);
 		warpPerspective(morphBinaryFrame, stretchTable, perspectiveMat, Size(tableBb.width, tableBb.height));
 		warpPerspective(outputColorFrame, outputColorStretchFrame, perspectiveMat, Size(tableBb.width, tableBb.height));
-		if (DEBUG_LOCAL) showImg(stretchTable, "stretchTable");
+		//showImg(stretchTable, "stretchTable");
 
 		binaryTableCrop = stretchTable;
 	}
@@ -323,7 +316,7 @@ void MyImageAnalyser::cropAndStretchTableBg(){
  * output: set local variable - px for one mm
  */
 void MyImageAnalyser::recalculatePxToMm(Point p1, Point p2, int frameW, int frameH){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::recalculatePxToMm" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::recalculatePxToMm");
 
 	if (tableDetected){
 		if (!mmToPxCalculated){
@@ -333,7 +326,8 @@ void MyImageAnalyser::recalculatePxToMm(Point p1, Point p2, int frameW, int fram
 			oneMmInPxframeWidth = frameW;
 			oneMmInPxframeHeight = frameH;
 			mmToPxCalculated = true;
-			if (DEBUG_LOCAL) cout << "one MM to PX = " << TABLE_WIDTH_MM << "/" << distance << " = " <<  oneMmInPx << endl;
+			MyLog::log(LOG_DEBUG, TAG, "one MM to PX = " + to_string(TABLE_WIDTH_MM) + "/" + to_string(distance)
+					+ " = " + to_string(oneMmInPx));
 		}
 	}
 }
@@ -343,7 +337,7 @@ void MyImageAnalyser::recalculatePxToMm(Point p1, Point p2, int frameW, int fram
  * output: center point(x, y) of robotic arm
  */
 void MyImageAnalyser::detectArm(){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::detectArm" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::detectArm");
 
 	if (tableDetected){
 
@@ -366,11 +360,11 @@ void MyImageAnalyser::detectArm(){
 				int bbSize = bbox.height * bbox.width;
 				int frameSize = binaryWithoutArm.cols * binaryWithoutArm.rows;
 				double perc = bbSize * 100 / frameSize;
-				if (DEBUG_LOCAL) cout << "contour[" << i << "] =  " << perc << endl;
+				MyLog::log(LOG_DEBUG, TAG, "contour[" + to_string(i) + "] =  " + to_string(perc));
 
 				double verticalPos = (double) (bbox.y + bbox.height) / binaryWithoutArm.rows * 100;
 				double horizontalPos = (double) (bbox.x + bbox.width/2) / binaryWithoutArm.cols * 100;
-				if (DEBUG_LOCAL) cout << "pos: " << horizontalPos << " ver: " << verticalPos << endl;
+				MyLog::log(LOG_DEBUG, TAG, "pos: " + to_string(horizontalPos) + " ver: " + to_string(verticalPos));
 
 				// arm founded
 				if (horizontalPos > 48 && horizontalPos < 52 && verticalPos > 98){
@@ -409,11 +403,11 @@ void MyImageAnalyser::detectArm(){
 					rectangle(binaryWithoutArm, Point(armBb.x, armBb.y), Point(armBb.x+armBb.width, armBb.y+armBb.height), colorBlack, CV_FILLED);
 					armDetected = true;
 
-					if (DEBUG_LOCAL) showImg(myArm, "aarm");
-					if (DEBUG_LOCAL) cout << "arm detected" << endl;
+					//showImg(myArm, "aarm");
+					MyLog::log(LOG_DEBUG, TAG, "arm detected");;
 				}
 			}
-			if (DEBUG_LOCAL) cout << "-----------------------" << endl;
+			MyLog::log(LOG_DEBUG, TAG, "-----------------------");
 		}
 	}
 }
@@ -423,7 +417,7 @@ void MyImageAnalyser::detectArm(){
  * output: true/false if there is any other object expect arm on table
  */
 void MyImageAnalyser::detectObjects(){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::detectObjects" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::detectObjects");
 
 	detectedObjects.clear();
 
@@ -445,7 +439,7 @@ void MyImageAnalyser::detectObjects(){
 			// filter small thrash
 			Rect bbox = boundingRect(contours[i]);
 			if (bbox.width < 5 || bbox.height < 5){
-				if (DEBUG_LOCAL) cout << "skipping rect TOO SMALL " << endl;
+				MyLog::log(LOG_DEBUG, TAG, "skipping rect TOO SMALL ");
 				continue;
 			}
 
@@ -462,7 +456,7 @@ void MyImageAnalyser::detectObjects(){
 }
 
 void MyImageAnalyser::saveImageForProcessing(){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::saveImageForProcessing" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::saveImageForProcessing");
 
 	if (interestingFrame && isObjectDetected){
 		mInputStorage->addToProcessingQueue(originalColorFrame, binaryWithoutArm, armCenter, detectedObjects, oneMmInPx);
@@ -479,7 +473,7 @@ void MyImageAnalyser::saveImageForProcessing(){
 }
 
 void MyImageAnalyser::saveInputFrame(Mat frame, long videoTime){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::saveInputFrame" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::saveInputFrame");
 
 	if (startTime == 0){
 		startTime = videoTime;
@@ -508,14 +502,14 @@ void MyImageAnalyser::saveInputFrame(Mat frame, long videoTime){
 }
 
 void MyImageAnalyser::detectMovementResetStates(){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::detectMovementResetStates" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::detectMovementResetStates");
 
 	interestingFrame = false;
 	detectMovementLastGrayFrame = detectMovementGrayFrame.clone();
 }
 
 void MyImageAnalyser::showOutput(){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::showOutput" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::showOutput");
 
 //    this->showImg(originalColorFrame, "originalColorFrame");
 //    this->showImg(outputColorFrame, "outpuColorFrame");
@@ -528,7 +522,7 @@ void MyImageAnalyser::showOutput(){
  * show images saved through application and show them on main thread - GUI
  */
 void MyImageAnalyser::showImageFromBackground(){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::showOutput" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::showOutput");
 
 	while (mInputStorage->getDisplayQueueSize() >0){
 		ImageStoreItem mImageStoreItem = mInputStorage->getImgFromDiplayQueue();
@@ -540,12 +534,12 @@ void MyImageAnalyser::showImageFromBackground(){
  * show image with fallback for possible empty image
  */
 void MyImageAnalyser::showImg(Mat frame, String frameName){
-	if (DEBUG_LOCAL) cout << "MyImageAnalyser::showOutput" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MyImageAnalyser::showOutput");
 
 	if (frame.dims != 0) {
 		imshow(frameName, frame);
 	} else {
-		if (DEBUG_LOCAL) cout << frameName << " is EMPTY !" << endl;
+		MyLog::log(LOG_DEBUG, TAG, frameName + " is EMPTY !");
 	}
 }
 

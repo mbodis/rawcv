@@ -24,7 +24,7 @@
 
 class MainLogic{
 private:
-	bool DEBUG_LOCAL = false;
+	string TAG = "MainLogic";
 	int LOOP_SLEEP_TIME = 500000; //0.5 sec
 
 	/*

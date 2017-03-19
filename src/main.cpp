@@ -24,6 +24,7 @@ using namespace std;
 #include "application/controllers/MyImageAnalyser.h"
 #include "system/controllers/ImageAnalyser.h"
 #include "testing/RoboticArmControllingTest.h"
+#include "system/helper/MyLog.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -33,10 +34,9 @@ using namespace std;
  * NOTE: do not modify !
  */
 int main(int argc, char **argv) {
-
 	cout << cv::getBuildInformation() << endl;
 	AppConfig &mAppConfig = AppConfig::getInstance();
-	mAppConfig.CAMERA_IDX = 1;
+	mAppConfig.CAMERA_IDX = 2;
 	mAppConfig.USB_PORT = "/dev/ttyACM0";
 
 	// main logic
@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 	(new ProcessingFacade(new MyImageAnalyser()))->runAnalyse();
 
 	delete mStateController;
-	cout << "-- -- -- EXIT -- -- --" << endl;
+	MyLog::log(LOG_INFO, "main", "-- -- -- EXIT -- -- --");
 
 	return 0;
 }

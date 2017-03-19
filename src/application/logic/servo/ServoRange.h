@@ -8,7 +8,12 @@
 #ifndef SRC_APPLICATION_LOGIC_SERVO_SERVORANGE_H_
 #define SRC_APPLICATION_LOGIC_SERVO_SERVORANGE_H_
 
+#include "../../../system/helper/MyLog.h"
+
 class ServoRange : public ServoIface{
+private:
+	string TAG = "ServoRange";
+
 public:
 	int directionOpen = 0; // 1 == adding move to this direction, -1 == subtract to this direction
 	int directionClose = 0; // 1 == adding move to this direction, -1 == subtract to this direction
@@ -38,7 +43,7 @@ public:
 			}
 		}
 
-		cout << "convertMmToMilis: invalid mm size, servo idx:" << idx << endl;
+		MyLog::log(LOG_ERROR, TAG, "convertMmToMilis: invalid mm size, servo idx:" + to_string(idx));
 		return SERVO_POSITION_DEFAULT_MILIS;
 	}
 };

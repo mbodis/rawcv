@@ -30,13 +30,13 @@ void VideoFrameProcessingRunEveryFrame::start() {
 	bool isRunning = true;
 	while(isRunning){
 		if (!capture.isOpened()) { //check if video device has been initialized
-			cout << "cannot open video file" << endl;
+			MyLog::log(LOG_ERROR, "VideoFrameProcessingRunEveryFrame", "cannot open video file");
 			isRunning = false;
 		}else{
 			v_ts = capture.get(CV_CAP_PROP_POS_MSEC);
 			capture >> mat;
 			if (mat.dims == 0){
-				cout << "end of video file" << endl;
+				MyLog::log(LOG_ERROR, "VideoFrameProcessingRunEveryFrame", "end of video file");
 				break;
 			}
 			isRunning = mImageAnalyser->analyse(mat, v_ts);

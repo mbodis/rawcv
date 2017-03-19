@@ -5,11 +5,7 @@
  *      Author: mbodis
  */
 
-#include <opencv2/highgui/highgui.hpp>
-
 #include "DirImageFrameProcessing.h"
-
-using namespace cv;
 
 DirImageFrameProcessing::DirImageFrameProcessing(AppConfig *mAppConfig, ImageAnalyser *mImageAnalyser, SourcePath *sourcePath):
     FrameProcessing(sourcePath, mAppConfig){
@@ -19,8 +15,8 @@ DirImageFrameProcessing::DirImageFrameProcessing(AppConfig *mAppConfig, ImageAna
 
     selectedImagePath = mFileSystemHelper->getFileInFolder((char*)sourcePath->path.c_str(), 0);
     currentFrame = imread(selectedImagePath);
-    cout << "number files in folder : " << folderSize << endl;
-    cout << "selected image: " << selectedImagePath << endl;
+    MyLog::log(LOG_INFO, TAG, "number files in folder : " + to_string(folderSize));
+    MyLog::log(LOG_INFO, TAG, "selected image: " + selectedImagePath);
 
     this->mImageAnalyser = mImageAnalyser;
 }
@@ -54,7 +50,7 @@ void DirImageFrameProcessing::left() {
 
 		selectedImagePath = mFileSystemHelper->getFileInFolder(
 				(char*) sourcePath->path.c_str(), selectedImage);
-		cout << "selected image: " << selectedImagePath << endl;
+		MyLog::log(LOG_INFO, TAG, "selected image: " + selectedImagePath);
         currentFrame = imread(selectedImagePath);		
 	}
     
@@ -70,7 +66,7 @@ void DirImageFrameProcessing::right() {
 
 		selectedImagePath = mFileSystemHelper->getFileInFolder(
 				(char*) sourcePath->path.c_str(), selectedImage);
-		cout << "selected image: " << selectedImagePath << endl;
+		MyLog::log(LOG_INFO, TAG, "selected image: " + selectedImagePath);
         currentFrame = imread(selectedImagePath);		
 	}
     

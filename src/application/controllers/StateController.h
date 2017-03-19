@@ -9,6 +9,7 @@
 #define SRC_APPLICATION_CONTROLLERS_STATECONTROLLER_H_
 
 #include <thread>
+#include <unistd.h>
 
 #include "../../system/controllers/ImageAnalyser.h"
 #include "../logic/robotic_arm/RoboticArm.h"

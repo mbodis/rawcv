@@ -6,21 +6,13 @@
  */
 
 #include "VideoFrameProcessing.h"
-#include <opencv2/highgui/highgui.hpp>
-
-using namespace std;
-using namespace cv;
-
-#include <thread>
-#include "../path/SourcePath.h"
-#include "../../../controllers/ImageAnalyser.h"
-#include "../../../config/Constants.h"
 
 /* SHARED PROCESSING LABEL*/
 bool isInputFinished = false;
 Mat frameShared, processingFrame;
 int videoTimeShared = 0;
 bool lockClone = false;
+
 /*
  * sourcePath   ==> path to .avi or url
  * isRT         ==> (RT like Real Time) if is urlPath then have true value
@@ -29,7 +21,7 @@ void VideoFrameProcessing::runRTV(SourcePath *sourcePath) {
 	VideoCapture capture;
 
 	capture.set(CV_CAP_PROP_BUFFERSIZE, 1);    
-    cout<<"sourcePath->path.c_str(): " << sourcePath->path.c_str() << endl;
+	MyLog::log(LOG_INFO, "VideoFrameProcessing", "sourcePath->path.c_str(): " + sourcePath->path);
 	if (!capture.open(sourcePath->path.c_str())){
 		throw std::logic_error("VideoFrameProcessing::runRTV Error opening video stream or file");
 	}

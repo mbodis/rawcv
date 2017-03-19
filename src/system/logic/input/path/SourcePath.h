@@ -26,8 +26,8 @@ public:
 			this->cameraIdx = cameraIdx;
 	}
 
-	virtual int getSourceType(){ throw "Use subclass"; };
-	virtual ~SourcePath(){ throw "Use subclass"; };
+	virtual int getSourceType(){ throw std::logic_error("Use subclass"); };
+	virtual ~SourcePath(){ throw std::logic_error("Use subclass"); };
 };
 
 

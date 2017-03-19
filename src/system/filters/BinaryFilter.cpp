@@ -7,24 +7,13 @@
 
 #include "../filters/BinaryFilter.h"
 
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <iostream>
-#include <stdio.h>
-#include "../../application/config/AppConfig.h"
-
-using namespace std;
-using namespace cv;
-
-
 /*
  * inBinMat : binary image 
  * outBinMat: binary image with filled small holes
- * percentageLimit: fiter all small object by percentage 
+ * percentageLimit: filter all small object by percentage
  *      (e.g. 4% means it will remove all white blobs that BB size is smaller than 4% of full img size )
  *
- * desc:
+ * description:
  * 		1) find contours in bwImage
  * 		2) filter only small detected objects by limit
  * 		3) fill object with white color
@@ -33,7 +22,7 @@ void BinaryFilter::fillHoles(Mat *inBinMat, Mat *outBinMat, double percentageLim
     bool LOCAL_DEBUG = false;
     
     int sizeSq = inBinMat->cols * inBinMat->rows;
-    if (LOCAL_DEBUG) cout << "input sizeSqPx: " << sizeSq <<  " limit:" << percentageLimit << endl;
+    MyLog::log(LOG_DEBUG, TAG, "input sizeSqPx: " +  std::to_string(sizeSq) + " limit:" + to_string(percentageLimit));
     
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
@@ -44,7 +33,7 @@ void BinaryFilter::fillHoles(Mat *inBinMat, Mat *outBinMat, double percentageLim
 	// bounding box
 	vector<vector<Point> > contours_poly(contours.size());
 	vector<Rect> boundRect(contours.size());
-    if (LOCAL_DEBUG) cout << "contours.size(): " << contours.size() << endl;
+    MyLog::log(LOG_DEBUG, TAG, "contours.size(): " + to_string(contours.size()));
 
 	// filling holes
 	Mat holesMat = Mat::zeros(inBinMat->size(), CV_8UC3);
@@ -52,8 +41,7 @@ void BinaryFilter::fillHoles(Mat *inBinMat, Mat *outBinMat, double percentageLim
 
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
 		boundRect[i] = boundingRect(Mat(contours_poly[i]));
-        if (LOCAL_DEBUG)
-            cout << "contours.at(i).size(): " << contours.at(i).size() << endl;
+       	MyLog::log(LOG_DEBUG, TAG, "contours.at(i).size(): " + to_string(contours.at(i).size()));
 
 		if ((double)((double)(boundRect[i].width*boundRect[i].height)/sizeSq *100) < percentageLimit) {
 
@@ -80,9 +68,9 @@ void BinaryFilter::fillHoles(Mat *inBinMat, Mat *outBinMat, double percentageLim
 /*
  * bwMat: binary image
  * output: binary image with removed noise
- * percentageLimit: fiter all small object by percentage 
+ * percentageLimit: filter all small object by percentage
  *      (e.g. 4% means it will remove all white blobs that BB size is smaller than 4% of full img size )
- * desc:
+ * description:
  * 		1) find contours
  * 		2) get BB on contours
  * 		3) filter contours and by size 1-2px
@@ -91,13 +79,14 @@ void BinaryFilter::fillHoles(Mat *inBinMat, Mat *outBinMat, double percentageLim
  */
 void BinaryFilter::removeNoise(Mat *inBinMat, Mat *outBinMat, double percentageLimit) {
     bool LOCAL_DEBUG = false;
+
     Mat debugSmallNoise = Mat::zeros(inBinMat->size(), CV_8UC3);
     Mat debugLargeNoise = Mat::zeros(inBinMat->size(), CV_8UC3);
     
     *outBinMat = inBinMat->clone();
     
     int sizeSq = inBinMat->cols * inBinMat->rows;
-    if (LOCAL_DEBUG) cout << "input sizeSqPx: " << sizeSq <<  " limit:" << percentageLimit << endl;
+    MyLog::log(LOG_DEBUG, TAG, "input sizeSqPx: " + to_string(sizeSq) + " limit:" + to_string(percentageLimit));
     
 	Mat filteredContours = Mat::zeros(inBinMat->size(), CV_8UC3);
 	Mat boundingBoxes = Mat::zeros(inBinMat->size(), CV_8UC3);
@@ -113,13 +102,12 @@ void BinaryFilter::removeNoise(Mat *inBinMat, Mat *outBinMat, double percentageL
     for (int i = 0; i < contours.size(); i++) {
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
 		boundRect[i] = boundingRect(Mat(contours_poly[i]));
-        if (LOCAL_DEBUG)
-            cout << "contours.at(i).size(): " << contours.at(i).size() 
-            << " bb: " << (boundRect[i].width*boundRect[i].height) 
-            << " tot: " << (double)((double)(boundRect[i].width*boundRect[i].height)/sizeSq *100) << "%"
-            << endl;	
+       	MyLog::log(LOG_DEBUG, TAG, "contours.at(i).size(): " + to_string(contours.at(i).size())
+            + " bb: " + to_string((boundRect[i].width*boundRect[i].height))
+            + " tot: " + to_string((double)((double)(boundRect[i].width*boundRect[i].height)/sizeSq *100)) +  "%");
+
     }
-    if (LOCAL_DEBUG) cout << "contours.size(): " << contours.size() << endl;    
+  	MyLog::log(LOG_DEBUG, TAG, "contours.size(): " + to_string(contours.size()));
 
 	// filter 1-2 px noise
     for (int i = 0; i < contours.size(); i++) {
@@ -164,11 +152,11 @@ void BinaryFilter::removeNoise(Mat *inBinMat, Mat *outBinMat, double percentageL
  * bwMat: binary image
  * output: binary image with filled areas
  * 
- * desc:
+ * description:
  *      we have a binary image with large object inside, but it has some error and 
- *      it's not 100% filled, we wanto to find short gap in vertical direction and fill them
+ *      it's not 100% filled, we want to to find short gap in vertical direction and fill them
  * 
- * 		1) count nonZero pxs in columns
+ * 		1) count nonZero pixels in columns
  * 		2) find first and last pixel
  * 		3) join founded pixels with line 
  */
@@ -179,7 +167,7 @@ void BinaryFilter::fillVerticalHoles(Mat *inBinMat, Mat *outBinMat, double rowWh
     *outBinMat = inBinMat->clone();
 
     int sizeSq = inBinMat->cols * inBinMat->rows;
-    if (LOCAL_DEBUG) cout << "input sizeSqPx: " << sizeSq <<  " limit:" << rowWhitePerc << endl;
+    MyLog::log(LOG_DEBUG, TAG, "input sizeSqPx: " + to_string(sizeSq) + " limit: " + to_string(rowWhitePerc));
     
     for (int col = 0; col < outBinMat->cols; col++) {
         double columnPercen = (double) countNonZero(outBinMat->col(col)) / inBinMat->rows * 100;
@@ -218,6 +206,9 @@ void BinaryFilter::fillVerticalHoles(Mat *inBinMat, Mat *outBinMat, double rowWh
 
 }
 
+/*
+ * does input binary matrix contains any zeros in rectangle area by p1 and p2
+ */
 bool BinaryFilter::hasBBAnyZeros(Mat *bwMat, Point p1, Point p2) {
 
 	cv::Rect area(p1.x, p1.y, p2.x - p1.x, p2.y - p1.y);

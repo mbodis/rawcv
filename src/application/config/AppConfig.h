@@ -68,6 +68,7 @@ const int CLAWS_OBJECT_MAX_MM = 50;
  */
 class AppConfig{
 private:
+	string TAG = "AppConfig";
     bool isFontSizeSet = false;
 
     AppConfig();	// Private so that it can  not be called

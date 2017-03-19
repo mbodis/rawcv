@@ -1,8 +1,5 @@
 /*
  * ColorManipulation.h
- *
- *  Created on: Jun 21, 2016
- *      Author: jgal
  * source: http://stackoverflow.com/questions/5919663/how-does-photoshop-blend-two-images-together
  */
 

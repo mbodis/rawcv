@@ -8,10 +8,14 @@
 #ifndef SRC_HELPER_BBHELPER_H_
 #define SRC_HELPER_BBHELPER_H_
 
+#include <iostream>
+#include <stdio.h>
+
 #include <opencv2/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include "../../application/config/AppConfig.h"
 
+using namespace std;
 using namespace cv;
 
 /*

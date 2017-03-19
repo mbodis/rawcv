@@ -15,11 +15,7 @@ using namespace cv;
 #include "RoboticArmMove.h"
 #include "../../config/AppConfig.h"
 
-static bool MOVE_VISUALIZATION_LOCAL_DEBUG = false;
-
 class MoveVisualization{
-private:
-
 public:
 
 	/*
@@ -27,7 +23,9 @@ public:
 	 * show last move - skip default (not interesting)
 	 */
 	static void showArmPositionTopView(InputStorage *mImageStorage, RoboticArm *arm, ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
-		if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "MainLogic::showArmPosition" << endl;
+		string TAG = "MoveVisualization";
+
+		MyLog::log(LOG_DEBUG, TAG, "MainLogic::showArmPosition");
 
 		/*
 		 * TOP VIEW
@@ -86,6 +84,7 @@ public:
 	 * note: input values are in millimeters -> scaled with some ratio for better visualization
 	 */
 	static void showArmPositionSideView(InputStorage *mImageStorage, RoboticArm *arm, ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
+		string TAG = "MoveVisualization";
 
 		if (!arm->getNextMove()->isMoveDefault()){
 
@@ -103,14 +102,14 @@ public:
 			// object px -> mm
 			int objectWidthPx = max(mImagePreprocessItem->detectedObjects[mImagePreprocessItem->getObjectIndex()].boundingRect().width, mImagePreprocessItem->detectedObjects[mImagePreprocessItem->getObjectIndex()].boundingRect().height);
 			int objectWidthMm = objectWidthPx * mImagePreprocessItem->oneMmInPx;
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "objectWidthPx: " << objectWidthPx << endl;
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "objectWidthMm: " << objectWidthMm << endl;
+			MyLog::log(LOG_DEBUG, TAG, "objectWidthPx: " + to_string(objectWidthPx));
+			MyLog::log(LOG_DEBUG, TAG, "objectWidthMm: " + to_string(objectWidthMm));
 
 			// object distance px -> mm
 			int objectDistanceFromArmPx = cv::norm((Point)mImagePreprocessItem->armCenter - (Point) mImagePreprocessItem->detectedObjects[mImagePreprocessItem->getObjectIndex()].center );
 			int objectDistanceFromArmMm = objectDistanceFromArmPx * mImagePreprocessItem->oneMmInPx;
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "objectDistanceFromArmPx: " << objectDistanceFromArmPx << endl;
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "objectDistanceFromArmMm: " << objectDistanceFromArmMm << endl;
+			MyLog::log(LOG_DEBUG, TAG, "objectDistanceFromArmPx: " + objectDistanceFromArmPx);
+			MyLog::log(LOG_DEBUG, TAG, "objectDistanceFromArmMm: " + objectDistanceFromArmMm);
 
 			// angle
 			int armAngle1 = mRoboticArmMove->getAngleForServo(SERVO_IDX_BOTTOM_JOINT);
@@ -147,30 +146,30 @@ public:
 			int joint1X = MathHelper::sinDeg(180+armAngle1) * ARM_PART_1_PX; // -1 because of visualization
 			int joint1Y = MathHelper::sinDeg(90+armAngle1) * ARM_PART_1_PX;
 			Point joint1Center = Point(baseJointX - joint1X, baseJointY - joint1Y);
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "joint1X: " << joint1X << " joint1Y: " << joint1Y << endl;
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "joint1CenterX: " << joint1Center.x << " joint1CenterY: " << joint1Center.y << endl;
+			MyLog::log(LOG_DEBUG, TAG, "joint1X: " + to_string(joint1X) + " joint1Y: " + to_string(joint1Y));
+			MyLog::log(LOG_DEBUG, TAG, "joint1CenterX: " + to_string(joint1Center.x) + " joint1CenterY: " + to_string(joint1Center.y));
 			line(viewSideMat, baseCenter, joint1Center, colorWhite, 4, 8);
 
 			//arm part 2
 			int joint2X = MathHelper::sinDeg(180+armAngle2) * ARM_PART_2_PX; // -1 because of visualization
 			int joint2Y = MathHelper::sinDeg(90+armAngle2) * ARM_PART_2_PX;
 			Point joint2Center = Point(joint1Center.x - joint2X, joint1Center.y - joint2Y);
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "joint2X: " << joint2X << " joint2Y: " << joint2Y << endl;
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "joint2CenterX: " << joint2Center.x << " joint2CenterY: " << joint2Center.y << endl;
+			MyLog::log(LOG_DEBUG, TAG, "joint2X: " + to_string(joint2X) + " joint2Y: " + to_string(joint2Y));
+			MyLog::log(LOG_DEBUG, TAG, "joint2CenterX: " + to_string(joint2Center.x) + " joint2CenterY: " + to_string(joint2Center.y));
 			line(viewSideMat, joint1Center, joint2Center, colorWhite, 4, 8);
 
 			//arm part 3
 			int joint3X = MathHelper::sinDeg(180+armAngle3) * ARM_PART_3_PX; // -1 because of visualization
 			int joint3Y = MathHelper::sinDeg(90+armAngle3) * ARM_PART_3_PX;
 			Point joint3Center = Point(joint2Center.x - joint3X, joint2Center.y - joint3Y);
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "joint3X: " << joint3X << " joint3Y: " << joint3Y << endl;
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "joint3CenterX: " << joint3Center.x << " joint3CenterY: " << joint3Center.y << endl;
+			MyLog::log(LOG_DEBUG, TAG, "joint3X: " + to_string(joint3X) + " joint3Y: " + to_string(joint3Y));
+			MyLog::log(LOG_DEBUG, TAG, "joint3CenterX: " + to_string(joint3Center.x) + " joint3CenterY: " + to_string(joint3Center.y));
 			line(viewSideMat, joint2Center, joint3Center, colorWhite, 4, 8);
 
 			double armObjectDistanceFromArmPx = cv::norm((Point)joint3Center - Point(marginLeftPx + baseWidthPx/2 + objectDistanceFromArmPx, viewSideMat.rows - marginBottomPx - OBJECT_DEPTH_MM) );
 			double armObjectDistanceFromArmMm = armObjectDistanceFromArmPx * mImagePreprocessItem->oneMmInPx;
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "armObjectDistanceFromArmPx: " << armObjectDistanceFromArmPx << endl;
-			if (MOVE_VISUALIZATION_LOCAL_DEBUG) cout << "armObjectDistanceFromArmMm: " << armObjectDistanceFromArmMm << endl;
+			MyLog::log(LOG_DEBUG, TAG, "armObjectDistanceFromArmPx: " + to_string(armObjectDistanceFromArmPx));
+			MyLog::log(LOG_DEBUG, TAG, "armObjectDistanceFromArmMm: " + to_string(armObjectDistanceFromArmMm));
 
 			// draw base rotate center
 			circle(viewSideMat, baseCenter, 7, colorRed, 2);

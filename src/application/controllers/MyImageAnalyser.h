@@ -28,9 +28,7 @@ static double THRESHOLD_MOVE_PERCENTAGE = 0.02;
 
 class MyImageAnalyser: public ImageAnalyser{
 private:
-
-	bool DEBUG_LOCAL = false;
-
+	string TAG = "MyImageAnalyser";
 	InputStorage *mInputStorage;
 
 	// video time

@@ -8,6 +8,11 @@
 #ifndef SRC_APPLICATION_LOGIC_INPUTSTORAGE_H_
 #define SRC_APPLICATION_LOGIC_INPUTSTORAGE_H_
 
+#include <queue>
+#include <list>
+#include <map>
+#include <iostream>
+#include <sys/time.h>
 
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core.hpp>
@@ -15,16 +20,9 @@
 
 #include "image/ImageDisplayItem.h"
 #include "image/ImagePreprocessItem.h"
-using namespace cv;
-
 #include "../../system/config/Constants.h"
 
-#include <queue>          // std::stack
-#include <list>          // std::stack
-#include <map>          // std::stack
-#include <iostream>
-#include <sys/time.h>
-
+using namespace cv;
 using namespace std;
 
 static string IMAGE_VIEW_TOP = "view_top";

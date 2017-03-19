@@ -12,6 +12,12 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <iostream>
+#include <stdio.h>
+#include "../../application/config/AppConfig.h"
+#include "../helper/MyLog.h"
+
+using namespace std;
 using namespace cv;
 
 
@@ -20,6 +26,7 @@ using namespace cv;
  */
 class BinaryFilter{
 private:
+	string TAG = "BinaryFilter";
 
 public:
 	void fillHoles(Mat*, Mat*, double = 2);

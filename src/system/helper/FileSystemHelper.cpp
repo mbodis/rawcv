@@ -5,30 +5,7 @@
  *      Author: mbodis
  */
 
-#include <opencv2/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
-#include <iostream>
-#include <stdio.h>
-#include <dirent.h>
-#include <cassert>
-#include <exception>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <fstream>
-
-#include <algorithm>
-#include <string>
-#include <vector>
-#include <dirent.h>
-#include <sys/types.h>
-
 #include "FileSystemHelper.h"
-
-using namespace std;
-using namespace cv;
 
 bool FileSystemHelper::DirectoryExists(const char* pzPath) {
 	if (pzPath == NULL)
@@ -63,7 +40,7 @@ int FileSystemHelper::getNumberFilesInFolder(const char* folderName) {
 		}
 		closedir(dir);
 	} else {
-		cout << "folder " << folderName << " does not exists" << endl;
+		MyLog::log(LOG_INFO, "FileSystemHelper", "folder " + ((string)folderName) + " does not exists");
 	}
 
 	return count;
@@ -111,7 +88,7 @@ string FileSystemHelper::getFileInFolder(char* folderName, int selectedFileIdx) 
 }
 
 /*
- *
+ * return file content as string
  */
 string FileSystemHelper::getFileContent(char* path){
 	ifstream inFile;

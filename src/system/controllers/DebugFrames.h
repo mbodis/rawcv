@@ -8,14 +8,22 @@
 #ifndef SRC_LOGIC_DEBUGFRAMES_H_
 #define SRC_LOGIC_DEBUGFRAMES_H_
 
+
+#include <iostream>
+#include <opencv2/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 #include "../../application/config/AppConfig.h"
 #include "../../system/config/Constants.h"
 #include "../../system/helper/FileSystemHelper.h"
+#include "../../system/helper/DrawMethodHelper.h"
+#include "../../system/helper/MyLog.h"
 
 using namespace std;
 using namespace cv;
+
+
 
 /*
  * debug options:
@@ -26,6 +34,7 @@ using namespace cv;
 class DebugFrames {
 
 private:
+	string TAG = "DebugFrames";
 	
     // save output
     FileSystemHelper mFileSystemHelper;

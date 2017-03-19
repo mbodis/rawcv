@@ -5,18 +5,7 @@
  *      Author: mbodis
  */
 
-#include <opencv2/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-
-#include <iostream>
-
-using namespace std;
-using namespace cv;
-
 #include "DrawMethodHelper.h"
-
-#include "../config/Constants.h"
-#include "../../application/config/AppConfig.h"
 
 /*
  * draw rectangle with color borders

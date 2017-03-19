@@ -21,7 +21,7 @@ using namespace std;
 class ProcessingFacade{    
     
 private:
-    
+    string TAG = "ProcessingFacade";
     void runDirImageFrameProcessing();
 	void runVideoFrameProcessing();
     void runVideoFrameProcessingRunEveryFrame();

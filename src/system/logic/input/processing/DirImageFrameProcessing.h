@@ -8,17 +8,21 @@
 #ifndef SRC_LOGIC_FRAME_PROCESSING_DIRIMAGEFRAMEPROCESSING_H_
 #define SRC_LOGIC_FRAME_PROCESSING_DIRIMAGEFRAMEPROCESSING_H_
 
+#include <opencv2/highgui/highgui.hpp>
+
 #include "FrameProcessing.h"
 #include "../keyboard/abstract/Move.h"
 #include "../../../helper/FileSystemHelper.h"
 #include "../../../../application/config/AppConfig.h"
 #include "../../../controllers/ImageAnalyser.h"
 
+using namespace cv;
 using namespace std;
 
 
 class DirImageFrameProcessing : public FrameProcessing, public Move{
 private:
+	string TAG = "DirImageFrameProcessing";
 	bool isFinished = false;
 	int folderSize;
 	int selectedImage;

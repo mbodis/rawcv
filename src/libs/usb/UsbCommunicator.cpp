@@ -9,7 +9,7 @@
 
 
 UsbCommunicator::UsbCommunicator(){
-	cout << "-- -- -- CONSTRUCTOR: UsbCommunicator-- -- --" << endl;
+	MyLog::log(LOG_INFO, TAG, "-- -- -- CONSTRUCTOR: UsbCommunicator-- -- --");
 
 	AppConfig &mAppConfig = AppConfig::getInstance();
 	USB_PORT = (char*)mAppConfig.USB_PORT.c_str();
@@ -17,8 +17,8 @@ UsbCommunicator::UsbCommunicator(){
 	fd = open(USB_PORT, O_RDWR);
 	if (fd == -1) {
 		 perror(USB_PORT);
-		 cout << "UsbCommunicator failed to open port: " << USB_PORT << " please ensure device is plugged in "<< endl;
-//		 throw std::logic_error("UsbCommunicator failed to open port");
+		 MyLog::log(LOG_ERROR, TAG, "UsbCommunicator failed to open port: " + mAppConfig.USB_PORT + " please ensure device is plugged in ");
+		 //throw std::logic_error("UsbCommunicator failed to open port");
 	}
 
 	struct termios tios;
@@ -36,7 +36,7 @@ UsbCommunicator::UsbCommunicator(){
 }
 
 UsbCommunicator::~UsbCommunicator(){
-	cout << "-- -- -- DESTRUCTOR: UsbCommunicator-- -- --" << endl;
+	MyLog::log(LOG_INFO, TAG, "-- -- -- DESTRUCTOR: UsbCommunicator-- -- --");
 
 }
 

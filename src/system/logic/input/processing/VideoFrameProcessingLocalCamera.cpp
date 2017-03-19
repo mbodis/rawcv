@@ -6,26 +6,6 @@
  */
 
 #include "VideoFrameProcessingLocalCamera.h"
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/objdetect/objdetect.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
-#include <iostream>
-#include <stdio.h>
-#include <cstdio>
-#include <string>
-
-using namespace std;
-using namespace cv;
-
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
-
-#include <thread>
-#include "../path/SourcePath.h"
-#include "../../../config/Constants.h"
 
 /* SHARED PROCESSING LABEL*/
 bool isInputFinished2 = false;
@@ -41,7 +21,7 @@ void VideoFrameProcessingLocalCamera::runRTV(SourcePath *sourcePath) {
 	VideoCapture stream1(sourcePath->cameraIdx);
 
 	if (!stream1.isOpened()) {
-		cout << "camera index " << sourcePath->cameraIdx << " is not working please try different idx" << endl;
+		MyLog::log(LOG_ERROR, "VideoFrameProcessingLocalCamera", "camera index " + to_string(sourcePath->cameraIdx) + " is not working please try different idx");
 		throw std::logic_error(" VideoFrameProcessingLocalCamera Error opening camera stream");
 	}
 
@@ -90,7 +70,7 @@ void VideoFrameProcessingLocalCamera::startEveryFrame() {
 
 	stream1.set(CV_CAP_PROP_BUFFERSIZE, 1);
 	if (!stream1.isOpened())
-		throw "Error opening video stream or file";
+		throw std::logic_error("Error opening video stream or file");
 
 	int v_ts;
 	Mat mat;
@@ -98,13 +78,13 @@ void VideoFrameProcessingLocalCamera::startEveryFrame() {
 	bool isRunning = true;
 	while(isRunning){
 		if (!stream1.isOpened()) { //check if video device has been initialized
-			cout << "cannot open video file" << endl;
+			MyLog::log(LOG_ERROR, "VideoFrameProcessingLocalCamera", "cannot open video file");
 			isRunning = false;
 		}else{
 			v_ts = stream1.get(CV_CAP_PROP_POS_MSEC);
 			stream1 >> mat;
 			if (mat.dims == 0){
-				cout << "end of video file" << endl;
+				MyLog::log(LOG_ERROR, "VideoFrameProcessingLocalCamera", "end of video file");
 				break;
 			}
 			isRunning = mImageAnalyser->analyse(mat, v_ts);

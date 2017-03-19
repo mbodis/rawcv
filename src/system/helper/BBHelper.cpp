@@ -6,17 +6,13 @@
  */
 
 #include "BBHelper.h"
-#include "../../application/config/AppConfig.h"
-
-#include <iostream>
-#include <stdio.h>
-
-using namespace std;
-using namespace cv;
 
 
 /*
- * TODO
+ * bwMat : binary image
+ * bb: rectangle
+ *
+ * result: if BB is more than 90% of binaryInputMat
  */
 bool BBHelper::isBBFillingAllHeight(Mat *bwMat, Rect bb){
 

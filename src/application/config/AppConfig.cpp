@@ -41,7 +41,7 @@ string getStrByKey(wstring wkey, JSONObject root){
 	string key(wkey.begin(), wkey.end());
 
 	if (root.find(wkey) == root.end() || !root[wkey]->IsString()){
-		cout << "json file required " << key << " attr" << endl;
+		MyLog::log(LOG_INFO, "AppConfig", "json file required " + key + " attr");
 		return "";
 	}
 	wstring ws = root[wkey]->AsString();
@@ -56,7 +56,7 @@ double getNumberByKey(wstring wkey, JSONObject root){
 	string key(wkey.begin(), wkey.end());
 
 	if (root.find(wkey) == root.end() || !root[wkey]->IsNumber()){
-		cout << "json file required " << key << " attr" << endl;
+		MyLog::log(LOG_INFO, "AppConfig", "json file required " + key + " attr");
 		return -1;
 	}
 
@@ -72,7 +72,7 @@ Scalar getScalarByKey(wstring wkey, JSONObject root){
 	string key(wkey.begin(), wkey.end());
 
 	if (root.find(wkey) == root.end() || !root[wkey]->IsObject()){
-		cout << "json file required " << key << " attr" << endl;
+		MyLog::log(LOG_INFO, "AppConfig", "json file required " + key + " attr");
 		return Scalar(0,0,0);
 	}
 
@@ -93,7 +93,7 @@ Point getPointByKey(wstring wkey, JSONObject root){
 	string key(wkey.begin(), wkey.end());
 
 	if (root.find(wkey) == root.end() || !root[wkey]->IsObject()){
-		cout << "json file required " << key << " attr" << endl;
+		MyLog::log(LOG_INFO, "AppConfig", "json file required " + key + " attr");
 		return Point(-1, -1);
 	}
 
@@ -113,7 +113,7 @@ AppConfig::AppConfig(){
 	this->printMode = PRINT_MODE;
 	FileSystemHelper mFileSystemHelper;
 	string s = mFileSystemHelper.getFileContent(EXAMPLE_CONFIG);
-    cout << s << endl;
+	MyLog::log(LOG_INFO, TAG, s);
 
 	char *json_string = (char*) s.c_str();
 
@@ -121,7 +121,7 @@ AppConfig::AppConfig(){
 	JSONValue *value = JSON::Parse(json_string);
 
 	if (value == NULL) {
-		cout << "Json failed to parse: " << s << endl;
+		MyLog::log(LOG_INFO, TAG, "Json failed to parse: " + s);
 	} else {
 		root = value->AsObject();
 
@@ -168,15 +168,15 @@ void AppConfig::setFontSize(int width, int height){
 
 void AppConfig::debugPrintOut(){
 
-	cout << "VIDEO_NAME:" << VIDEO_NAME << endl;
-	cout << "FOLDER:" << FOLDER << endl;
-	cout << "FOLDER_NAME:" << FOLDER_NAME << endl;
-	cout << "URL:" << URL << endl;
-	cout << "CAMERA_IDX:" << CAMERA_IDX << endl;
+	MyLog::log(LOG_INFO, TAG, "VIDEO_NAME:" + VIDEO_NAME);
+	MyLog::log(LOG_INFO, TAG, "FOLDER:" + FOLDER);
+	MyLog::log(LOG_INFO, TAG, "FOLDER_NAME:" + ((string)FOLDER_NAME) );
+	MyLog::log(LOG_INFO, TAG, "URL:" + URL);
+	MyLog::log(LOG_INFO, TAG, "CAMERA_IDX:" + to_string(CAMERA_IDX));
 
-	cout << "FONT_SIZE:" << FONT_SIZE << endl;
-	cout << "FONT_SIZE_SM:" << FONT_SIZE_SM << endl;
-	cout << "ROW:" << ROW << endl;
+	MyLog::log(LOG_INFO, TAG, "FONT_SIZE:" + to_string(FONT_SIZE));
+	MyLog::log(LOG_INFO, TAG, "FONT_SIZE_SM:" + to_string(FONT_SIZE_SM));
+	MyLog::log(LOG_INFO, TAG, "ROW:" + to_string(ROW));
 
 }
 

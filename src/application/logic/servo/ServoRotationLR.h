@@ -11,11 +11,13 @@
 #include <iostream>
 #include <algorithm>
 
+#include "../../../system/helper/MyLog.h"
+
 using namespace std;
 
 class ServoRotationLR : public ServoIface{
 private:
-
+	string TAG = "ServoRotationLR";
 	int directionLeft = 0; // 1 == adding move to this direction, -1 == subtract to this direction
 	int directionRight = 0; // 1 == adding move to this direction, -1 == subtract to this direction
 	double angle = 0; // one degree in milis
@@ -37,7 +39,7 @@ public:
 			return abs(SERVO_POSITION_DEFAULT_MILIS - this->minMilisPosition) / this->angle;
 		}
 
-		cout << "getMaxLeftAngle: invalid direction servo idx:" << idx << endl;
+		MyLog::log(LOG_ERROR, TAG, "getMaxLeftAngle: invalid direction servo idx:" + to_string(idx));
 		throw std::logic_error("getMaxLeftAngle: invalid direction for ServoRotationLR");
 	}
 
@@ -49,7 +51,7 @@ public:
 			return abs(SERVO_POSITION_DEFAULT_MILIS - this->minMilisPosition) / this->angle;
 		}
 
-		cout << "getMaxRightAngle: invalid direction servo idx:" << idx << endl;
+		MyLog::log(LOG_ERROR, TAG, "getMaxRightAngle: invalid direction servo idx:" + to_string(idx));
 		throw std::logic_error("getMaxRightAngle: invalid direction for ServoRotationLR");
 	}
 
@@ -63,7 +65,7 @@ public:
 			}
 		}
 
-		cout << "convertAngleToMilisLeft: invalid angle, servo idx:" << idx << endl;
+		MyLog::log(LOG_ERROR, TAG, "convertAngleToMilisLeft: invalid angle, servo idx:" + to_string(idx));
 		return SERVO_POSITION_DEFAULT_MILIS;
 	}
 
@@ -77,7 +79,7 @@ public:
 			}
 		}
 
-		cout << "convertAngleToMilisRight: invalid angle, servo idx:" << idx << endl;
+		MyLog::log(LOG_ERROR, TAG, "convertAngleToMilisRight: invalid angle, servo idx:" + to_string(idx));
 		return SERVO_POSITION_DEFAULT_MILIS;
 	}
 };

@@ -47,7 +47,7 @@ void ProcessingFacade::runAnalyse() {
     	runLocalCameraFrameProcessing();
 
     }else{
-        cout << "Processing facade: unsupported input type" << endl;
+    	MyLog::log(LOG_ERROR, TAG, "Processing facade: unsupported input type");
     }
     
 }

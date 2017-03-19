@@ -7,9 +7,8 @@
 
 #include "MainLogic.h"
 
-
 MainLogic::MainLogic(){
-	cout << "-- -- -- CONSTRUCTOR: MainLogic -- -- --" << endl;
+	MyLog::log(LOG_INFO, TAG, "-- -- -- CONSTRUCTOR: MainLogic -- -- --");
 
 	// start arm communication
 	this->mRoboticArmController = new RoboticArmController;
@@ -30,7 +29,7 @@ MainLogic::MainLogic(){
 }
 
 MainLogic::~MainLogic(){
-	cout << "-- -- -- DESTRUCTOR: MainLogic -- -- --" << endl;
+	MyLog::log(LOG_INFO, TAG, "-- -- -- DESTRUCTOR: MainLogic -- -- --");
 	this->mRoboticArmController->end();
 }
 
@@ -51,7 +50,7 @@ void MainLogic::process(){
 
 	// IMAGE TRIGGER: new content from pro-processing
 	if (mImageStorage->getProcessingQueueSize() > 0){
-		if (DEBUG_LOCAL) cout << "MainLogic::IMAGE TRIGGER----------------" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "MainLogic::IMAGE TRIGGER----------------");
 
 		showArmView = true;
 		mImagePreprocessItem = (mImageStorage->getImgFromProcessingQueue());
@@ -65,7 +64,7 @@ void MainLogic::process(){
 
 	// TIME TRIGGER: change move by time
 	}else{
-		if (DEBUG_LOCAL) cout << "MainLogic::TIME TRIGGER----------------" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "MainLogic::TIME TRIGGER----------------");
 		if (isAnyModulActive()){
 			continueInActiveModuleTimeTrigger(arm);
 		}
@@ -73,7 +72,7 @@ void MainLogic::process(){
 
 	// execute possible changes
 	if (arm->getNextMove()->hasChanged()){
-		if (DEBUG_LOCAL) cout << "move has changed" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "move has changed");
 
 		if (showArmView){
 			// show arm
@@ -88,10 +87,10 @@ void MainLogic::process(){
 void MainLogic::executeInputFromKeyboard(){
 	if (mImageStorage->getKeyPressQueueSize() > 0 ){
 		char key = mImageStorage->getKeyFromKeyPressQueue();
-		cout << "new key input: " << (int)key << endl;
+		MyLog::log(LOG_INFO, TAG, "new key input: " + key);
 		switch((int)key){
 		case 114: // 'r'
-			cout << "reset active modules " << endl;
+			MyLog::log(LOG_INFO, TAG, "reset active modules ");
 			for (int i=0; i<1;i++){
 				if (modules[i]->isModulActive()){
 					modules[i]->resetContent();
@@ -99,7 +98,6 @@ void MainLogic::executeInputFromKeyboard(){
 			}
 			break;
 		}
-
 	}
 }
 
@@ -107,7 +105,7 @@ void MainLogic::executeInputFromKeyboard(){
  * loop through all modules, find any module is active
  */
 bool MainLogic::isAnyModulActive(){
-	if (DEBUG_LOCAL) cout << "MainLogic::isAnyModulActive" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MainLogic::isAnyModulActive");
 	for (int i=0; i<1;i++){
 		if (modules[i]->isModulActive()){
 			return true;
@@ -120,7 +118,7 @@ bool MainLogic::isAnyModulActive(){
  * loop through all modules, continue in active module
  */
 void MainLogic::continueInActiveModuleFrameTrigger(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
-	if (DEBUG_LOCAL) cout << "MainLogic::continueInActiveModule" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MainLogic::continueInActiveModule");
 	for (int i=0; i<1;i++){
 		if (modules[i]->isModulActive()){
 			modules[i]->processNextStateFrameTrigger(mImagePreprocessItem, mRoboticArm);
@@ -132,7 +130,7 @@ void MainLogic::continueInActiveModuleFrameTrigger(ImagePreprocessItem *mImagePr
  * loop through all modules, continue in active module
  */
 void MainLogic::continueInActiveModuleTimeTrigger(RoboticArm *mRoboticArm){
-	if (DEBUG_LOCAL) cout << "MainLogic::continueInActiveModule" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MainLogic::continueInActiveModule");
 	for (int i=0; i<1;i++){
 		if (modules[i]->isModulActive()){
 			modules[i]->processNextStateTimeTrigger(mRoboticArm);
@@ -144,11 +142,10 @@ void MainLogic::continueInActiveModuleTimeTrigger(RoboticArm *mRoboticArm){
  * loop through all modules, try to start some module
  */
 void MainLogic::detectModuleToStartWith(ImagePreprocessItem *mImagePreprocessItem, RoboticArm *mRoboticArm){
-	if (DEBUG_LOCAL) cout << "MainLogic::detectModuleToStartWith" << endl;
+	MyLog::log(LOG_DEBUG, TAG, "MainLogic::detectModuleToStartWith");
 	for (int i=0; i<1;i++){
-		if (DEBUG_LOCAL) cout << "i="<<i << endl;
 		if (modules[i]->initialObjectDetection(mImagePreprocessItem, mRoboticArm)){
-			if (DEBUG_LOCAL) cout << "starting module "<< modules[i]->getName() << endl;
+			MyLog::log(LOG_DEBUG, TAG, "starting module " + modules[i]->getName());
 		}
 	}
 }

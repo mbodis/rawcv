@@ -8,9 +8,11 @@
 #ifndef SRC_APPLICATION_LOGIC_SERVO_SERVOROTATIONFB_H_
 #define SRC_APPLICATION_LOGIC_SERVO_SERVOROTATIONFB_H_
 
+#include "../../../system/helper/MyLog.h"
+
 class ServoRotationFB : public ServoIface{
 private:
-
+	string TAG = "ServoRotationFB";
 	int directionForward = 0; // 1 == adding move to this direction, -1 == subtract to this direction
 	int directionBackward = 0; // 1 == adding move to this direction, -1 == subtract to this direction
 	double angle = 0; // one degree in milis
@@ -32,7 +34,7 @@ public:
 			return abs(SERVO_POSITION_DEFAULT_MILIS - this->minMilisPosition) / this->angle;
 		}
 
-		cout << "getMaxForwardAngle: invalid direction servo idx:" << idx << endl;
+		MyLog::log(LOG_ERROR, TAG, "getMaxForwardAngle: invalid direction servo idx:" + to_string(idx));
 		throw std::logic_error("getMaxForwardAngle: invalid direction for ServoRotationFB");
 	}
 
@@ -44,7 +46,7 @@ public:
 			return abs(SERVO_POSITION_DEFAULT_MILIS - this->minMilisPosition) / this->angle;
 		}
 
-		cout << "getMaxBackwardAngle: invalid direction servo idx:" << idx << endl;
+		MyLog::log(LOG_ERROR, TAG, "getMaxBackwardAngle: invalid direction servo idx:" + to_string(idx));
 		throw std::logic_error("getMaxBackwardAngle: invalid direction for ServoRotationFB");
 	}
 

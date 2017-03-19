@@ -16,6 +16,7 @@ using namespace std;
 
 class RoboticArmMove{
 private:
+	string TAG = "RoboticArmMove";
 	vector<ServoMove*> servoMoveSetup;
 
 public:
@@ -35,8 +36,8 @@ public:
 
 	static void logMove(RoboticArmMove *armMove){
 		for(int i=0; i<armMove->servoMoveSetup.size(); i++){
-			cout << i << " type: " << armMove->servoMoveSetup[i]->type << " angle:" << armMove->servoMoveSetup[i]->angle
-					<< " mm:" << armMove->servoMoveSetup[i]->mm << " direction:" << armMove->servoMoveSetup[i]->direction << endl;
+			MyLog::log(LOG_INFO, "RoboticArmMove", to_string(i) + " type: " + to_string(armMove->servoMoveSetup[i]->type) + " angle:" + to_string(armMove->servoMoveSetup[i]->angle)
+					+ " mm:" + to_string(armMove->servoMoveSetup[i]->mm) + " direction:" + to_string(armMove->servoMoveSetup[i]->direction));
 		}
 	}
 

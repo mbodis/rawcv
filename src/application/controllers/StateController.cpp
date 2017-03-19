@@ -5,10 +5,7 @@
  *      Author: mbodis
  */
 
-#include "../controllers/StateController.h"
-#include "../logic/robotic_arm/RoboticArm.h"
-
-#include <unistd.h>
+#include "StateController.h"
 
 thread t;
 bool isStateControllerAlive = false;
@@ -21,7 +18,7 @@ StateController::StateController(){
 }
 
 StateController::~StateController(){
-	cout << "-- -- -- DESTRUCTOR: StateController -- -- --" << endl;
+	MyLog::log(LOG_INFO, "StateController", "-- -- -- DESTRUCTOR: StateController -- -- --");
 	isStateControllerAlive = false;
 }
 
@@ -36,7 +33,7 @@ void StateController::executeLogicLoop(){
 
 	delete mMainLogic;
 
-	cout << "-- -- -- STATE CONTROLLER ENDED -- -- --" << endl;
+	MyLog::log(LOG_INFO, "StateController", "-- -- -- STATE CONTROLLER ENDED -- -- --");
 	t.join();
 }
 

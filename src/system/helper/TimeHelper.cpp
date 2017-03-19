@@ -7,16 +7,6 @@
 
 #include "TimeHelper.h"
 
-#include <iostream>
-#include <stdio.h>
-#include <time.h>
-#include <sys/time.h>
-#include <iostream>
-#include <sstream>
-
-using namespace std;
-
-
 void TimeHelper::resetTimer() {
 	gettimeofday(&tp, NULL);
 	this->milis = tp.tv_sec * 1000 + tp.tv_usec / 1000;

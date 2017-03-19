@@ -46,14 +46,14 @@ void RoboticArmController::start(){
 void RoboticArmController::end(){
 	mUsbCommunicator->~UsbCommunicator();
 	readNewCommand = false;
-	cout << "-- -- -- ROBOTIC ARM CONTROLLING ENDING -- -- --" << endl;
+	MyLog::log(LOG_INFO, TAG, "-- -- -- ROBOTIC ARM CONTROLLING ENDING -- -- --");
 }
 
 void RoboticArmController::executeCommandsLoop(){
 	while (readNewCommand){
 		if (armCommandsStack.size() >0){
 			ControllerMessage newCommand = armCommandsStack.front();
-			cout << "executing command: " << newCommand.getMessage() << " " << newCommand.getKey() << endl;
+			MyLog::log(LOG_INFO, "RoboticArmController", "executing command: " + newCommand.getMessage() + " " + newCommand.getKey());
 			mUsbCommunicator->sendCommand((char*)newCommand.getMessage().c_str());
 
 			// set message as progress
@@ -73,7 +73,7 @@ void RoboticArmController::executeCommandsLoop(){
 
 	}
 
-	cout << "-- -- -- ROBOTIC ARM CONTROLLING ENDED -- -- --" << endl;
+	MyLog::log(LOG_INFO, "RoboticArmController", "-- -- -- ROBOTIC ARM CONTROLLING ENDED -- -- --");
 	t.join();
 }
 

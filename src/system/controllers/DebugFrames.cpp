@@ -7,39 +7,24 @@
 
 #include "../controllers/DebugFrames.h"
 
-#include <opencv2/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-
-#include "../../system/helper/FileSystemHelper.h"
-#include "../../system/helper/DrawMethodHelper.h"
-
-
-#include <iostream>
-
-using namespace std;
-using namespace cv;
-
 /*
  * constructor
  * mode [MODE_VIDEO, MODE_IMG_FOLDER, MODE_IMG]
  * typePrintInfo [PRINT_MODE_DEBUG, PRINT_MODE_PRESENTATION]
  */
 DebugFrames::DebugFrames() {
-	cout << "Object DebugFrames is being created" << endl;
+	MyLog::log(LOG_INFO, TAG, "Object DebugFrames is being created");
     this->c = &AppConfig::getInstance();
     this->INPUT_MODE = AppConfig::getInstance().inputMode;
 	this->typePrintInfo = AppConfig::getInstance().printMode;
 	if (!mFileSystemHelper.DirectoryExists(FOLDER_OUTPUT)) {
-		cout
-				<< "missing output folder, please create empty folder in project directory: "
-				<< FOLDER_OUTPUT << endl;
+		MyLog::log(LOG_ERROR, TAG, ((string)"missing output folder, please create empty folder in project directory: ").append(FOLDER_OUTPUT));
 	}
 }
 
 /* destructor */
 DebugFrames::~DebugFrames(void) {
-	cout << "Object DebugFrames is being deleted" << endl;
+	MyLog::log(LOG_INFO, TAG, "Object DebugFrames is being deleted");
 }
 
 /*

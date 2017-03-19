@@ -15,22 +15,23 @@ const int MODULE_STATE_START = 1;
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
-#include "../../logic/image/ImagePreprocessItem.h"
-#include "../../../system/helper/MathHelper.h"
 #include "../../config/AppConfig.h"
-#include "../../logic/InputStorage.h"
 #include "../../controllers/RoboticArmController.h"
+#include "../../logic/image/ImagePreprocessItem.h"
+#include "../../logic/InputStorage.h"
+#include "../../../system/helper/MathHelper.h"
 
 using namespace std;
 using namespace cv;
 
 
 class CVModule{
+private:
+	string TAG = "CVModule";
 
 protected:
 	RoboticArmController *mRoboticArmController;
 
-	bool DEBUG_LOCAL = false;
 	bool finished = false;
 	bool enabled = true;
 	string moduleName;
@@ -45,9 +46,9 @@ protected:
 	 * arm rotation
 	 */
 	void pickupObjectCalculateArmRotation(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
-		if (DEBUG_LOCAL) cout << "plane: " << mImagePreprocessItem->preprocessFrame.cols << " x " << mImagePreprocessItem->preprocessFrame.rows << endl;
-		if (DEBUG_LOCAL) cout << "arm: [" << mImagePreprocessItem->armCenter.x << "," << mImagePreprocessItem->armCenter.y << "]" << endl;
-		if (DEBUG_LOCAL) cout << "object: [" << (int)mImagePreprocessItem->detectedObjects[0].center.x << "," << (int)mImagePreprocessItem->detectedObjects[0].center.y << "]" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "plane: " + to_string(mImagePreprocessItem->preprocessFrame.cols) + " x " + to_string(mImagePreprocessItem->preprocessFrame.rows));
+		MyLog::log(LOG_DEBUG, TAG, "arm: [" + to_string(mImagePreprocessItem->armCenter.x) + "," + to_string(mImagePreprocessItem->armCenter.y) + "]");
+		MyLog::log(LOG_DEBUG, TAG, "object: [" + to_string((int)mImagePreprocessItem->detectedObjects[0].center.x) + "," + to_string((int)mImagePreprocessItem->detectedObjects[0].center.y) + "]");
 
 		int x, y, z, angle, direction;
 		direction = (mImagePreprocessItem->detectedObjects[0].center.x > mImagePreprocessItem->armCenter.x) ? DIRECTION_RIGHT : DIRECTION_LEFT;
@@ -69,14 +70,14 @@ protected:
 		}
 
 		mRoboticArmMove->setServo(SERVO_IDX_BASE, direction, angle, 0);
-		if (DEBUG_LOCAL) cout << "direction: " << (direction==DIRECTION_LEFT ? "left" : "right") << " " << angle << " degree" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "direction: " + ((string)(direction==DIRECTION_LEFT ? "left " : "right ")) + to_string(angle) + " °");
 	}
 
 	/*
 	 * arm lean
 	 */
 	void pickupObjectCalculateArmLean(ImagePreprocessItem *mImagePreprocessItem, RoboticArmMove *mRoboticArmMove){
-		if (DEBUG_LOCAL) cout << "calculateArmLean--------------------------" << endl;
+		MyLog::log(LOG_DEBUG, TAG, "calculateArmLean--------------------------");
 
 		int ARM_PART_1_PX = ARM_PART_1_MM * mImagePreprocessItem->oneMmInPx;
 		int ARM_PART_2_PX = ARM_PART_2_MM * mImagePreprocessItem->oneMmInPx;
@@ -88,7 +89,7 @@ protected:
 
 		int objectX = cv::norm((Point)mImagePreprocessItem->armCenter - (Point) mImagePreprocessItem->detectedObjects[mImagePreprocessItem->getObjectIndex()].center );
 		int objectY = 0;
-		if (DEBUG_LOCAL) cout << "objectX: " << objectX << " objectY: " << objectY << endl;
+		MyLog::log(LOG_DEBUG, TAG, "objectX: " + to_string(objectX) + " objectY: " + to_string(objectY));
 
 		double minDistance = 999;
 		int minAngle1 = 0, minAngle2 =0, minAngle3 =0, yCord = 999;
@@ -109,22 +110,28 @@ protected:
 					int joint1X = MathHelper::sinDeg(180+angle1) * ARM_PART_1_PX;
 					int joint1Y = MathHelper::sinDeg(90+angle1) * ARM_PART_1_PX;
 					Point joint1Center = Point(baseJointX - joint1X, baseJointY - joint1Y);
-					if (DEBUG_LOCAL) cout << "joint1X: " << joint1X << " joint1Y: " << joint1Y << endl;
-					if (DEBUG_LOCAL) cout << "joint1CenterX: " << joint1Center.x << " joint1CenterY: " << joint1Center.y << endl;
+					if (MyLog::isLogEnabled(LOG_DEBUG)){
+						MyLog::log(LOG_DEBUG, TAG, "joint1X: " + to_string(joint1X) + " joint1Y: " + to_string(joint1Y));
+						MyLog::log(LOG_DEBUG, TAG, "joint1CenterX: " + to_string(joint1Center.x) + " joint1CenterY: " + to_string(joint1Center.y));
+					}
 
 					//arm part 2
 					int joint2X = MathHelper::sinDeg(180+angle2) * ARM_PART_2_PX;
 					int joint2Y = MathHelper::sinDeg(90+angle2) * ARM_PART_2_PX;
 					Point joint2Center = Point(joint1Center.x - joint2X, joint1Center.y - joint2Y);
-					if (DEBUG_LOCAL) cout << "joint2X: " << joint2X << " joint2Y: " << joint2Y << endl;
-					if (DEBUG_LOCAL) cout << "joint2CenterX: " << joint2Center.x << " joint2CenterY: " << joint2Center.y << endl;
+					if (MyLog::isLogEnabled(LOG_DEBUG)){
+						MyLog::log(LOG_DEBUG, TAG, "joint2X: " + to_string(joint2X) + " joint2Y: " + to_string(joint2Y));;
+						MyLog::log(LOG_DEBUG, TAG, "joint2CenterX: " + to_string(joint2Center.x) + " joint2CenterY: " + to_string(joint2Center.y));
+					}
 
 					//arm part 3
 					int joint3X = MathHelper::sinDeg(180+angle3) * ARM_PART_3_PX;
 					int joint3Y = MathHelper::sinDeg(90+angle3) * ARM_PART_3_PX;
 					Point joint3Center = Point(joint2Center.x - joint3X, joint2Center.y - joint3Y);
-					if (DEBUG_LOCAL) cout << "joint3X: " << joint3X << " joint3Y: " << joint3Y << endl;
-					if (DEBUG_LOCAL) cout << "joint3CenterX: " << joint3Center.x << " joint3CenterY: " << joint3Center.y << endl;
+					if (MyLog::isLogEnabled(LOG_DEBUG)){
+						MyLog::log(LOG_DEBUG, TAG, "joint3X: " + to_string(joint3X) + " joint3Y: " + to_string(joint3Y));
+						MyLog::log(LOG_DEBUG, TAG, "joint3CenterX: " + to_string(joint3Center.x) + " joint3CenterY: " + to_string(joint3Center.y));
+					}
 
 					// add some limitations (arm should not hit table)
 					// 50 mm above table is closest for arm TODO later
@@ -134,14 +141,16 @@ protected:
 
 					double objectArmEndFromObjectPx = cv::norm(joint3Center - Point(objectX, objectY));
 					double objectDistanceFromArmMm = objectArmEndFromObjectPx * mImagePreprocessItem->oneMmInPx;
-					if (DEBUG_LOCAL) cout << "objectArmEndFromObjectPx: " << objectArmEndFromObjectPx << endl;
-					if (DEBUG_LOCAL) cout << "objectDistanceFromArmMm: " << objectDistanceFromArmMm << endl;
+					if (MyLog::isLogEnabled(LOG_DEBUG)){
+						MyLog::log(LOG_DEBUG, TAG, "objectArmEndFromObjectPx: " + to_string(objectArmEndFromObjectPx));
+						MyLog::log(LOG_DEBUG, TAG, "objectDistanceFromArmMm: " + to_string(objectDistanceFromArmMm));
+					}
 
 					if (objectDistanceFromArmMm <= ARM_MAX_DISTANCE_PICKUP_MM){
 
 						if (minDistance > objectDistanceFromArmMm){
-							if (DEBUG_LOCAL) cout << "found better: angle1=" << armAngle1 << "° angle2="
-								<< armAngle2 << "° angle3=" << armAngle3 << "° dist=" << objectDistanceFromArmMm << endl;
+							MyLog::log(LOG_DEBUG, TAG, "found better: angle1=" + to_string(armAngle1) + "° angle2="
+								+ to_string(armAngle2) + "° angle3=" + to_string(armAngle3) + "° dist=" + to_string(objectDistanceFromArmMm));
 							minDistance = objectDistanceFromArmMm;
 							minAngle1 = armAngle1;
 							minAngle2 = armAngle2;
@@ -153,7 +162,8 @@ protected:
 			}
 		}
 
-		cout << "OBJECT DETECTED angle1=" << minAngle1 << "° angle2=" << minAngle2 << "° angle3=" << minAngle3 << "° minDistance=" << minDistance <<  endl;
+		MyLog::log(LOG_INFO, TAG, "OBJECT DETECTED angle1=" + to_string(minAngle1) + "° angle2=" + to_string(minAngle2)
+				+ "° angle3=" + to_string(minAngle3) + "° minDistance=" + to_string(minDistance));
 
 		mRoboticArmMove->setServo(SERVO_IDX_BOTTOM_JOINT, DIRECTION_FORWARD, minAngle1, 0);
 		mRoboticArmMove->setServo(SERVO_IDX_MIDDLE_JOINT, DIRECTION_FORWARD, minAngle2, 0);
@@ -166,6 +176,8 @@ public:
 	CVModule(string moduleName, RoboticArmController *mRoboticArmController){
 		this->mRoboticArmController = mRoboticArmController;
 		this->moduleName = moduleName;
+		this->lastMovePreprocessItem = new ImagePreprocessItem();
+		this->lastMove = new RoboticArmMove();
 	}
 
 	~CVModule(){

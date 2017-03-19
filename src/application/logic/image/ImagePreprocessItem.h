@@ -15,6 +15,14 @@ private:
 	int objectIdx = -1;
 
 public:
+	// raw input
+	Mat fullInputFrame;
+
+	// preprocessed content
+	Mat preprocessFrame;
+	Point armCenter;
+	vector<RotatedRect> detectedObjects;
+	double oneMmInPx = -1;
 
 	ImagePreprocessItem(){
 	}
@@ -35,14 +43,6 @@ public:
 		return this->objectIdx;
 	}
 
-	// raw input
-	Mat fullInputFrame;
-
-	// preprocessed content
-	Mat preprocessFrame;
-	Point armCenter;
-	vector<RotatedRect> detectedObjects;
-	double oneMmInPx;
 };
 
 
