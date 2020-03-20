@@ -1,4 +1,6 @@
 .settings/
-Debug/
+.idea/
+cmake-build-debug
 output/
 img_stack_to_process/
+media/

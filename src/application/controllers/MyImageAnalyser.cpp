@@ -75,7 +75,8 @@ void MyImageAnalyser::detectMovement(){
 	equalizeHist(detectMovementGrayFrame, detectMovementGrayFrame);
 	Mat diffGray, actualDiffBw;
 
-	if (detectMovementGrayFrame.dims != 0 && detectMovementLastGrayFrame.dims != 0) {
+	if (detectMovementGrayFrame.dims != 0 && detectMovementLastGrayFrame.dims != 0
+			&& detectMovementGrayFrame.cols == detectMovementLastGrayFrame.cols) {
 
 		absdiff(detectMovementLastGrayFrame, detectMovementGrayFrame, diffGray);
 		actualDiffBw = diffGray > THRESHOLD_MOVEMENT_BW_VALUE;

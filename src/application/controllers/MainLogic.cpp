@@ -23,6 +23,7 @@ MainLogic::MainLogic(){
 	// modules
 	this->modules.clear();
 	this->modules.push_back(new PickUpObject("PickUpObject", mRoboticArmController));
+	// TODO add new modules here
 
 	// img storage
 	this->mImageStorage = &InputStorage::getInstance();

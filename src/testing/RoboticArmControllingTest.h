@@ -37,6 +37,7 @@ private:
 	void resetToDefaultPositionAllAngle();
 
 	void stupido();
+	void babysleep();
 
 	RoboticArmController *mRoboticArmController;
 	RoboticArm *arm;
@@ -45,8 +46,6 @@ public:
 	RoboticArmControllingTest();
 	void runTest();
 };
-
-
 
 
 #endif /* SRC_TESTING_ROBOTICARMCONTROLLINGTEST_H_ */

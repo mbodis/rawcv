@@ -209,6 +209,35 @@ void RoboticArmControllingTest::stupido(){
 	resetToDefaultPositionAllAngle();
 }
 
+void RoboticArmControllingTest::babysleep(){
+
+	for(int i=0; i< 5;i++){
+		// forward
+		mRoboticArmController->executeCommand(MessageComposer::composeControllerFullMessage(
+		arm->getServo(SERVO_IDX_BASE), DIRECTION_LEFT, 0,
+		arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
+		arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 60,
+		arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 30,
+		arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_RIGHT, 0,
+		arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, 0
+		));
+		sleep(1);
+
+		// backward
+		mRoboticArmController->executeCommand(MessageComposer::composeControllerFullMessage(
+		arm->getServo(SERVO_IDX_BASE), DIRECTION_LEFT, 0,
+		arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
+		arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 60,
+		arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 60,
+		arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_RIGHT, 0,
+		arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, 0
+		));
+		sleep(1);
+	}
+	sleep(1);
+	resetToDefaultPositionAllAngle();
+}
+
 void RoboticArmControllingTest::runTest(){
 	mRoboticArmController->start();
 //	dummyTestCommunicaion();
@@ -226,10 +255,10 @@ void RoboticArmControllingTest::runTest(){
 //	resetToDefaultPositionAllAngle();
 
 //	stupido();
-//	resetToDefaultPositionAllAngle();
+//	babysleep();
+	resetToDefaultPositionAllAngle();
 
 	sleep(4);
 	mRoboticArmController->end();
-
 }
 
