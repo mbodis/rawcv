@@ -127,89 +127,7 @@ void RoboticArmControllingTest::resetToDefaultPositionAllAngle(){
 	sleep(2);
 }
 
-void RoboticArmControllingTest::stupido(){
-	int claw = 30;
-//	mRoboticArmController->executeCommand(MessageComposer::composeControllerFullMessage(
-//	arm->getServo(SERVO_IDX_BASE), DIRECTION_RIGHT, 0,
-//	arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_FORWARD, 0,
-//	arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 0,
-//	arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 0,
-//	arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_LEFT, 0,
-//	arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, 420
-//	));
-//	sleep(2);
-//
-//	mRoboticArmController->executeCommand(MessageComposer::composeControllerFullMessage(
-//		arm->getServo(SERVO_IDX_BASE), DIRECTION_RIGHT, 0,
-//		arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_FORWARD, 0,
-//		arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 0,
-//		arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 0,
-//		arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_LEFT, 0,
-//		arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, claw
-//		));
-//		sleep(2);
-
-	mRoboticArmController->executeCommand(MessageComposer::composeControllerFullMessage(
-	arm->getServo(SERVO_IDX_BASE), DIRECTION_RIGHT, 0,
-	arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
-	arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 60,
-	arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 60,
-	arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_LEFT, 0,
-	arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, claw
-	));
-	sleep(2);
-
-	for(int i=0; i< 2;i++){
-
-		//left
-		mRoboticArmController->executeCommand(MessageComposer::composeControllerFullMessage(
-		arm->getServo(SERVO_IDX_BASE), DIRECTION_LEFT, 20,
-		arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
-		arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 60,
-		arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 60,
-		arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_RIGHT, 0,
-		arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, claw
-		));
-		sleep(4);
-
-		//top
-		mRoboticArmController->executeCommand(MessageComposer::composeControllerFullMessage(
-		arm->getServo(SERVO_IDX_BASE), DIRECTION_LEFT, 0,
-		arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
-		arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 55,
-		arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 60,
-		arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_RIGHT, 0,
-		arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, claw
-		));
-		sleep(4);
-
-		//right
-		mRoboticArmController->executeCommand(MessageComposer::composeControllerFullMessage(
-		arm->getServo(SERVO_IDX_BASE), DIRECTION_RIGHT, 20,
-		arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
-		arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 60,
-		arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 60,
-		arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_LEFT, 0,
-		arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, claw
-		));
-		sleep(4);
-
-		//down
-		mRoboticArmController->executeCommand(MessageComposer::composeControllerFullMessage(
-		arm->getServo(SERVO_IDX_BASE), DIRECTION_LEFT, 0,
-		arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_BACKWARD, 40,
-		arm->getServo(SERVO_IDX_MIDDLE_JOINT), DIRECTION_FORWARD, 65,
-		arm->getServo(SERVO_IDX_UPPER_JOINT), DIRECTION_FORWARD, 65,
-		arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_RIGHT, 0,
-		arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, claw
-		));
-		sleep(4);
-	}
-
-	resetToDefaultPositionAllAngle();
-}
-
-void RoboticArmControllingTest::babysleep(){
+void RoboticArmControllingTest::waving(){
 
 	for(int i=0; i< 5;i++){
 		// forward
@@ -235,7 +153,6 @@ void RoboticArmControllingTest::babysleep(){
 		sleep(1);
 	}
 	sleep(1);
-	resetToDefaultPositionAllAngle();
 }
 
 void RoboticArmControllingTest::runTest(){
@@ -254,9 +171,8 @@ void RoboticArmControllingTest::runTest(){
 //	testRealValuesAllAngle();
 //	resetToDefaultPositionAllAngle();
 
-//	stupido();
-//	babysleep();
-	resetToDefaultPositionAllAngle();
+//	waving();
+//	resetToDefaultPositionAllAngle();
 
 	sleep(4);
 	mRoboticArmController->end();

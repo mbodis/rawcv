@@ -36,8 +36,7 @@ private:
 	void testRealValuesAllAngle();
 	void resetToDefaultPositionAllAngle();
 
-	void stupido();
-	void babysleep();
+	void waving();
 
 	RoboticArmController *mRoboticArmController;
 	RoboticArm *arm;

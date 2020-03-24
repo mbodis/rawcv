@@ -33,7 +33,7 @@ using namespace std;
 /*
  * NOTE: do not modify !
  */
-int main3(int argc, char **argv) {
+int main(int argc, char **argv) {
 	cout << cv::getBuildInformation() << endl;
 	AppConfig &mAppConfig = AppConfig::getInstance();
 	mAppConfig.CAMERA_IDX = 2;
@@ -54,7 +54,7 @@ int main3(int argc, char **argv) {
 /*
  * TESTING CONTROLING ROBOTIC ARM
  */
-int main(int argc, char **argv) {
+int main3(int argc, char **argv) {
 
 	RoboticArmControllingTest *mRoboticArmControllingTest = new RoboticArmControllingTest;
 	mRoboticArmControllingTest->runTest();
