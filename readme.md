@@ -26,3 +26,6 @@ svb: problem with gdal lib - some listed below works :D
 `sudo dnf install -y gdal23-devel gdal30-devel`
 `sudo dnf install -y gdalcpp-devel`
 
+**hardware setup:** 
+- voltage should be set to 7.5V
+- running with sudo cmd, because of access to camera (can be fixed ofcource)

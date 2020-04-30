@@ -37,6 +37,7 @@ private:
 	void resetToDefaultPositionAllAngle();
 
 	void waving();
+	void voltageTest();
 
 	RoboticArmController *mRoboticArmController;
 	RoboticArm *arm;

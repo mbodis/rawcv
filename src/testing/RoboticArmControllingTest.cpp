@@ -139,7 +139,7 @@ void RoboticArmControllingTest::waving(){
 		arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_RIGHT, 0,
 		arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, 0
 		));
-		sleep(1);
+        sleep(2);
 
 		// backward
 		mRoboticArmController->executeCommand(MessageComposer::composeControllerFullMessage(
@@ -150,29 +150,46 @@ void RoboticArmControllingTest::waving(){
 		arm->getServo(SERVO_IDX_CLAW_ROTATE), DIRECTION_RIGHT, 0,
 		arm->getServo(SERVO_IDX_CLAWS), DIRECTION_OPEN, 0
 		));
-		sleep(1);
+        sleep(2);
 	}
-	sleep(1);
+}
+
+/**
+ * note: in case source is set to 5v ar will fall down if bas joint has higher value
+ * make sure source si set to 7.5V
+ */
+void RoboticArmControllingTest::voltageTest(){
+    mRoboticArmController->executeCommand(MessageComposer::composeControllerMessage(2, arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_FORWARD, 50));
+    sleep(2);
+    mRoboticArmController->executeCommand(MessageComposer::composeControllerMessage(2, arm->getServo(SERVO_IDX_BOTTOM_JOINT), DIRECTION_BACKWARD, 30));
+    sleep(2);
 }
 
 void RoboticArmControllingTest::runTest(){
 	mRoboticArmController->start();
-//	dummyTestCommunicaion();
 
-//	testRealValuesStepsMilis();
-//	resetToDefaultPositionStepsMilis();
+    resetToDefaultPositionAllAngle();
 
-//	testRealValuesAllMilis();
-//	resetToDefaultPositionAllMilis();
+    resetToDefaultPositionAllAngle();
+	dummyTestCommunicaion();
 
-//	testRealValuesStepsAngle();
-//	resetToDefaultPositionStepsAngle();
+	testRealValuesStepsMilis();
+	resetToDefaultPositionStepsMilis();
 
-//	testRealValuesAllAngle();
-//	resetToDefaultPositionAllAngle();
+	testRealValuesAllMilis();
+	resetToDefaultPositionAllMilis();
 
-//	waving();
-//	resetToDefaultPositionAllAngle();
+	testRealValuesStepsAngle();
+	resetToDefaultPositionStepsAngle();
+
+	testRealValuesAllAngle();
+	resetToDefaultPositionAllAngle();
+
+	waving();
+	resetToDefaultPositionAllAngle();
+
+    voltageTest();
+    resetToDefaultPositionAllAngle();
 
 	sleep(4);
 	mRoboticArmController->end();

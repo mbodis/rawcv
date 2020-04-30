@@ -30,34 +30,42 @@ using namespace std;
 #include <math.h>
 #include <stdlib.h>
 
+
+void runProgram();
+void runTests();
+
+int main(int argc, char **argv) {
+    if (argc == 2 && ((string)argv[1]) == "testing"){
+        runTests();
+    }else{
+        runProgram();
+    }
+    return 0;
+}
+
 /*
  * NOTE: do not modify !
  */
-int main(int argc, char **argv) {
-	cout << cv::getBuildInformation() << endl;
-	AppConfig &mAppConfig = AppConfig::getInstance();
-	mAppConfig.CAMERA_IDX = 2;
-	mAppConfig.USB_PORT = "/dev/ttyACM0";
+void runProgram(){
+    cout << cv::getBuildInformation() << endl;
+    AppConfig &mAppConfig = AppConfig::getInstance();
+    mAppConfig.CAMERA_IDX = 2;
+    mAppConfig.USB_PORT = "/dev/ttyACM0";
 
-	// main logic
-	StateController *mStateController = new StateController();
+    // main logic
+    StateController *mStateController = new StateController();
 
     // start video analyze on main thread - until ESC pressed
-	(new ProcessingFacade(new MyImageAnalyser()))->runAnalyse();
+    (new ProcessingFacade(new MyImageAnalyser()))->runAnalyse();
 
-	delete mStateController;
-	MyLog::log(LOG_INFO, "main", "-- -- -- EXIT -- -- --");
-
-	return 0;
+    delete mStateController;
+    MyLog::log(LOG_INFO, "main", "-- -- -- EXIT -- -- --");
 }
 
 /*
  * TESTING CONTROLING ROBOTIC ARM
  */
-int main3(int argc, char **argv) {
-
-	RoboticArmControllingTest *mRoboticArmControllingTest = new RoboticArmControllingTest;
-	mRoboticArmControllingTest->runTest();
-
-	return 0;
+void runTests(){
+    RoboticArmControllingTest *mRoboticArmControllingTest = new RoboticArmControllingTest;
+    mRoboticArmControllingTest->runTest();
 }
